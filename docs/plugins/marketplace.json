@@ -1,0 +1,74 @@
+{
+  "name": "miyabi-official",
+  "owner": "miyabi",
+  "description": "Miyabi - 完全自律型AI開発オペレーションプラットフォーム",
+  "repository": "https://github.com/ShunsukeHayashi/Miyabi",
+  "homepage": "https://shunsukehayashi.github.io/Miyabi/plugins/",
+  "plugins": [
+    {
+      "name": "miyabi-full",
+      "source": "https://shunsukehayashi.github.io/Miyabi/plugins/miyabi-full-v2.0.0.zip",
+      "version": "2.0.0",
+      "description": "Miyabi 完全パッケージ - 25 Agents + 22 Skills + 50 Commands + MCP + Hooks",
+      "category": "automation",
+      "tags": ["ai", "agents", "devops", "automation", "github", "rust"],
+      "featured": true
+    },
+    {
+      "name": "miyabi-coding-agents",
+      "source": "https://shunsukehayashi.github.io/Miyabi/plugins/miyabi-coding-agents-v2.0.0.zip",
+      "version": "2.0.0",
+      "description": "9 Coding Agents: Coordinator, CodeGen, Review, Issue, PR, Deployment",
+      "category": "development",
+      "tags": ["coding", "agents", "rust", "github"]
+    },
+    {
+      "name": "miyabi-business-agents",
+      "source": "https://shunsukehayashi.github.io/Miyabi/plugins/miyabi-business-agents-v2.0.0.zip",
+      "version": "2.0.0",
+      "description": "16 Business Agents: Marketing, Sales, CRM, Analytics, YouTube",
+      "category": "business",
+      "tags": ["business", "marketing", "sales", "content"]
+    },
+    {
+      "name": "miyabi-skills",
+      "source": "https://shunsukehayashi.github.io/Miyabi/plugins/miyabi-skills-v2.0.0.zip",
+      "version": "2.0.0",
+      "description": "22 Development Skills: Rust, TDD, Git, Security, Performance",
+      "category": "development",
+      "tags": ["skills", "rust", "testing", "security"]
+    },
+    {
+      "name": "miyabi-commands",
+      "source": "https://shunsukehayashi.github.io/Miyabi/plugins/miyabi-commands-v2.0.0.zip",
+      "version": "2.0.0",
+      "description": "50+ Slash Commands: /deploy, /review, /security-scan, /agent-run",
+      "category": "productivity",
+      "tags": ["commands", "cli", "automation"]
+    },
+    {
+      "name": "miyabi-hooks",
+      "source": "https://shunsukehayashi.github.io/Miyabi/plugins/miyabi-hooks-v2.0.0.zip",
+      "version": "2.0.0",
+      "description": "Pre/Post Tool Hooks: Session management, Git integration",
+      "category": "automation",
+      "tags": ["hooks", "events", "automation"]
+    },
+    {
+      "name": "miyabi-honoka",
+      "source": "https://shunsukehayashi.github.io/Miyabi/plugins/miyabi-honoka-v2.0.0.zip",
+      "version": "2.0.0",
+      "description": "穂花(ほのか) - Udemyコース作成＆コンテンツ販売の専門Agent",
+      "category": "education",
+      "tags": ["udemy", "course", "education", "content"]
+    },
+    {
+      "name": "miyabi-guardian",
+      "source": "https://shunsukehayashi.github.io/Miyabi/plugins/miyabi-guardian-v2.0.0.zip",
+      "version": "2.0.0",
+      "description": "Guardian Agent - クリティカル障害対応・エスカレーション",
+      "category": "security",
+      "tags": ["security", "escalation", "incident-response"]
+    }
+  ]
+}

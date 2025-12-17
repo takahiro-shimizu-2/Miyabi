@@ -2,7 +2,6 @@
   "name": "autonomous-operations",
   "version": "0.14.0",
   "description": "Complete autonomous AI development operations platform - Optimized for AI coding agents",
-  "deprecated": "⚠️ TypeScript Edition is in legacy support mode. New features are prioritized in Rust Edition. Please migrate to 'miyabi-cli' (Rust) via 'cargo install miyabi-cli' or download from https://github.com/ShunsukeHayashi/Miyabi/releases",
   "type": "module",
   "main": "index.js",
   "workspaces": [

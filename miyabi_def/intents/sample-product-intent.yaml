@@ -1,0 +1,62 @@
+project:
+  name: "Miyabi Commerce Pilot"
+  summary: >
+    Launch an autonomous agent workflow that can triage, implement,
+    and deploy small e-commerce enhancements end-to-end.
+  stakeholders:
+    - Product Lead
+    - Backend Guild
+  priority: high
+  repository: "customer-cloud/miyabi-private"
+
+intent:
+  objective: >
+    From a single requirements brief, derive the necessary Miyabi
+    definitions (entities, workflows, agents) and produce the docs
+    needed for engineering hand-off.
+  constraints:
+    - Keep agent count under 10
+    - Focus on marketplace features (pricing, listings, analytics)
+  success_criteria:
+    - Definition bundle compiles without manual edits
+    - Workflows cover discovery → delivery → deployment
+
+outputs:
+  templates:
+    - world
+    - entities
+    - relations
+    - workflows
+    - agents
+    - skills
+    - universal
+
+variables:
+  project:
+    domain: "e-commerce"
+    target_user: "Marketplace Operator"
+    metrics:
+      - name: "Time-to-Shipping"
+        target: "↓ 30%"
+      - name: "Auto-merge Success Rate"
+        target: "≥ 90%"
+  agents:
+    focus_area: ["catalog", "pricing", "analytics"]
+  workflows:
+    release_channels:
+      - "staging"
+      - "production"
+
+agents:
+  include:
+    - CoordinatorAgent
+    - CodeGenAgent
+    - ReviewAgent
+    - DeploymentAgent
+    - MarketResearchAgent
+  exclude:
+    - DiscordCommunityAgent
+
+notes:
+  - "Use TmuxControlAgent to supervise Infinity mode if long-running tasks are detected."
+  - "Prefer RefresherAgent for label hygiene when backlog exceeds 50 open issues."

@@ -1,0 +1,53 @@
+@startuml miyabi_overview
+!include <C4/C4_Container>
+
+LAYOUT_WITH_LEGEND()
+
+title Miyabi Definition Automation Overview
+
+Person(human, "Human Operator", "Provides first intent input")
+
+System_Boundary(intents, "Intent Capture") {
+    System(intentFile, "Intent YAML", "project/intent/objective")
+}
+
+System_Boundary(pipeline, "Definition Automation Pipeline") {
+    Container(intentParser, "Intent Parser", "Python", "Validates intent, builds template plan")
+    Container(variableLoader, "Variable Loader", "YAML", "Aggregates base + intent overrides")
+    Container(templateEngine, "Jinja2 Renderer", "Jinja2", "Applies templates with merged context")
+}
+
+System_Boundary(outputs, "Generated Artefacts") {
+    Container(definitions, "Generated YAML Bundle", "entities.yaml, agents.yaml, ...")
+    Container(puml, "PlantUML Diagrams", "entities.puml, overview.puml", "Visual schemas")
+}
+
+System_Boundary(runtime, "Runtime Consumers") {
+    System_Ext(orchestra, "Miyabi Orchestra", "21 Agents / Infinity Mode")
+    System_Ext(tmuxControl, "TmuxControlAgent", "AI-driven tmux operations")
+    System_Ext(docs, "Documentation", "Automation Guide, Specs")
+}
+
+Rel(human, intentFile, "Describe intent, constraints")
+Rel(intentFile, intentParser, "Parse & validate", "--intent")
+Rel(intentParser, variableLoader, "Select template plan, share context")
+Rel(variableLoader, templateEngine, "Provide merged variables")
+Rel(templateEngine, definitions, "Render YAML bundle")
+Rel(templateEngine, puml, "Emit diagrams via generate_puml.py")
+Rel(definitions, orchestra, "Provision agents/workflows")
+Rel(definitions, tmuxControl, "Expose agent specs")
+Rel(definitions, docs, "Sync documentation")
+Rel(puml, docs, "Embed diagrams")
+
+note top of intentParser
+  Template aliases: world, entities, workflows...
+  Intent fallback: default template order
+end note
+
+note bottom of tmuxControl
+  Uses TmuxControlAgent docs & commands
+  generated via /tmux-control
+end note
+
+SHOW_LEGEND()
+@enduml

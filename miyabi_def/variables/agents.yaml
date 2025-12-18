@@ -1,0 +1,134 @@
+# Miyabi Agents Variable Definitions
+# Version: 1.0.0
+
+agents:
+  coding:
+    - name: "CoordinatorAgent"
+      role: "orchestration"
+      description: "Task orchestration and DAG-based parallel execution"
+      label: "agent:coordinator"
+      character: "指揮者アーク"
+
+    - name: "CodeGenAgent"
+      role: "code_generation"
+      description: "AI-driven code generation with Claude Sonnet 4"
+      label: "agent:codegen"
+      character: "創造者ノヴァ"
+
+    - name: "ReviewAgent"
+      role: "code_review"
+      description: "Code quality assessment and security scanning"
+      label: "agent:review"
+      character: "審査官レビィ"
+
+    - name: "IssueAgent"
+      role: "issue_management"
+      description: "Issue analysis and 57-label system classification"
+      label: "agent:issue"
+      character: "整理者イシュー"
+
+    - name: "PRAgent"
+      role: "pr_automation"
+      description: "Pull Request automation with Conventional Commits"
+      label: "agent:pr"
+      character: "統合者プル"
+
+    - name: "DeploymentAgent"
+      role: "deployment"
+      description: "CI/CD deployment with Firebase auto-deploy"
+      label: "agent:deployment"
+      character: "展開者デプロ"
+
+    - name: "RefresherAgent"
+      role: "state_monitoring"
+      description: "Issue state monitoring and auto-update"
+      label: "agent:refresher"
+      character: "更新者リフ"
+
+  business:
+    strategy_planning:
+      - name: "AIEntrepreneurAgent"
+        phase: 0
+        description: "包括的なビジネスプラン作成とスタートアップ戦略立案"
+        label: "agent:ai-entrepreneur"
+        character: "起業家エンター"
+
+      - name: "SelfAnalysisAgent"
+        phase: 1
+        description: "キャリア・スキル・実績の詳細分析"
+        label: "agent:self-analysis"
+        character: "分析者セルフ"
+
+      - name: "PersonaAgent"
+        phase: 3
+        description: "ターゲット顧客の詳細ペルソナとカスタマージャーニー設計"
+        label: "agent:persona"
+        character: "顧客像ペルソ"
+
+      - name: "ProductConceptAgent"
+        phase: 4
+        description: "USP・収益モデル・ビジネスモデルキャンバス設計"
+        label: "agent:product-concept"
+        character: "企画者コンセプト"
+
+      - name: "ProductDesignAgent"
+        phase: 5
+        description: "6ヶ月分のコンテンツ・技術スタック・MVP定義"
+        label: "agent:product-design"
+        character: "設計者デザイン"
+
+      - name: "FunnelDesignAgent"
+        phase: 7
+        description: "認知→購入→LTVまでの顧客導線最適化"
+        label: "agent:funnel-design"
+        character: "導線設計ファネル"
+
+    marketing:
+      - name: "MarketResearchAgent"
+        phase: 2
+        description: "市場トレンド分析と競合調査（20社以上）"
+        label: "agent:market-research"
+        character: "調査者マーケット"
+
+      - name: "MarketingAgent"
+        phase: 9
+        description: "広告・SEO・SNS等を駆使した集客施策実行計画"
+        label: "agent:marketing"
+        character: "集客者マーケ"
+
+      - name: "ContentCreationAgent"
+        phase: 6
+        description: "動画・記事・教材等の実コンテンツ制作計画"
+        label: "agent:content-creation"
+        character: "制作者コンテンツ"
+
+      - name: "SNSStrategyAgent"
+        phase: 8
+        description: "Twitter/Instagram/YouTube等のSNS戦略立案と投稿カレンダー作成"
+        label: "agent:sns-strategy"
+        character: "SNS戦略家ソーシャル"
+
+      - name: "YouTubeAgent"
+        phase: "specialized"
+        description: "YouTube運用最適化 - チャンネルコンセプト設計から投稿計画まで13ワークフロー完備"
+        label: "agent:youtube"
+        character: "動画配信ユーチューブ"
+
+    sales_crm:
+      - name: "SalesAgent"
+        phase: 10
+        description: "リード→顧客の転換率最大化とセールスプロセス最適化"
+        label: "agent:sales"
+        character: "営業者セールス"
+
+      - name: "CRMAgent"
+        phase: 11
+        description: "顧客満足度向上とLTV最大化のための顧客管理体制構築"
+        label: "agent:crm"
+        character: "顧客管理CRM"
+
+      - name: "AnalyticsAgent"
+        phase: 12
+        description: "全データ分析・PDCAサイクル実行・継続的改善"
+        label: "agent:analytics"
+        character: "分析者アナリティクス"

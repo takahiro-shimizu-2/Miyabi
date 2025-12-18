@@ -1,0 +1,464 @@
+# Miyabi PR Merge Rules - Pull Request自動マージ判定ルール
+# Version: 1.0.0
+# Description: PRをレビュー・マージするための定量的閾値ルール
+# Philosophy: "Quality gates ensure system integrity while enabling rapid iteration"
+
+pr_merge_rules:
+  version: "1.1.0"
+  last_updated: "2025-10-31"
+
+  # === Phase 1: 必須チェック (Mandatory Gates) ===
+  # これらが全て通過しないとマージ不可
+  mandatory_checks:
+
+    github_status:
+      description: "GitHub Actions CI/CDステータス"
+      rules:
+        - check: "All GitHub Actions workflows passed"
+          threshold: "100% success"
+          blocking: true
+          priority: "P.1-Critical"
+
+        - check: "No merge conflicts"
+          threshold: "0 conflicts"
+          blocking: true
+          priority: "P.1-Critical"
+
+        - check: "Branch up-to-date with main"
+          threshold: "0 commits behind"
+          blocking: true
+          priority: "P.1-Critical"
+
+    label_requirements:
+      description: "必須ラベル付与確認"
+      rules:
+        - check: "State label exists"
+          required_labels:
+            - "state:reviewing"
+            - "state:done"
+          blocking: true
+          priority: "P.1-Critical"
+
+        - check: "Agent label exists"
+          required_one_of:
+            - "agent:coordinator"
+            - "agent:codegen"
+            - "agent:review"
+            - "agent:deployment"
+            - "agent:issue"
+            - "agent:pr"
+          blocking: true
+          priority: "P.2-High"
+
+        - check: "Type label exists"
+          required_one_of:
+            - "type:feature"
+            - "type:bug"
+            - "type:refactor"
+            - "type:docs"
+            - "type:test"
+            - "type:chore"
+            - "type:security"
+          blocking: true
+          priority: "P.2-High"
+
+    code_quality:
+      description: "コード品質基準"
+      rules:
+        - check: "No ESLint errors"
+          threshold: "0 errors"
+          blocking: true
+          priority: "P.1-Critical"
+          command: "pnpm lint"
+
+        - check: "TypeScript compilation success"
+          threshold: "0 type errors"
+          blocking: true
+          priority: "P.1-Critical"
+          command: "pnpm typecheck"
+
+        - check: "All tests pass"
+          threshold: "100% pass rate"
+          blocking: true
+          priority: "P.1-Critical"
+          command: "pnpm test"
+
+        - check: "Test coverage maintained"
+          threshold: ">= 80%"
+          blocking: true
+          priority: "P.2-High"
+          command: "pnpm test:coverage"
+
+    security:
+      description: "セキュリティ基準"
+      rules:
+        - check: "No Sev.1-Critical vulnerabilities"
+          threshold: "0 critical"
+          blocking: true
+          priority: "P.1-Critical"
+          command: "pnpm audit --audit-level=critical"
+
+        - check: "No Sev.2-High vulnerabilities"
+          threshold: "0 high"
+          blocking: true
+          priority: "P.2-High"
+          command: "pnpm audit --audit-level=high"
+
+        - check: "No secrets leaked"
+          threshold: "0 secrets"
+          blocking: true
+          priority: "P.1-Critical"
+          tools:
+            - "git-secrets"
+            - "trufflehog"
+
+  # === Phase 2: 品質スコア評価 (Quality Score Assessment) ===
+  # 総合スコア80点以上でマージ推奨
+  quality_score:
+    description: "ReviewAgentによる品質スコアリング（E6_QualityReport）"
+    total_points: 100
+    passing_threshold: 80
+
+    components:
+      eslint_score:
+        weight: 0.40  # 40%
+        calculation: "100 - (errors * 10 + warnings * 2)"
+        thresholds:
+          excellent: ">= 95"  # 0-1 warnings
+          good: ">= 85"       # 2-7 warnings
+          acceptable: ">= 70" # 8-15 warnings
+          poor: "< 70"        # 16+ warnings
+
+      typescript_score:
+        weight: 0.30  # 30%
+        calculation: "100 - (type_errors * 20)"
+        thresholds:
+          excellent: "100"    # 0 errors
+          good: ">= 80"       # 1 error
+          acceptable: ">= 60" # 2 errors
+          poor: "< 60"        # 3+ errors
+
+      security_score:
+        weight: 0.20  # 20%
+        calculation: "100 - (critical * 50 + high * 20 + medium * 5)"
+        thresholds:
+          excellent: "100"    # 0 vulnerabilities
+          good: ">= 80"       # 1-4 medium
+          acceptable: ">= 60" # 5-8 medium or 1 high
+          poor: "< 60"        # 2+ high or 1+ critical
+
+      coverage_score:
+        weight: 0.10  # 10%
+        calculation: "coverage_percentage"
+        thresholds:
+          excellent: ">= 90"
+          good: ">= 80"
+          acceptable: ">= 70"
+          poor: "< 70"
+
+    quality_labels:
+      excellent:
+        score_range: ">= 95"
+        label: "quality:excellent"
+        auto_merge: true
+
+      good:
+        score_range: "85-94"
+        label: "quality:good"
+        auto_merge: true
+
+      needs_improvement:
+        score_range: "70-84"
+        label: "quality:needs-improvement"
+        auto_merge: false
+        action: "Request changes with improvement suggestions"
+
+      poor:
+        score_range: "< 70"
+        label: "quality:poor"
+        auto_merge: false
+        action: "Reject PR and escalate to Guardian"
+
+  # === Phase 3: PR属性チェック (PR Attribute Checks) ===
+  pr_attributes:
+    description: "PRの構造的品質チェック"
+
+    size_limits:
+      files_changed:
+        warning: "> 20 files"
+        blocking: "> 50 files"
+        action_on_exceed: "Split into multiple PRs"
+
+      lines_changed:
+        warning: "> 500 lines"
+        blocking: "> 2000 lines"
+        action_on_exceed: "Split into multiple PRs"
+
+      commits_count:
+        warning: "> 10 commits"
+        recommendation: "Squash before merge"
+
+  # === Phase 4: クリーンナップ運用ルール (Cleanup Policies) ===
+  cleanup_policy:
+    description: "レビュー前に必ず遵守すべきクリーンナップ運用ルール"
+
+    rules:
+      - check: "生成物コミット禁止"
+        details: |
+          `.cargo/registry`、`target/`、`dist/`、`.cache/`、ビルドログ、バイナリアセット、`.env.*` を含む生成物や秘密情報はリポジトリに含めない。必要に応じて `.gitignore` を更新し、検出した場合は削除してから再レビューを依頼する。
+        blocking: true
+        priority: "P.1-Critical"
+
+      - check: "統制ドキュメントの最小更新"
+        details: |
+          `CLAUDE.md` や `.codex/context/**` などの統制ドキュメントは最新版を維持し、差分は必要最小限に留める。巻き戻しや空白化が発生した場合は即時修正しない限りマージ不可。
+        blocking: true
+        priority: "P.1-Critical"
+
+      - check: "テスト・Lintの実行証跡"
+        details: |
+          `cargo fmt` / `cargo clippy` / `cargo test`（必要に応じて `pnpm lint` 等）のローカル実行結果をPRコメントに明記する。未実行または失敗状態のままのPRはレビュー対象外とする。
+        blocking: true
+        priority: "P.1-Critical"
+
+      - check: "互換性変更の説明責任"
+        details: |
+          既存機能の削除や挙動変更を行う場合は、PR本文に理由と代替手段・移行手順を明記する。説明が不足している場合はレビューを差し戻す。
+        blocking: true
+        priority: "P.2-High"
+
+      - check: "秘密情報の即時ローテーション"
+        details: |
+          秘密情報を誤ってコミットした場合は即座に削除し、キーをローテーションした上で再レビュー依頼時に対応状況を共有する。ローテーションが完了するまではマージ禁止。
+        blocking: true
+        priority: "P.1-Critical"
+
+      - check: "PRサイズと差分の管理"
+        details: |
+          1 PR = 1 機能/修正を徹底し、巨大差分（>500行、>20ファイル）はタスク分割を行う。分割せずに提出された場合はQ&A前にリスコープする。
+        blocking: false
+        priority: "P.2-High"
+
+      - check: "事前自己チェックリスト"
+        details: |
+          生成物削除／テスト結果／ドキュメント更新／BREAKING CHANGE の有無をPRテンプレートに従って自己チェックし、結果を本文に記載する。
+        blocking: true
+        priority: "P.2-High"
+
+      - check: "クリーンナップ未完了時の停止条件"
+        details: |
+          上記ルール違反が見つかったPRは「クリーンナップ完了」コメントと修正の再プッシュがあるまでレビュー・マージを停止する。
+        blocking: true
+        priority: "P.1-Critical"
+
+    description_quality:
+      rules:
+        - check: "PR title follows Conventional Commits"
+          pattern: "^(feat|fix|refactor|docs|test|chore|security)(\\(.+\\))?: .+"
+          blocking: false
+          priority: "P.3-Medium"
+
+        - check: "PR body contains summary"
+          min_length: 50
+          blocking: false
+          priority: "P.3-Medium"
+
+        - check: "PR body contains test plan"
+          keywords: ["test", "testing", "verified"]
+          blocking: false
+          priority: "P.3-Medium"
+
+    review_status:
+      rules:
+        - check: "At least 1 approval"
+          threshold: ">= 1 approval"
+          blocking: true
+          priority: "P.2-High"
+          exceptions:
+            - condition: "author = Guardian"
+              required_approvals: 0
+            - condition: "quality:excellent AND agent:codegen"
+              required_approvals: 0  # Auto-approve for CodeGenAgent excellent work
+
+        - check: "No requested changes"
+          threshold: "0 change requests"
+          blocking: true
+          priority: "P.2-High"
+
+  # === Phase 4: 自動マージ判定 (Auto-Merge Decision) ===
+  auto_merge_criteria:
+    description: "自動マージ実行の最終判定"
+
+    fast_track:
+      description: "高速マージトラック（即座にマージ）"
+      conditions:
+        all_of:
+          - "All mandatory_checks passed"
+          - "quality_score >= 95"
+          - "quality:excellent label"
+          - "No merge conflicts"
+          - "files_changed <= 20"
+          - "agent:codegen OR agent:deployment"
+      action: "Auto-merge immediately with squash"
+
+    standard_track:
+      description: "標準マージトラック（1承認後にマージ）"
+      conditions:
+        all_of:
+          - "All mandatory_checks passed"
+          - "quality_score >= 80"
+          - "quality:good OR quality:excellent label"
+          - "At least 1 approval"
+      action: "Auto-merge after approval with squash"
+
+    manual_review_required:
+      description: "手動レビュー必須（Guardian承認必要）"
+      conditions:
+        any_of:
+          - "quality_score < 80"
+          - "Sev.2-High OR Sev.1-Critical label"
+          - "files_changed > 50"
+          - "type:security"
+          - "phase:production"
+      action: "Wait for Guardian approval"
+
+    blocked:
+      description: "マージ不可（改善必須）"
+      conditions:
+        any_of:
+          - "Any mandatory_checks failed"
+          - "quality_score < 70"
+          - "quality:poor label"
+          - "Merge conflicts exist"
+      action: "Request changes, return to implementing"
+
+  # === Phase 5: マージ戦略 (Merge Strategy) ===
+  merge_strategy:
+    default: "squash"
+
+    strategies:
+      squash:
+        description: "全コミットを1つにまとめる（推奨）"
+        use_when:
+          - "Most PRs (default)"
+          - "feature branches"
+          - "bug fixes"
+        commit_message_format: |
+          {pr_title}
+
+          {pr_body}
+
+          🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+          Co-Authored-By: {agent_name} <noreply@anthropic.com>
+
+      merge_commit:
+        description: "マージコミットを作成（履歴保持）"
+        use_when:
+          - "Long-running feature branches"
+          - "Release branches"
+        preserve_history: true
+
+      rebase:
+        description: "リベースしてマージ（線形履歴）"
+        use_when:
+          - "Small PRs with clean history"
+          - "Single commit PRs"
+        requires: "Clean commit history"
+
+  # === Phase 6: ポストマージアクション (Post-Merge Actions) ===
+  post_merge_actions:
+    required:
+      - action: "Delete feature branch"
+        timing: "Immediately after merge"
+
+      - action: "Update Issue state to 'done'"
+        timing: "Immediately after merge"
+        label_change: "state:reviewing → state:done"
+
+      - action: "Close linked Issues"
+        timing: "Immediately after merge"
+        condition: "PR body contains 'Closes #N' or 'Fixes #N'"
+
+      - action: "Trigger deployment workflow"
+        timing: "After merge to main"
+        workflow: "W5_Deployment"
+
+      - action: "Notify Discord/Slack"
+        timing: "After merge"
+        message: "✅ PR #{pr_number} merged: {pr_title}"
+
+    optional:
+      - action: "Update CHANGELOG.md"
+        timing: "Weekly batch update"
+
+      - action: "Generate release notes"
+        timing: "On version tag"
+
+  # === Phase 7: エスカレーション (Escalation Rules) ===
+  escalation:
+    triggers:
+      quality_failure:
+        condition: "quality_score < 70 after 2 retries"
+        escalate_to: "Guardian"
+        action: "Manual review and guidance"
+
+      security_issue:
+        condition: "Sev.1-Critical OR Sev.2-High vulnerability"
+        escalate_to: "CISO + TechLead"
+        action: "Immediate remediation plan"
+
+      deployment_failure:
+        condition: "W5_Deployment failed on staging"
+        escalate_to: "DevOps + TechLead"
+        action: "Rollback and root cause analysis"
+
+      complexity_too_high:
+        condition: "files_changed > 100 OR lines_changed > 5000"
+        escalate_to: "TechLead"
+        action: "Architecture review and PR split"
+
+  # === Phase 8: メトリクスとKPI (Metrics & KPIs) ===
+  metrics:
+    track:
+      - metric: "Merge success rate"
+        target: ">= 90%"
+
+      - metric: "Average quality score"
+        target: ">= 85"
+
+      - metric: "Average PR review time"
+        target: "<= 2 hours"
+
+      - metric: "Auto-merge rate"
+        target: ">= 70%"
+
+      - metric: "Security issues caught pre-merge"
+        target: "100%"
+
+  # === Integration with Workflows ===
+  workflow_integration:
+    W4_Code_Review_QA:
+      stage: 8
+      decision_point: "Approval / Rejection"
+      uses_rules:
+        - "mandatory_checks"
+        - "quality_score"
+        - "auto_merge_criteria"
+      output: "QualityReport (E6)"
+
+    W5_Deployment:
+      precondition: "PR merged to main"
+      trigger: "post_merge_actions.trigger_deployment_workflow"
+
+# Summary
+summary:
+  total_rule_categories: 8
+  total_checks: 25
+  quality_score_weight: 100
+  passing_threshold: 80
+  auto_merge_rate_target: 70
+
+  philosophy: |
+    "Quality gates ensure system integrity while enabling rapid iteration.
+    Automate what can be measured. Escalate what requires judgment."

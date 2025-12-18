@@ -1,0 +1,299 @@
+{% extends "base.yaml.j2" %}
+
+{% block content %}
+# Miyabi Entity Definitions - Complete Specification
+# Generated from: variables/entities.yaml
+# Template: templates/entities.yaml.j2
+
+entities:
+  total_count: {{ entities | length }}
+
+  definitions:
+{% for entity_key, entity in entities.items() %}
+    {{ entity_key }}:
+      id: "{{ entity.id }}"
+      name: "{{ entity.name }}"
+      type: "{{ entity.type }}"
+      description: "{{ entity.description }}"
+{% if entity.extends is defined %}
+      extends: "{{ entity.extends }}"
+{% endif %}
+
+{% if entity.attributes is defined %}
+      attributes:
+{% if entity.attributes is mapping %}
+{# attributes is a dict with categories #}
+{% for attr_category, attrs in entity.attributes.items() %}
+        {{ attr_category }}:
+{% for attr in attrs %}
+          - name: "{{ attr.name }}"
+            type: "{{ attr.type }}"
+{% if attr.values is defined %}
+            values: {{ attr.values }}
+{% endif %}
+{% if attr.format is defined %}
+            format: "{{ attr.format }}"
+{% endif %}
+            description: "{{ attr.description }}"
+            required: {{ attr.required }}
+{% if attr.default is defined %}
+            default: "{{ attr.default }}"
+{% endif %}
+{% if attr.weight is defined %}
+            weight: "{{ attr.weight }}"
+{% endif %}
+{% if attr.unit is defined %}
+            unit: "{{ attr.unit }}"
+{% endif %}
+{% if attr.range is defined %}
+            range: "{{ attr.range }}"
+{% endif %}
+{% if attr.example is defined %}
+            example: "{{ attr.example }}"
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% else %}
+{# attributes is a flat list #}
+{% for attr in entity.attributes %}
+        - name: "{{ attr.name }}"
+          type: "{{ attr.type }}"
+          description: "{{ attr.description }}"
+{% if attr.required is defined %}
+          required: {{ attr.required }}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endif %}
+
+{% if entity.types is defined %}
+      types:
+{% for type_category, type_list in entity.types.items() %}
+        {{ type_category }}:
+{% for type_item in type_list %}
+{% if type_item is mapping %}
+          - name: "{{ type_item.name }}"
+            role: "{{ type_item.role }}"
+{% if type_item.authority is defined %}
+            authority: "{{ type_item.authority }}"
+{% endif %}
+{% if type_item.character is defined %}
+            character: "{{ type_item.character }}"
+{% endif %}
+{% else %}
+          - "{{ type_item }}"
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% endif %}
+
+{% if entity.categories is defined %}
+      categories:
+{% for category_key, category in entity.categories.items() %}
+        {{ category_key }}:
+          count: {{ category.count }}
+          role: "{{ category.role }}"
+          labels:
+{% for label in category.labels %}
+            - "{{ label }}"
+{% endfor %}
+{% endfor %}
+
+      total_count: {{ entity.total_count }}
+{% endif %}
+
+{% if entity.commands is defined %}
+      commands:
+{% for cmd in entity.commands %}
+        - name: "{{ cmd.name }}"
+          description: "{{ cmd.description }}"
+          file: "{{ cmd.file }}"
+{% endfor %}
+{% endif %}
+
+{% if entity.authority_levels is defined %}
+      authority_levels:
+{% for auth in entity.authority_levels %}
+        - name: "{{ auth.name }}"
+          description: "{{ auth.description }}"
+          agents: {{ auth.agents }}
+{% endfor %}
+{% endif %}
+
+{% if entity.escalation_targets is defined %}
+      escalation_targets: {{ entity.escalation_targets }}
+{% endif %}
+
+{% if entity.trigger_conditions is defined %}
+      trigger_conditions:
+{% for target, conditions in entity.trigger_conditions.items() %}
+        {{ target }}:
+{% for condition in conditions %}
+          - "{{ condition }}"
+{% endfor %}
+{% endfor %}
+{% endif %}
+
+{% if entity.quality_issue_structure is defined %}
+      quality_issue_structure:
+        attributes:
+{% for attr in entity.quality_issue_structure.attributes %}
+          - name: "{{ attr.name }}"
+            type: "{{ attr.type }}"
+{% if attr.values is defined %}
+            values: {{ attr.values }}
+{% endif %}
+{% if attr.description is defined %}
+            description: "{{ attr.description }}"
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% if entity.composition_algebra is defined %}
+      composition_algebra:
+        sequential: "{{ entity.composition_algebra.sequential }}"
+        parallel: "{{ entity.composition_algebra.parallel }}"
+        conditional: "{{ entity.composition_algebra.conditional }}"
+        iterative: "{{ entity.composition_algebra.iterative }}"
+{% endif %}
+
+{% if entity.path_convention is defined %}
+      path_convention:
+        pattern: "{{ entity.path_convention.pattern }}"
+        examples:
+{% for example in entity.path_convention.examples %}
+          - "{{ example }}"
+{% endfor %}
+{% endif %}
+
+{% if entity.hierarchy_labels is defined %}
+      hierarchy_labels:
+{% for label in entity.hierarchy_labels %}
+        - name: "{{ label.name }}"
+          description: "{{ label.description }}"
+{% endfor %}
+{% endif %}
+
+{% if entity.use_cases is defined %}
+      use_cases:
+{% for use_case in entity.use_cases %}
+        - "{{ use_case }}"
+{% endfor %}
+{% endif %}
+
+{% if entity.completion_progress_structure is defined %}
+      completion_progress_structure:
+        attributes:
+{% for attr in entity.completion_progress_structure.attributes %}
+          - name: "{{ attr.name }}"
+            type: "{{ attr.type }}"
+{% if attr.range is defined %}
+            range: "{{ attr.range }}"
+{% endif %}
+            description: "{{ attr.description }}"
+{% endfor %}
+{% endif %}
+
+{% if entity.structure is defined %}
+      structure:
+{% if entity.structure.format is defined %}
+        format: "{{ entity.structure.format }}"
+{% endif %}
+{% if entity.structure.frontmatter is defined %}
+        frontmatter: {{ entity.structure.frontmatter }}
+{% endif %}
+{% if entity.structure.body is defined %}
+        body: {{ entity.structure.body }}
+{% endif %}
+{% if entity.structure.fields is defined %}
+        fields:
+{% for field in entity.structure.fields %}
+          - name: "{{ field.name }}"
+            type: "{{ field.type }}"
+            description: "{{ field.description }}"
+{% endfor %}
+{% endif %}
+{% endif %}
+
+{% if entity.channel_structure is defined %}
+      channel_structure:
+        attributes: {{ entity.channel_structure.attributes }}
+{% endif %}
+
+{% if entity.role_structure is defined %}
+      role_structure:
+        attributes: {{ entity.role_structure.attributes }}
+{% endif %}
+
+{% if entity.webhook_structure is defined %}
+      webhook_structure:
+        attributes: {{ entity.webhook_structure.attributes }}
+{% endif %}
+
+{% if entity.task_decomposition is defined %}
+      task_decomposition:
+        attributes:
+{% for attr in entity.task_decomposition.attributes %}
+          - name: "{{ attr.name }}"
+            type: "{{ attr.type }}"
+{% if attr.unit is defined %}
+            unit: "{{ attr.unit }}"
+{% endif %}
+            description: "{{ attr.description }}"
+{% endfor %}
+{% endif %}
+
+{% if entity.edge_structure is defined %}
+      edge_structure:
+{% for attr in entity.edge_structure %}
+        - name: "{{ attr.name }}"
+          type: "{{ attr.type }}"
+          description: "{{ attr.description }}"
+{% endfor %}
+{% endif %}
+
+{% if entity.relations is defined %}
+      relations:
+{% for relation in entity.relations %}
+        - "{{ relation }}"
+{% endfor %}
+{% endif %}
+
+{% if entity.implementation is defined %}
+      implementation:
+{% for impl_key, impl_value in entity.implementation.items() %}
+        {{ impl_key }}: "{{ impl_value }}"
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+
+# Metadata
+metadata:
+  generated_at: "{{ global.project.generated_at if global.project.generated_at is defined else 'N/A' }}"
+  total_entities: {{ entities | length }}
+  source_file: "variables/entities.yaml"
+  template_file: "templates/entities.yaml.j2"
+
+{% if metadata is defined and metadata.total_entities is defined %}
+  statistics:
+    total_entities: {{ metadata.total_entities }}
+    coding_agents: {{ metadata.coding_agents }}
+    business_agents: {{ metadata.business_agents }}
+    total_agents: {{ metadata.total_agents }}
+    total_labels: {{ metadata.total_labels }}
+    label_categories: {{ metadata.label_categories }}
+    total_relations: {{ metadata.total_relations }}
+
+  entity_categories:
+{% for category, entity_list in metadata.entity_categories.items() %}
+    {{ category }}: {{ entity_list }}
+{% endfor %}
+
+  completion_status:
+    implemented: {{ metadata.completion_status.implemented }}
+    in_progress: {{ metadata.completion_status.in_progress }}
+    planned: {{ metadata.completion_status.planned }}
+{% endif %}
+
+{% endblock %}

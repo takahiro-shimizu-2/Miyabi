@@ -1,0 +1,680 @@
+{# Agent Task Execution Maximization Framework #}
+{# Version: 1.0.0 - Maximum Execution Capability Theory #}
+
+---
+# ═══════════════════════════════════════════════════════════════
+# Λ-System: Agent Task Execution Maximization
+# ═══════════════════════════════════════════════════════════════
+
+meta:
+  system_name: "Λ-System (Lambda)"
+  version: "1.0.0"
+  principle: "Maximum Agent Execution Capability"
+  foundation: "完全制御 × 最適コンテキスト × 明確指示 × 適切ツール × 明確成果物"
+
+{% set control = lambda_system.control %}
+{% set roles = lambda_system.roles %}
+{% set context = lambda_system.context %}
+{% set tools = lambda_system.tools %}
+{% set deliverable = lambda_system.deliverable %}
+{% set monitoring = lambda_system.monitoring %}
+{% set progress = monitoring.progress %}
+{% set current_role = monitoring.current_role %}
+{% set context_size = monitoring.context_size %}
+{% set tools_used = monitoring.tools_used %}
+{% set deliverable_status = monitoring.deliverable_status %}
+
+# ═══════════════════════════════════════════════════════════════
+# § 1. Execution Maximization Principle - 実行最大化原理
+# ═══════════════════════════════════════════════════════════════
+
+ExecutionMaximization:
+  theorem: |
+    Agent実行能力は以下の5要素の積で最大化される:
+
+    E_max = C × R × I × T × D
+
+    Where:
+      C = Control (完全制御)
+      R = Role Sequence (役割シーケンス)
+      I = Context (最適コンテキスト)
+      T = Tools (適切ツール)
+      D = Deliverable (明確成果物)
+
+  optimal_condition:
+    formula: |
+      ∀ε > 0, ∃δ > 0:
+        |C - C*| < δ ∧
+        |R - R*| < δ ∧
+        |I - I*| < δ ∧
+        |T - T*| < δ ∧
+        |D - D*| < δ
+        ⟹ |E - E_max| < ε
+
+    description: "5要素全てが最適値に近づくとき、実行能力が最大化される"
+
+  necessary_sufficient_condition:
+    necessary: |
+      E_max を達成するための必要条件:
+        - C ≥ C_threshold (制御閾値以上)
+        - R が well-defined (役割明確定義)
+        - I が minimal & sufficient (必要十分最小)
+        - T ⊆ T_available (利用可能ツール内)
+        - D が unambiguous (非曖昧)
+
+    sufficient: |
+      E_max を達成するための十分条件:
+        - C = 1 (完全制御)
+        - R が total order (全順序)
+        - I が Pareto optimal (パレート最適)
+        - T が complete (完全)
+        - D が SMART (具体的・測定可能・達成可能・関連性・期限)
+
+# ═══════════════════════════════════════════════════════════════
+# § 2. Component 1: Control (C) - 完全制御
+# ═══════════════════════════════════════════════════════════════
+
+Control:
+  signature: "C(s, p, m) → [0, 1]"
+  description: "エージェント動作の制御度合い"
+
+  dimensions:
+    state_control:
+      symbol: "s"
+      type: "StateControlVector"
+      components:
+        initialization:
+          value: "{{ control.state.init | default('defined') }}"
+          constraint: "∀s₀: initial_state(s₀) is well-defined"
+
+        transition:
+          value: "{{ control.state.transition | default('deterministic') }}"
+          constraint: "∀s, a: δ(s, a) → s' is deterministic"
+
+        termination:
+          value: "{{ control.state.term | default('guaranteed') }}"
+          constraint: "∀execution: halting_condition is guaranteed"
+
+    process_control:
+      symbol: "p"
+      type: "ProcessControlVector"
+      components:
+        sequencing:
+          value: "{{ control.process.sequence | default('strict_order') }}"
+          constraint: "Tasks execute in specified order"
+
+        synchronization:
+          value: "{{ control.process.sync | default('barrier_based') }}"
+          constraint: "No race conditions"
+
+        resource_management:
+          value: "{{ control.process.resource | default('reservation') }}"
+          constraint: "Resource conflicts prevented"
+
+    monitoring:
+      symbol: "m"
+      type: "MonitoringVector"
+      components:
+        observability:
+          value: "{{ control.monitor.observe | default('full') }}"
+          constraint: "All state transitions observable"
+
+        traceability:
+          value: "{{ control.monitor.trace | default('complete') }}"
+          constraint: "Complete execution trace maintained"
+
+        debuggability:
+          value: "{{ control.monitor.debug | default('enabled') }}"
+          constraint: "Step-by-step debugging possible"
+
+  control_function:
+    formula: "C = min(s, p, m)"
+    optimization: "max C subject to overhead(C) < threshold"
+
+  implementation:
+    control_structure: |
+      ControlFlow {
+        pre_conditions: [
+{% for precond in control.pre_conditions %}
+          "{{ precond }}",
+{% endfor %}
+        ],
+
+        invariants: [
+{% for inv in control.invariants %}
+          "{{ inv }}",
+{% endfor %}
+        ],
+
+        post_conditions: [
+{% for postcond in control.post_conditions %}
+          "{{ postcond }}",
+{% endfor %}
+        ]
+      }
+
+# ═══════════════════════════════════════════════════════════════
+# § 3. Component 2: Role Sequence (R) - 役割シーケンス
+# ═══════════════════════════════════════════════════════════════
+
+RoleSequence:
+  signature: "R(ρ, σ, δ) → Sequence"
+  description: "Agent役割の完全順序付けシーケンス"
+
+  dimensions:
+    roles:
+      symbol: "ρ"
+      type: "RoleSet"
+      structure: |
+        ρ = {r₁, r₂, ..., rₙ}
+
+        ∀rᵢ ∈ ρ:
+          rᵢ = (name, capability, responsibility, authority)
+
+      role_catalog:
+{% for role in roles %}
+        - name: "{{ role.name }}"
+          capability: "{{ role.capability }}"
+          responsibility: "{{ role.responsibility }}"
+          authority: "{{ role.authority }}"
+          preconditions: [{{ role.preconditions | join(', ') }}]
+          postconditions: [{{ role.postconditions | join(', ') }}]
+{% endfor %}
+
+    sequence:
+      symbol: "σ"
+      type: "TotalOrder"
+      properties:
+        reflexive: "∀r: r ≤ r"
+        antisymmetric: "r₁ ≤ r₂ ∧ r₂ ≤ r₁ ⟹ r₁ = r₂"
+        transitive: "r₁ ≤ r₂ ∧ r₂ ≤ r₃ ⟹ r₁ ≤ r₃"
+        total: "∀r₁, r₂: r₁ ≤ r₂ ∨ r₂ ≤ r₁"
+
+      sequence_definition: |
+        σ: ρ → ℕ (bijection)
+
+        Execution Order:
+{% for i in range(roles | length) %}
+          Step {{ i + 1 }}: {{ roles[i].name }}
+{% endfor %}
+
+    dependencies:
+      symbol: "δ"
+      type: "DependencyDAG"
+      structure: |
+        δ = (V, E) where:
+          V = ρ (vertices = roles)
+          E ⊆ V × V (edges = dependencies)
+
+        Constraint: δ must be acyclic
+
+      dependency_matrix:
+        representation: |
+          D[i][j] = 1 if rᵢ depends on rⱼ
+          D[i][j] = 0 otherwise
+
+        properties:
+          - "No cycles: ∄ path rᵢ → ... → rᵢ"
+          - "Minimal: ∀(rᵢ, rⱼ) ∈ E, cannot remove"
+
+  sequence_validation:
+    check_total_order:
+      formula: "∀r₁, r₂ ∈ ρ: σ(r₁) ≠ σ(r₂) unless r₁ = r₂"
+
+    check_dependencies:
+      formula: "∀(rᵢ, rⱼ) ∈ E: σ(rⱼ) < σ(rᵢ)"
+
+    check_completeness:
+      formula: "∀capability_required: ∃r ∈ ρ: r.capability covers it"
+
+# ═══════════════════════════════════════════════════════════════
+# § 4. Component 3: Context (I) - 最適コンテキスト
+# ═══════════════════════════════════════════════════════════════
+
+OptimalContext:
+  signature: "I(κ, ν, σ) → Context"
+  description: "必要十分最小の最適コンテキスト"
+
+  dimensions:
+    content:
+      symbol: "κ"
+      type: "ContextContent"
+      principle: "Minimal & Sufficient"
+
+      information_theory:
+        entropy: "H(κ) = -∑ p(x) log p(x)"
+        mutual_information: "I(T; κ) = H(T) - H(T|κ)"
+        optimization: "min |κ| subject to I(T; κ) ≥ I_threshold"
+
+      content_categories:
+        essential:
+          definition: "Task実行に絶対必要な情報"
+          examples:
+{% for item in context.essential %}
+            - "{{ item }}"
+{% endfor %}
+
+        supportive:
+          definition: "実行を助けるが必須ではない情報"
+          examples:
+{% for item in context.supportive %}
+            - "{{ item }}"
+{% endfor %}
+
+        noise:
+          definition: "タスクと無関係な情報（除去対象）"
+          criterion: "I(T; noise) ≈ 0"
+
+    necessity:
+      symbol: "ν"
+      type: "NecessityMeasure"
+
+      necessity_function:
+        formula: "ν(c) = P(success | c) - P(success | ¬c)"
+        interpretation: "情報cがあることで成功確率がどれだけ上がるか"
+
+      filtering_rule:
+        rule: "c ∈ κ ⟺ ν(c) > ν_threshold"
+        threshold: "{{ context.necessity_threshold | default(0.1) }}"
+
+    sufficiency:
+      symbol: "σ"
+      type: "SufficiencyMeasure"
+
+      sufficiency_function:
+        formula: "σ(κ) = P(success | κ) / P(success | κ_all)"
+        interpretation: "コンテキストκで最大成功確率の何%を達成できるか"
+
+      sufficiency_criterion:
+        rule: "σ(κ) ≥ {{ context.sufficiency_threshold | default(0.95) }}"
+        meaning: "95%以上の成功確率を保証"
+
+  context_optimization:
+    objective: "min |κ| subject to σ(κ) ≥ σ_min"
+
+    algorithm:
+      name: "Greedy Context Selection"
+      steps:
+        - "1. κ = ∅ (empty set)"
+        - "2. while σ(κ) < σ_min:"
+        - "3.   c* = arg max[c∈C\\κ] ν(c)"
+        - "4.   κ = κ ∪ {c*}"
+        - "5. return κ"
+
+  context_structure:
+    schema: |
+      Context {
+        task_definition: "{{ context.task.definition }}",
+
+        input_specification: {
+          schema: "{{ context.input.schema }}",
+          constraints: [{{ context.input.constraints | join(', ') }}]
+        },
+
+        output_specification: {
+          schema: "{{ context.output.schema }}",
+          requirements: [{{ context.output.requirements | join(', ') }}]
+        },
+
+        domain_knowledge: {
+          ontology: "{{ context.domain.ontology }}",
+          rules: [{{ context.domain.rules | join(', ') }}],
+          examples: [{{ context.domain.examples | join(', ') }}]
+        },
+
+        constraints: {
+          temporal: "{{ context.constraints.time }}",
+          resource: "{{ context.constraints.resource }}",
+          quality: "{{ context.constraints.quality }}"
+        }
+      }
+
+# ═══════════════════════════════════════════════════════════════
+# § 5. Component 4: Tools (T) - 適切ツール
+# ═══════════════════════════════════════════════════════════════
+
+OptimalTools:
+  signature: "T(𝒜, ℛ, ℰ) → ToolSet"
+  description: "タスク実行に最適なツールセット"
+
+  dimensions:
+    availability:
+      symbol: "𝒜"
+      type: "AvailableTools"
+
+      tool_registry:
+{% for tool in tools.available %}
+        - name: "{{ tool.name }}"
+          category: "{{ tool.category }}"
+          capabilities: [{{ tool.capabilities | join(', ') }}]
+          preconditions: [{{ tool.preconditions | join(', ') }}]
+          postconditions: [{{ tool.postconditions | join(', ') }}]
+          cost: "{{ tool.cost }}"
+{% endfor %}
+
+    requirements:
+      symbol: "ℛ"
+      type: "ToolRequirements"
+
+      capability_mapping:
+        formula: "∀capability ∈ Task: ∃tool ∈ T: tool.capability covers capability"
+
+      requirement_categories:
+        functional:
+          description: "機能要件"
+          items:
+{% for req in tools.requirements.functional %}
+            - "{{ req }}"
+{% endfor %}
+
+        non_functional:
+          description: "非機能要件"
+          items:
+{% for req in tools.requirements.non_functional %}
+            - "{{ req }}"
+{% endfor %}
+
+    efficiency:
+      symbol: "ℰ"
+      type: "EfficiencyMetric"
+
+      efficiency_function:
+        formula: "ℰ(t) = output_quality(t) / (time(t) + cost(t) + complexity(t))"
+
+      selection_criterion:
+        rule: "t* = arg max[t∈𝒜] ℰ(t) subject to ℛ(t) satisfied"
+
+  tool_selection_algorithm:
+    name: "Optimal Tool Selection"
+
+    input:
+      - "Task requirements ℛ"
+      - "Available tools 𝒜"
+      - "Efficiency threshold ℰ_min"
+
+    output:
+      - "Selected tool set T* ⊆ 𝒜"
+
+    steps:
+      - "1. Filter: 𝒜' = {t ∈ 𝒜 | ℛ(t) satisfied}"
+      - "2. Rank: sort 𝒜' by ℰ(t) descending"
+      - "3. Select: T* = minimum cover from 𝒜'"
+      - "4. Validate: check T* is complete & minimal"
+      - "5. Return: T*"
+
+  tool_composition:
+    sequential:
+      pattern: "t₁ → t₂ → t₃"
+      constraint: "output(tᵢ) compatible with input(tᵢ₊₁)"
+
+    parallel:
+      pattern: "t₁ ⊗ t₂ ⊗ t₃"
+      constraint: "no resource conflicts"
+
+    conditional:
+      pattern: "if condition then t₁ else t₂"
+      constraint: "condition must be decidable"
+
+# ═══════════════════════════════════════════════════════════════
+# § 6. Component 5: Deliverable (D) - 明確成果物
+# ═══════════════════════════════════════════════════════════════
+
+ClearDeliverable:
+  signature: "D(𝒮, ℳ, 𝒱) → Specification"
+  description: "SMART原則に基づく明確な成果物定義"
+
+  SMART_principles:
+    Specific:
+      symbol: "𝒮"
+      definition: "具体的 (Specific)"
+      criteria:
+        - "What: 何を作るか明確"
+        - "Who: 誰のためか明確"
+        - "Why: なぜ必要か明確"
+
+      specification_template: |
+        Deliverable: {{ deliverable.name }}
+        Description: {{ deliverable.description }}
+        Target Audience: {{ deliverable.audience }}
+        Purpose: {{ deliverable.purpose }}
+
+    Measurable:
+      symbol: "ℳ"
+      definition: "測定可能 (Measurable)"
+      criteria:
+        - "Quantitative metrics defined"
+        - "Quality criteria specified"
+        - "Acceptance test exists"
+
+      metrics:
+{% for metric in deliverable.metrics %}
+        - name: "{{ metric.name }}"
+          type: "{{ metric.type }}"
+          target: "{{ metric.target }}"
+          measurement: "{{ metric.measurement }}"
+{% endfor %}
+
+    Achievable:
+      definition: "達成可能 (Achievable)"
+      validation:
+        resources_available:
+          formula: "required_resources ⊆ available_resources"
+
+        time_feasible:
+          formula: "estimated_time ≤ deadline"
+
+        skill_sufficient:
+          formula: "required_skills ⊆ agent_capabilities"
+
+    Relevant:
+      definition: "関連性 (Relevant)"
+      alignment:
+        with_goal:
+          formula: "deliverable ⟹ goal_achievement"
+
+        with_context:
+          formula: "deliverable is_useful_in context"
+
+    Time_bound:
+      definition: "期限 (Time-bound)"
+      temporal_constraints:
+        deadline: "{{ deliverable.deadline }}"
+        milestones:
+{% for milestone in deliverable.milestones %}
+          - name: "{{ milestone.name }}"
+            date: "{{ milestone.date }}"
+            criteria: "{{ milestone.criteria }}"
+{% endfor %}
+
+  deliverable_specification:
+    structure: |
+      Deliverable {
+        identity: {
+          id: "{{ deliverable.id }}",
+          name: "{{ deliverable.name }}",
+          version: "{{ deliverable.version }}"
+        },
+
+        content: {
+          format: "{{ deliverable.format }}",
+          schema: "{{ deliverable.schema }}",
+          examples: [{{ deliverable.examples | join(', ') }}]
+        },
+
+        quality_requirements: {
+          completeness: "{{ deliverable.quality.completeness }}",
+          accuracy: "{{ deliverable.quality.accuracy }}",
+          consistency: "{{ deliverable.quality.consistency }}"
+        },
+
+        acceptance_criteria: [
+{% for criterion in deliverable.acceptance %}
+          "{{ criterion }}",
+{% endfor %}
+        ],
+
+        validation_process: {
+          tests: [{{ deliverable.validation.tests | join(', ') }}],
+          reviewers: [{{ deliverable.validation.reviewers | join(', ') }}],
+          approval_threshold: "{{ deliverable.validation.threshold }}"
+        }
+      }
+
+# ═══════════════════════════════════════════════════════════════
+# § 7. Integrated Execution Protocol - 統合実行プロトコル
+# ═══════════════════════════════════════════════════════════════
+
+IntegratedExecution:
+  signature: "Λ(C, R, I, T, D) → Execution"
+  description: "5要素統合による最大実行能力の発揮"
+
+  execution_phases:
+
+    phase_0_preparation:
+      name: "Φ₀: Preparation"
+      operations:
+        - verify_control: "C = 1 (完全制御確認)"
+        - load_role_sequence: "R from configuration"
+        - optimize_context: "I = minimal & sufficient"
+        - select_tools: "T = optimal tool set"
+        - clarify_deliverable: "D = SMART specification"
+
+    phase_1_initialization:
+      name: "Φ₁: Initialization"
+      formula: "Init(C, R, I, T, D) → State₀"
+      actions:
+        - "Set initial_state = State₀"
+        - "Load context I into agent memory"
+        - "Register tools T in agent registry"
+        - "Set target deliverable D"
+
+    phase_2_execution:
+      name: "Φ₂: Execution"
+      formula: "Exec(State₀, R) → State_final"
+
+      role_execution_loop: |
+        for each role r in sequence R:
+          # Pre-execution checks
+          assert(preconditions(r) satisfied)
+          assert(required_context ⊆ I)
+          assert(required_tools ⊆ T)
+
+          # Execute role
+          result_r = execute_role(r, I, T)
+
+          # Post-execution validation
+          assert(postconditions(r) satisfied)
+          assert(result_r contributes to D)
+
+          # Update state
+          State = update(State, result_r)
+
+    phase_3_integration:
+      name: "Φ₃: Integration"
+      formula: "Integrate(State_final) → Deliverable"
+      actions:
+        - "Aggregate all role results"
+        - "Synthesize into deliverable format"
+        - "Validate against D specification"
+
+    phase_4_validation:
+      name: "Φ₄: Validation"
+      formula: "Validate(Deliverable, D) → {Pass, Fail}"
+      checks:
+        - completeness_check: "all required components present"
+        - quality_check: "meets quality thresholds"
+        - acceptance_check: "satisfies acceptance criteria"
+
+    phase_5_delivery:
+      name: "Φ₅: Delivery"
+      formula: "Deliver(Deliverable) → Result"
+      actions:
+        - "Package deliverable"
+        - "Generate metadata"
+        - "Create provenance trace"
+        - "Submit to requestor"
+
+  execution_guarantees:
+    correctness:
+      property: "∀execution: result satisfies specification"
+      proof: "By construction from SMART deliverable D"
+
+    completeness:
+      property: "∀required_component: component ∈ deliverable"
+      proof: "By role sequence R covering all requirements"
+
+    optimality:
+      property: "execution_time ≈ optimal_time"
+      proof: "By optimal context I and optimal tools T"
+
+# ═══════════════════════════════════════════════════════════════
+# § 8. Practical Implementation - 実装ガイド
+# ═══════════════════════════════════════════════════════════════
+
+Implementation:
+
+  configuration_template: |
+    agent_execution:
+      control:
+        level: "complete"
+        monitoring: "full"
+        traceability: "enabled"
+
+      role_sequence:
+{% for role in roles %}
+        - name: "{{ role.name }}"
+          order: {{ loop.index }}
+          dependencies: [{{ role.dependencies | join(', ') }}]
+{% endfor %}
+
+      context:
+        optimization: "minimal_sufficient"
+        essential: [{{ context.essential | join(', ') }}]
+        sufficiency_threshold: 0.95
+
+      tools:
+        selection: "automatic"
+        efficiency_threshold: 0.8
+        available: [{{ tools.available | map(attribute='name') | join(', ') }}]
+
+      deliverable:
+        specification: "SMART"
+        format: "{{ deliverable.format }}"
+        validation: "automatic"
+
+  execution_workflow: |
+    1. Load Configuration
+       └─> Parse YAML/JSON configuration
+
+    2. Initialize Λ-System
+       ├─> Verify Control (C)
+       ├─> Load Role Sequence (R)
+       ├─> Optimize Context (I)
+       ├─> Select Tools (T)
+       └─> Clarify Deliverable (D)
+
+    3. Execute Role Sequence
+       └─> For each role in R:
+           ├─> Check preconditions
+           ├─> Execute with context I and tools T
+           ├─> Validate postconditions
+           └─> Update state
+
+    4. Integrate Results
+       └─> Synthesize deliverable D
+
+    5. Validate & Deliver
+       ├─> Run validation checks
+       └─> Deliver if passed
+
+  monitoring_dashboard:
+    metrics:
+      - "Execution progress: {{ progress }}%"
+      - "Current role: {{ current_role }}"
+      - "Context size: {{ context_size }} tokens"
+      - "Tools used: {{ tools_used }}"
+      - "Deliverable status: {{ deliverable_status }}"
+
+# ═══════════════════════════════════════════════════════════════
+# End of Λ-System: Agent Task Execution Maximization
+# ═══════════════════════════════════════════════════════════════

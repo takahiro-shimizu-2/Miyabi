@@ -1,0 +1,200 @@
+@startuml Miyabi Definition System - Architecture (Refined)
+!theme cerulean-outline
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontName "SF Pro Display"
+
+' Color Palette: Academic & Professional
+skinparam package {
+  BackgroundColor #F8FAFB
+  BorderColor #3B82F6
+  FontColor #1E293B
+}
+
+skinparam component {
+  BackgroundColor #DBEAFE
+  BorderColor #2563EB
+  FontColor #1E3A8A
+}
+
+skinparam database {
+  BackgroundColor #EFF6FF
+  BorderColor #60A5FA
+  FontColor #1E40AF
+}
+
+title <size:18><b>Miyabi Definition System</b></size>\n<size:14>Complete Architecture & Data Flow</size>\n<size:12><i>Version 1.0.0 | 2025-11-04</i></size>
+
+' === Variable Sources ===
+
+package "📁 Variable Sources\n<size:11>15 YAML Files | 4,290 Lines</size>" as vars #F0F9FF {
+  database "global.yaml" as global #FFFFFF
+  database "entities.yaml\n<size:10>14 Entities</size>" as entities #FFFFFF
+  database "relations.yaml\n<size:10>39 Relations</size>" as relations #FFFFFF
+  database "labels.yaml\n<size:10>57 Labels</size>" as labels #FFFFFF
+  database "workflows.yaml\n<size:10>5 Workflows</size>" as workflows #FFFFFF
+  database "agents.yaml\n<size:10>21 Agents</size>" as agents #FFFFFF
+  database "crates.yaml\n<size:10>15 Crates</size>" as crates #FFFFFF
+  database "skills.yaml\n<size:10>18 Skills</size>" as skills #FFFFFF
+  database "world_definition.yaml\n<size:10>World Space (W)</size>" as world #FFFFFF
+  database "swml.yaml\n<size:10>SWML Theory</size>" as swml #FFFFFF
+  database "omega.yaml\n<size:10>Ω-System</size>" as omega #FFFFFF
+}
+
+' === Template Engine ===
+
+package "⚙️ Template Engine\n<size:11>Jinja2 + Python 3</size>" as engine #FEF3C7 {
+  component "MiyabiDefinitionGenerator" as generator #FEF9C3 {
+    [load_all_variables()] as load
+    [render_template()] as render
+    [generate_all()] as gen_all
+  }
+
+  component "Jinja2 Environment" as jinja #FDE68A {
+    [FileSystemLoader] as loader
+    [Autoescape] as escape
+    [Trim/Lstrip] as trim
+  }
+}
+
+' === Jinja2 Templates ===
+
+package "📝 Jinja2 Templates\n<size:11>11 Template Files</size>" as templates #ECFDF5 {
+  database "base.yaml.j2\n<size:10>Base Template</size>" as base #DCFCE7
+  database "entities.yaml.j2" as t_entities #FFFFFF
+  database "relations.yaml.j2" as t_relations #FFFFFF
+  database "labels.yaml.j2" as t_labels #FFFFFF
+  database "workflows.yaml.j2" as t_workflows #FFFFFF
+  database "agents.yaml.j2" as t_agents #FFFFFF
+  database "crates.yaml.j2" as t_crates #FFFFFF
+  database "skills.yaml.j2" as t_skills #FFFFFF
+  database "world_definition.yaml.j2" as t_world #FFFFFF
+  database "step_back_question_method.yaml.j2" as t_sbq #FFFFFF
+  database "universal_task_execution.yaml.j2" as t_omega #FFFFFF
+}
+
+' === Generated YAML ===
+
+package "✅ Generated YAML\n<size:11>11 Files | 191KB Total</size>" as generated #FDF4FF {
+  database "entities.yaml\n<size:10>39KB</size>" as g_entities #FFFFFF
+  database "relations.yaml\n<size:10>25KB</size>" as g_relations #FFFFFF
+  database "labels.yaml\n<size:10>14KB</size>" as g_labels #FFFFFF
+  database "workflows.yaml\n<size:10>13KB</size>" as g_workflows #FFFFFF
+  database "agents.yaml\n<size:10>9.4KB</size>" as g_agents #FFFFFF
+  database "crates.yaml\n<size:10>6.3KB</size>" as g_crates #FFFFFF
+  database "skills.yaml\n<size:10>7.6KB</size>" as g_skills #FFFFFF
+  database "world_definition.yaml\n<size:10>21KB</size>" as g_world #FFFFFF
+  database "step_back_question_method.yaml\n<size:10>18KB</size>" as g_sbq #FFFFFF
+  database "universal_task_execution.yaml\n<size:10>21KB</size>" as g_omega #FFFFFF
+  database "agent_execution_maximization.yaml\n<size:10>23KB</size>" as g_agent_exec #FFFFFF
+}
+
+' === Consumption ===
+
+package "🚀 Consumption Layer\n<size:11>Runtime & Integration</size>" as consumers #FEE2E2 {
+  component "Miyabi Core" as core #FEF2F2 {
+    [CLI] as cli
+    [Agents] as agent_sys
+    [Workflows] as wf_sys
+  }
+
+  component "Documentation" as docs #FEF2F2 {
+    [README Generator] as readme_gen
+    [API Docs] as api_docs
+    [Schema Validator] as validator
+  }
+
+  component "CI/CD" as cicd #FEF2F2 {
+    [GitHub Actions] as gh_actions
+    [Deployment Scripts] as deploy
+  }
+}
+
+' === Data Flow (with refined arrows) ===
+
+global -[#3B82F6]-> load
+entities -[#3B82F6]-> load
+relations -[#3B82F6]-> load
+labels -[#3B82F6]-> load
+workflows -[#3B82F6]-> load
+agents -[#3B82F6]-> load
+crates -[#3B82F6]-> load
+skills -[#3B82F6]-> load
+world -[#3B82F6]-> load
+swml -[#3B82F6]-> load
+omega -[#3B82F6]-> load
+
+load -[#10B981]-> render
+render -[#10B981]-> jinja
+jinja -[#10B981]-> loader
+loader -[#10B981]-> base
+
+base -[#6366F1,dashed]-> t_entities : <size:9>extends</size>
+base -[#6366F1,dashed]-> t_relations : <size:9>extends</size>
+base -[#6366F1,dashed]-> t_labels : <size:9>extends</size>
+base -[#6366F1,dashed]-> t_workflows : <size:9>extends</size>
+base -[#6366F1,dashed]-> t_agents : <size:9>extends</size>
+base -[#6366F1,dashed]-> t_crates : <size:9>extends</size>
+base -[#6366F1,dashed]-> t_skills : <size:9>extends</size>
+base -[#6366F1,dashed]-> t_world : <size:9>extends</size>
+base -[#6366F1,dashed]-> t_sbq : <size:9>extends</size>
+base -[#6366F1,dashed]-> t_omega : <size:9>extends</size>
+
+t_entities -[#8B5CF6]-> g_entities : <size:9>render</size>
+t_relations -[#8B5CF6]-> g_relations : <size:9>render</size>
+t_labels -[#8B5CF6]-> g_labels : <size:9>render</size>
+t_workflows -[#8B5CF6]-> g_workflows : <size:9>render</size>
+t_agents -[#8B5CF6]-> g_agents : <size:9>render</size>
+t_crates -[#8B5CF6]-> g_crates : <size:9>render</size>
+t_skills -[#8B5CF6]-> g_skills : <size:9>render</size>
+t_world -[#8B5CF6]-> g_world : <size:9>render</size>
+t_sbq -[#8B5CF6]-> g_sbq : <size:9>render</size>
+t_omega -[#8B5CF6]-> g_omega : <size:9>render</size>
+
+g_entities -[#DC2626]-> cli
+g_agents -[#DC2626]-> agent_sys
+g_workflows -[#DC2626]-> wf_sys
+g_world -[#DC2626]-> agent_sys
+g_omega -[#DC2626]-> agent_sys
+
+g_entities -[#DC2626]-> readme_gen
+g_agents -[#DC2626]-> api_docs
+g_entities -[#DC2626]-> validator
+
+g_workflows -[#DC2626]-> gh_actions
+g_agents -[#DC2626]-> deploy
+
+note top of vars #EFF6FF
+  <b>Variable Sources</b>
+  • YAML format
+  • Single source of truth
+  • Machine-readable definitions
+  • Version-controlled
+end note
+
+note top of templates #D1FAE5
+  <b>Template System</b>
+  • Jinja2 template engine
+  • Base template inheritance
+  • Variable substitution
+  • Automated generation
+end note
+
+note top of generated #FAE8FF
+  <b>Generated Outputs</b>
+  • 191KB total size
+  • Type-safe YAML
+  • Machine-readable
+  • Auto-regenerated
+end note
+
+legend right
+  <b>Legend</b>
+  |<#3B82F6>  | Variable loading |
+  |<#10B981>  | Template processing |
+  |<#6366F1>  | Template inheritance |
+  |<#8B5CF6>  | YAML generation |
+  |<#DC2626>  | Consumption |
+endlegend
+
+@enduml

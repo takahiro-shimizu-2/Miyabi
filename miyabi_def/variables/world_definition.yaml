@@ -1,0 +1,665 @@
+# Miyabi World Definition - W (World Space)
+# Version: 1.0.0
+# Based on: Ω-System Universal Task Execution Logic
+#
+# World Space: W(t, s, c, r, e) → State
+#
+# Parameters:
+#   t: Temporal (時間) - current_time, horizon, constraints
+#   s: Spatial (空間) - physical, digital, abstract
+#   c: Contextual (文脈) - domain, user, system
+#   r: Resources (リソース) - compute, human, info
+#   e: Environmental (環境) - load, dependencies, constraints
+
+world:
+  # ═══════════════════════════════════════════════════════════════════════
+  # § 1. World Metadata - 世界のメタ情報
+  # ═══════════════════════════════════════════════════════════════════════
+  metadata:
+    world_id: "miyabi-private"
+    world_name: "Miyabi Autonomous Development Framework"
+    world_version: "0.1.2"
+    format_version: "1.0.0"
+    created_at: "2025-10-01T00:00:00+09:00"
+    last_updated: "2025-11-01T00:00:00+09:00"
+    maintainer: "Miyabi Team"
+    license: "Apache-2.0"
+
+  # 互換性: Ω-System テンプレートが期待する簡易プロパティ
+  time:
+    current: "2025-11-01T10:00:00+09:00"
+    horizon: "2026-03-31T23:59:59+09:00"
+    constraints:
+      - "business_hours: 09:00-18:00 JST"
+      - "maintenance_window: 03:00-05:00 JST"
+      - "deployment_window: 22:00-23:00 JST"
+
+  space:
+    physical:
+      location: "Japan"
+      datacenter: "GCP asia-northeast1 (Tokyo)"
+    digital:
+      repository: "https://github.com/ShunsukeHayashi/Miyabi"
+      deployment: "https://miyabi.run"
+      api: "https://api.miyabi.run"
+    abstract:
+      conceptual_layers:
+        - "miyabi_def/"
+        - "crates/"
+        - "docs/"
+
+  context:
+    domain: "Software Development"
+    user:
+      primary_role: "AI-first developer"
+      preferences:
+        - "automation-first"
+        - "quality-focus"
+    system:
+      platform: "macOS (arm64)"
+      architecture: "Agent-based autonomous framework"
+
+  resources:
+    compute:
+      cpu: "Apple M1 (8 cores)"
+      memory: "16GB"
+      storage: "500GB SSD"
+    human:
+      expertise:
+        - "Rust programming"
+        - "AI agent design"
+      availability: "full_time"
+    info:
+      kb: "miyabi-knowledge (Qdrant)"
+      sources:
+        - "GitHub Issues"
+        - "Project documentation"
+
+  env:
+    load: "normal"
+    dependencies:
+      - "cargo"
+      - "git"
+      - "node"
+      - "python3"
+    constraints:
+      - "memory_limit: 80%"
+      - "cpu_limit: 90%"
+      - "no_breaking_changes"
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # § 2. Temporal Dimension - t (時間次元)
+  # ═══════════════════════════════════════════════════════════════════════
+  temporal:
+    # 現在時刻
+    current_time:
+      format: "ISO 8601"
+      timezone: "Asia/Tokyo (UTC+9)"
+      example: "2025-11-01T10:00:00+09:00"
+
+    # 時間的制約
+    horizon:
+      project_duration: "6 months (2025-10 ~ 2026-03)"
+      sprint_duration: "2 weeks"
+      task_timeout: "2 hours (default)"
+
+    # 時間制約
+    constraints:
+      business_hours: "09:00-18:00 JST (Mon-Fri)"
+      maintenance_window: "03:00-05:00 JST"
+      deployment_window: "22:00-23:00 JST"
+
+    # タイムゾーン設定
+    timezones:
+      primary: "Asia/Tokyo"
+      secondary:
+        - "America/Los_Angeles"  # PST/PDT
+        - "Europe/London"        # GMT/BST
+        - "UTC"                  # Coordinated Universal Time
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # § 3. Spatial Dimension - s (空間次元)
+  # ═══════════════════════════════════════════════════════════════════════
+  spatial:
+    # 物理空間
+    physical:
+      location: "Japan"
+      datacenter: "GCP asia-northeast1 (Tokyo)"
+      edge_locations:
+        - "Cloudflare Global Network"
+        - "Vercel Edge Network"
+
+    # デジタル空間
+    digital:
+      # Repository
+      repository:
+        primary: "https://github.com/ShunsukeHayashi/Miyabi"
+        public: "https://github.com/ShunsukeHayashi/Miyabi"
+        private: "/Users/shunsuke/Dev/01-miyabi/_core/miyabi-private"
+
+      # Deployment
+      deployment:
+        production: "https://miyabi.run"
+        staging: "https://staging.miyabi.run"
+        preview: "https://*.vercel.app"
+
+      # API Endpoints
+      api:
+        rest: "https://api.miyabi.run"
+        graphql: "https://api.miyabi.run/graphql"
+        websocket: "wss://ws.miyabi.run"
+
+    # 抽象空間
+    abstract:
+      # 概念レイヤー
+      conceptual_layers:
+        layer0_definition: "miyabi_def/"
+        layer1_integration: ".claude/, .codex/, .cursor/, .gemini/"
+        layer2_implementation: "crates/"
+        layer3_data: ".miyabi/, .ai/, data/"
+        layer4_documentation: "docs/"
+        layer5_configuration: "Config files"
+        layer6_testing: ".github/workflows/, tests/"
+        layer7_deployment: "deployment/"
+        layer8_external: "integrations/"
+        layer9_legacy: "archive/"
+        layer10_business: "BUDGET.yml, marketplace.json"
+
+      # 数学的空間
+      mathematical_spaces:
+        intent_space: "I = {goals, preferences, objectives, modality}"
+        world_space: "W = {temporal, spatial, contextual, resources, environmental}"
+        result_space: "R = {artifacts, metadata, quality_metrics}"
+        task_space: "T = {function, input, output, dependencies, constraints}"
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # § 4. Contextual Dimension - c (文脈次元)
+  # ═══════════════════════════════════════════════════════════════════════
+  contextual:
+    # ドメイン
+    domain:
+      primary: "Software Development"
+      sub_domains:
+        - "AI/ML Engineering"
+        - "DevOps & Automation"
+        - "Full-Stack Development"
+        - "Business Strategy"
+        - "Marketing & Content"
+
+    # ユーザー
+    user:
+      types:
+        - "Solo Developer"
+        - "Small Team (2-5)"
+        - "Startup (5-20)"
+        - "Enterprise"
+
+      personas:
+        - name: "AI-First Developer"
+          description: "Claude/Copilot/Cursorを日常的に使用"
+          needs: ["自動化", "並列実行", "品質保証"]
+
+        - name: "Indie Hacker"
+          description: "個人開発者・副業開発者"
+          needs: ["迅速な開発", "低コスト", "簡単な運用"]
+
+        - name: "Tech Lead"
+          description: "小規模チームのテックリード"
+          needs: ["チーム管理", "コードレビュー", "品質管理"]
+
+    # システムコンテキスト
+    system:
+      # プロジェクトタイプ
+      project_type: "Autonomous Development Framework"
+
+      # アーキテクチャパターン
+      architecture:
+        primary: "GitHub as OS"
+        patterns:
+          - "Event-Driven Architecture"
+          - "Microservices"
+          - "Agent-Based System"
+          - "Git Worktree Isolation"
+
+      # 技術スタック
+      tech_stack:
+        backend:
+          primary: "Rust 2021 Edition"
+          frameworks: ["Tokio", "Axum", "Serde"]
+
+        frontend:
+          primary: "TypeScript"
+          frameworks: ["React 18", "Tauri 2.0", "Zustand"]
+
+        infrastructure:
+          cloud: "GCP (Cloud Run, Cloud Build)"
+          edge: "Cloudflare Workers, Vercel Edge"
+          database: "PostgreSQL, Qdrant (Vector DB)"
+
+        ai:
+          llms:
+            - "Claude 3.5 Sonnet"
+            - "GPT-4 Turbo"
+            - "Gemini 1.5 Pro"
+          tools:
+            - "Claude Code CLI"
+            - "GitHub Copilot"
+            - "Cursor IDE"
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # § 5. Resources Dimension - r (リソース次元)
+  # ═══════════════════════════════════════════════════════════════════════
+  resources:
+    # 計算リソース
+    compute:
+      local:
+        device: "MacBook Pro M3 Max"
+        cpu: "16 cores (12 performance + 4 efficiency)"
+        ram: "128 GB"
+        storage: "2 TB SSD"
+        gpu: "40-core GPU"
+
+      cloud:
+        gcp:
+          compute_engine: "e2-medium (2 vCPU, 4 GB)"
+          cloud_run: "8 vCPU, 16 GB"
+          cloud_build: "32 vCPU, 128 GB (parallel builds)"
+
+        vercel:
+          edge_functions: "Unlimited"
+          serverless_functions: "100 GB-hours/month"
+
+      limits:
+        max_parallel_agents: 10
+        max_worktrees: 50
+        max_file_descriptors: 1024
+
+    # 人的リソース
+    human:
+      team_size: 1  # Solo developer
+      ai_assistants:
+        - name: "Claude Code"
+          role: "Primary Development Assistant"
+          availability: "24/7"
+
+        - name: "Codex"
+          role: "Code Generation Assistant"
+          availability: "24/7"
+
+        - name: "Cursor"
+          role: "IDE-Integrated Assistant"
+          availability: "24/7"
+
+        - name: "Gemini"
+          role: "Multimodal Assistant (planned)"
+          availability: "24/7"
+
+      external_contributors: "Open to community contributions"
+
+    # 情報リソース
+    information:
+      # ドキュメント
+      documentation:
+        internal: "50+ MD files in docs/"
+        external: "README.md, CLAUDE.md, QUICKSTART-JA.md"
+        generated: "miyabi_def/generated/ (10+ YAML files)"
+
+      # ナレッジベース
+      knowledge_base:
+        vector_db: "Qdrant"
+        embeddings: "text-embedding-3-small (OpenAI)"
+        documents: "1000+ code snippets + docs"
+
+      # 外部知識ソース
+      external_sources:
+        - "Rust Official Docs"
+        - "React Official Docs"
+        - "Anthropic Claude API Docs"
+        - "GitHub API Docs"
+        - "Stack Overflow"
+        - "Crates.io"
+        - "npm Registry"
+
+    # 財務リソース
+    financial:
+      budget:
+        monthly: "$500"
+        breakdown:
+          llm_apis: "$200"
+          cloud_hosting: "$100"
+          services: "$100"
+          domain_ssl: "$50"
+          misc: "$50"
+
+    # Ω-System互換フィールド
+    info:
+      kb: "miyabi-knowledge (Qdrant)"
+      sources:
+        - "Internal documentation (docs/)"
+        - "GitHub Issues"
+        - "Knowledge base embeddings"
+        - "External references (Rust/React/Claude API docs)"
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # § 6. Environmental Dimension - e (環境次元)
+  # ═══════════════════════════════════════════════════════════════════════
+  environmental:
+    # システム負荷
+    load:
+      current:
+        cpu_usage: "20-40%"
+        ram_usage: "32 GB / 128 GB"
+        disk_usage: "500 GB / 2 TB"
+
+      thresholds:
+        cpu_alert: "80%"
+        ram_alert: "90%"
+        disk_alert: "85%"
+
+      monitoring:
+        tool: "GCP Cloud Monitoring"
+        metrics: ["CPU", "Memory", "Disk", "Network", "Error Rate"]
+        alerts: "Slack + Email"
+
+    # 依存関係
+    dependencies:
+      # Rustクレート
+      rust_crates: "150+ dependencies"
+      critical_crates:
+        - "tokio = 1.40"
+        - "serde = 1.0"
+        - "reqwest = 0.12"
+        - "anyhow = 1.0"
+        - "tracing = 0.1"
+
+      # Node.jsパッケージ
+      npm_packages: "200+ dependencies"
+      critical_packages:
+        - "react = 18.3"
+        - "typescript = 5.6"
+        - "@tauri-apps/api = 2.1"
+        - "zustand = 5.0"
+
+      # システム依存
+      system_dependencies:
+        - "Rust 1.82+"
+        - "Node.js 20+"
+        - "pnpm 9+"
+        - "Git 2.40+"
+        - "gh CLI 2.50+"
+
+    # 制約
+    constraints:
+      # 技術的制約
+      technical:
+        rust_edition: "2021"
+        msrv: "1.82.0"  # Minimum Supported Rust Version
+        node_version: ">=20.0.0"
+        typescript_version: ">=5.6.0"
+
+      # ビジネス制約
+      business:
+        license: "Apache-2.0"
+        pricing: "Freemium (Free tier + Pro tier)"
+        support: "Community + Pro Support"
+
+      # 法的制約
+      legal:
+        gdpr_compliance: true
+        ccpa_compliance: true
+        data_residency: "Japan"
+
+      # セキュリティ制約
+      security:
+        vulnerability_scanning: "cargo audit + npm audit"
+        dependency_review: "Dependabot"
+        secrets_scanning: "Gitleaks"
+        code_scanning: "CodeQL"
+
+    # 外部環境
+    external:
+      # APIレート制限
+      api_rate_limits:
+        github:
+          rest: "5000 requests/hour"
+          graphql: "5000 points/hour"
+
+        anthropic:
+          claude_sonnet: "100 req/min"
+          claude_opus: "50 req/min"
+
+        openai:
+          gpt4_turbo: "500 req/min"
+          embeddings: "3000 req/min"
+
+      # サービス可用性
+      service_availability:
+        target_uptime: "99.9%"
+        sla: "99.5%"
+
+      # 地理的制約
+      geographic:
+        primary_region: "Asia/Pacific"
+        supported_regions: ["Global"]
+        restricted_regions: []
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # § 7. State Management - 状態管理
+  # ═══════════════════════════════════════════════════════════════════════
+  state:
+    # プロジェクト状態
+    project:
+      phase: "Phase 11 - Desktop App Development"
+      progress: "85%"
+      next_milestone: "v1.0.0 Release"
+
+    # システム状態
+    system:
+      health: "healthy"
+      last_build: "2025-11-01T09:00:00+09:00"
+      last_deploy: "2025-10-31T22:00:00+09:00"
+
+    # Git状態
+    git:
+      branch: "main"
+      last_commit: "1a00fd5"
+      open_prs: 6
+      open_issues: 150
+
+    # ワークツリー状態
+    worktrees:
+      active: 0
+      max_concurrent: 10
+      cleanup_policy: "auto-cleanup after 7 days"
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # § 8. Ω-System Integration - Ω-Systemとの統合
+  # ═══════════════════════════════════════════════════════════════════════
+  omega_system:
+    # Ω関数定義
+    signature: "Ω: I × W → R"
+
+    # 実行エンジン
+    execution_engine:
+      phases:
+        theta1_understanding:
+          input: "Intent (I)"
+          output: "Structure (S)"
+          handler: "AI CLI (Claude/Codex/Cursor)"
+
+        theta2_generation:
+          input: "Structure (S)"
+          output: "Tasks (T)"
+          handler: "CoordinatorAgent"
+
+        theta3_allocation:
+          input: "Tasks (T)"
+          output: "Allocated Resources (A)"
+          handler: "Git Worktree Manager"
+
+        theta4_execution:
+          input: "Allocated Resources (A)"
+          output: "Results (R)"
+          handler: "CodeGenAgent + Other Agents"
+
+        theta5_integration:
+          input: "Results (R)"
+          output: "Deliverable (D)"
+          handler: "PRAgent + ReviewAgent"
+
+        theta6_learning:
+          input: "Deliverable (D)"
+          output: "Knowledge (K)"
+          handler: "Knowledge Base + .ai/ logs"
+
+    # タスク代数
+    task_algebra:
+      sequential: "T₁ ∘ T₂ = T₃"
+      parallel: "T₁ ⊗ T₂ = T₃"
+      conditional: "T₁ ⊕ T₂ = T₃"
+      iterative: "T* = ⊕[n=0→∞] Tⁿ"
+
+    # 品質メトリクス
+    quality_metrics:
+      formula: "Q = ω₁·Completeness + ω₂·Accuracy + ω₃·Efficiency"
+      weights:
+        completeness: 0.4
+        accuracy: 0.3
+        efficiency: 0.3
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # § 9. Evolution & Adaptation - 進化と適応
+  # ═══════════════════════════════════════════════════════════════════════
+  evolution:
+    # メタ学習
+    meta_learning:
+      enabled: true
+      learning_rate: 0.01
+      pattern_extraction: "frequency-based"
+      strategy_optimization: "expected-quality-maximization"
+
+    # 適応メカニズム
+    adaptation:
+      world_state_monitoring: "continuous"
+      auto_scaling: true
+      resource_reallocation: "dynamic"
+
+    # 進化戦略
+    strategy:
+      mutation_rate: 0.05
+      selection: "tournament"
+      elitism: true
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # § 10. Governance - ガバナンス
+  # ═══════════════════════════════════════════════════════════════════════
+  governance:
+    # 意思決定
+    decision_making:
+      autonomous_threshold: 0.95  # Quality score >= 95 → Auto-approve
+      human_review_threshold: 0.80  # 80-95 → Review required
+      reject_threshold: 0.50  # < 50 → Auto-reject
+
+    # ラベルシステム (57 labels)
+    label_system:
+      categories: 11
+      total_labels: 57
+      auto_labeling: true
+
+    # ワークフロー (5 workflows, 38 stages)
+    workflows:
+      total: 5
+      stages: 38
+      automation_level: "80%"
+
+    # エージェント (21 agents)
+    agents:
+      total: 21
+      coding: 7
+      business: 14
+      orchestration: "CoordinatorAgent"
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # § 11. Observability - 可観測性
+  # ═══════════════════════════════════════════════════════════════════════
+  observability:
+    # ログ
+    logging:
+      level: "info"
+      format: "json"
+      destinations: [".ai/logs/", "GCP Cloud Logging"]
+
+    # メトリクス
+    metrics:
+      system: ["CPU", "Memory", "Disk", "Network"]
+      application: ["Request Rate", "Error Rate", "Latency", "Task Duration"]
+      business: ["Issue Completion Rate", "PR Merge Rate", "Quality Score"]
+
+    # トレーシング
+    tracing:
+      enabled: true
+      tool: "OpenTelemetry"
+      sampling_rate: 0.1
+
+    # アラート
+    alerting:
+      channels: ["Slack", "Email", "Discord"]
+      severity_levels: ["critical", "high", "medium", "low"]
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # § 12. Extensibility - 拡張性
+  # ═══════════════════════════════════════════════════════════════════════
+  extensibility:
+    # プラグインシステム
+    plugins:
+      supported: true
+      plugin_dir: ".claude/plugins/"
+      marketplace: "Claude Code Marketplace"
+
+    # カスタムエージェント
+    custom_agents:
+      supported: true
+      agent_dir: ".claude/agents/custom/"
+      registration: "automatic"
+
+    # カスタムスキル
+    custom_skills:
+      supported: true
+      skill_dir: ".claude/skills/custom/"
+      activation: "skill use custom-skill-name"
+
+    # MCP統合
+    mcp_integration:
+      enabled: true
+      servers:
+        - "context7"
+        - "chrome-devtools"
+        - "custom-mcp-server"
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # § 13. Future Roadmap - 将来のロードマップ
+  # ═══════════════════════════════════════════════════════════════════════
+  roadmap:
+    # Phase 12: Advanced Analytics (2026 Q1)
+    phase12:
+      focus: "Data Analysis & PDCA"
+      features:
+        - "Real-time dashboards"
+        - "Predictive analytics"
+        - "A/B testing framework"
+
+    # Phase 13: Multi-Agent Collaboration (2026 Q2)
+    phase13:
+      focus: "Agent Swarm Intelligence"
+      features:
+        - "Agent-to-agent communication"
+        - "Distributed task execution"
+        - "Consensus mechanisms"
+
+    # Phase 14: Ω-System v2 (2026 Q3)
+    phase14:
+      focus: "Complete Autonomous Operation"
+      features:
+        - "Self-improving algorithms"
+        - "Zero-human-intervention deployment"
+        - "Quantum-inspired optimization"

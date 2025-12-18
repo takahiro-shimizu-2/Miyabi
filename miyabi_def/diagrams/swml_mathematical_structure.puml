@@ -1,0 +1,353 @@
+@startuml SWML - Mathematical Structure
+!theme blueprint
+skinparam backgroundColor #F8F9FA
+
+title Shunsuke's World Model Logic (SWML)\nMathematical Foundations & Execution Flow\nVersion 1.0.0
+
+' === Fundamental Spaces ===
+
+package "§1 Fundamental Spaces" as spaces {
+
+  object "𝒲 (World Space)" as W {
+    **Topological Structure**
+    (𝒲, τ_W, d_W)
+    --
+    **Measure Space**
+    (𝒲, Σ_W, μ_W)
+    --
+    **Dimensions**
+    • t: Temporal (ℝ⁺ × Constraints_t)
+    • s: Spatial (Phys × Dig × Abs)
+    • c: Contextual (Domain × User × Sys)
+    • r: Resources (Comp × Hum × Info × Fin)
+    • e: Environmental (Load × Deps × Constraints)
+  }
+
+  object "ℐ (Intent Space)" as I {
+    **Vector Space**
+    ℐ ≅ ℝⁿ
+    --
+    **Partial Order**
+    (ℐ, ≼)
+    --
+    **Dimensions**
+    • g: Goals (Primary × Secondary × Implicit)
+    • p: Preferences (Quality/Speed × Cost/Perf)
+    • o: Objectives (Func × NonFunc × Quality)
+    • m: Modality (Text × Code × Visual × Data)
+  }
+
+  object "ℛ (Result Space)" as R {
+    **Quality Metric Space**
+    Q: ℛ → [0, 1]
+    --
+    **Formula**
+    Q(R) = ω₁·C(R) + ω₂·A(R) + ω₃·E(R)
+    --
+    **Dimensions**
+    • a: Artifacts (Code × Docs × Data × Config)
+    • m: Metadata (Timing × Resources × Deps)
+    • q: Quality (Completeness × Accuracy × Efficiency)
+  }
+
+  object "𝒯 (Task Space)" as T {
+    **DAG Structure**
+    G = (V, E, w)
+    --
+    **Dimensions**
+    • f: Function (Input → Output)
+    • i: Input Schema × Constraints
+    • o: Output Schema × Guarantees × Effects
+    • d: DAG Dependencies
+    • c: Temporal/Resource/Logical Constraints
+  }
+}
+
+' === Ω Function Core ===
+
+package "§5 Ω Function - Central Execution Engine" as omega_pkg {
+
+  object "Ω: ℐ × 𝒲 → ℛ" as Omega #LightCoral {
+    **Integral Representation**
+    Ω(I, W) = ∫_{t₀}^{t₁} 𝔼(I(τ), W(τ)) dτ
+    --
+    **Variational Principle**
+    Ω(I, W) = arg min_{R ∈ ℛ} 𝒮[I, W, R]
+    --
+    **Action Functional**
+    𝒮[I, W, R] = ∫_{t₀}^{t₁} ℒ(I, W, Ṙ, t) dt
+    --
+    **Decomposition**
+    Ω = θ₆ ∘ θ₅ ∘ θ₄ ∘ θ₃ ∘ θ₂ ∘ θ₁
+  }
+}
+
+' === Six Phases ===
+
+package "§5.1 Six-Phase Pipeline" as phases {
+
+  object "θ₁: Understanding" as theta1 #LightGreen {
+    **Signature**
+    θ₁: ℐ × 𝒲 → 𝒮
+    --
+    **Formula**
+    S = Parse(I) ⊗ Contextualize(I, W)
+        ⊗ Validate(I, W)
+    --
+    **Output**
+    Structured representation 𝒮
+  }
+
+  object "θ₂: Generation" as theta2 #LightGreen {
+    **Signature**
+    θ₂: 𝒮 × 𝒲 → 𝒯
+    --
+    **Formula**
+    𝕋 = Decompose(S)
+        → Prioritize(·)
+        → Optimize(·, W)
+    --
+    **Output**
+    Task set with DAG structure
+  }
+
+  object "θ₃: Allocation" as theta3 #LightGreen {
+    **Signature**
+    θ₃: 𝒯 × 𝒲.r → 𝒜
+    --
+    **Formula**
+    A = arg min_{a ∈ Allocations} Cost(a, W.r)
+    --
+    **Output**
+    Resource allocation 𝒜
+  }
+
+  object "θ₄: Execution" as theta4 #LightBlue {
+    **Signature**
+    θ₄: 𝒜 → ℛ
+    --
+    **Formula**
+    R = ⨁_{i=1}^{n} Execute(T_i, A(T_i))
+    --
+    **Output**
+    Partial results ℛ
+  }
+
+  object "θ₅: Integration" as theta5 #LightBlue {
+    **Signature**
+    θ₅: ℛ → 𝒟
+    --
+    **Formula**
+    D = Aggregate(R)
+        → Synthesize(·)
+        → Validate(·, I)
+    --
+    **Output**
+    Deliverable 𝒟
+  }
+
+  object "θ₆: Learning" as theta6 #LightYellow {
+    **Signature**
+    θ₆: 𝒟 × ℐ × 𝒲 → 𝒦
+    --
+    **Formula**
+    K = Evaluate(D, I)
+        → Learn(·)
+        → Update(Knowledge, ΔK)
+    --
+    **Output**
+    Knowledge update 𝒦
+  }
+}
+
+' === Task Algebra ===
+
+package "§7 Task Algebra" as task_alg {
+
+  object "Sequential (∘)" as seq {
+    **Signature**
+    ∘: 𝒯 × 𝒯 → 𝒯
+    --
+    **Definition**
+    (T₁ ∘ T₂)(x) = T₂(T₁(x))
+    --
+    **Law**
+    (T₁ ∘ T₂) ∘ T₃ = T₁ ∘ (T₂ ∘ T₃)
+  }
+
+  object "Parallel (⊗)" as par {
+    **Signature**
+    ⊗: 𝒯 × 𝒯 → 𝒯
+    --
+    **Definition**
+    (T₁ ⊗ T₂)(x₁, x₂) = (T₁(x₁), T₂(x₂))
+    --
+    **Law**
+    T₁ ⊗ T₂ = T₂ ⊗ T₁ (if independent)
+  }
+
+  object "Conditional (⊕)" as cond {
+    **Signature**
+    ⊕: 𝒯 × 𝒯 → 𝒯
+    --
+    **Definition**
+    (T₁ ⊕ T₂)(x) =
+      if condition(x) then T₁(x)
+      else T₂(x)
+  }
+
+  object "Iteration (*)" as iter {
+    **Signature**
+    *: 𝒯 → 𝒯
+    --
+    **Definition**
+    T* = ⨁_{n=0}^{∞} Tⁿ
+  }
+}
+
+' === Optimization ===
+
+package "§9 Optimization Theory" as opt {
+
+  object "Objective Function" as obj {
+    **Maximize**
+    max Q(Ω(I, W))
+    --
+    **Subject to**
+    • resource_usage(Ω) ≤ W.r
+    • execution_time(Ω) ≤ W.t.horizon
+    • quality(Ω(I,W)) ≥ I.o.min_quality
+  }
+
+  object "Lagrangian" as lag {
+    **Formula**
+    ℒ(I, W, R, λ, μ, ν) = Q(R)
+      - λ(resource_usage(R) - W.r)
+      - μ(execution_time(R) - W.t.horizon)
+      - ν(I.o.min_quality - quality(R))
+  }
+
+  object "KKT Conditions" as kkt {
+    **Stationarity**
+    ∇_R ℒ = 0
+    --
+    **Primal Feasibility**
+    constraints satisfied
+    --
+    **Dual Feasibility**
+    λ, μ, ν ≥ 0
+    --
+    **Complementary Slackness**
+    λ·slack₁ = μ·slack₂ = ν·slack₃ = 0
+  }
+
+  object "Bellman Equation" as bellman {
+    **Formula**
+    V*(I, W) = max_{a ∈ Actions}
+      [r(I, W, a) + γV*(I', W')]
+    --
+    **Components**
+    • V*: optimal value function
+    • r: immediate reward
+    • γ: discount factor (0.99)
+    • (I', W'): next state
+  }
+}
+
+' === Learning ===
+
+package "§10 Learning Theory" as learning {
+
+  object "Knowledge Update" as k_update {
+    **Gradient Ascent**
+    K_{t+1} = K_t + α∇Q(R_t, I_t, W_t)
+    --
+    **Exponential Moving Avg**
+    K_{t+1} = βK_t + (1-β)ΔK_t
+  }
+
+  object "Pattern Extraction" as pattern {
+    **Frequency-Based**
+    P(H) = arg max_{p ∈ 𝒫} freq(p, H)
+    --
+    **Entropy Minimization**
+    P* = arg min_{p ∈ 𝒫} ℋ(H | p)
+  }
+
+  object "Strategy Optimization" as strategy {
+    **Expected Quality**
+    S* = arg max_{s ∈ 𝒮} 𝔼_W[Q(s, W)]
+    --
+    **Adaptive Learning**
+    S_{t+1}(W) = S_t(W) + α∇_S Q(S_t, W)
+  }
+}
+
+' === Execution Flow ===
+
+I --> Omega : Intent I
+W --> Omega : World State W
+Omega --> R : Result R
+
+Omega *-- theta1
+Omega *-- theta2
+Omega *-- theta3
+Omega *-- theta4
+Omega *-- theta5
+Omega *-- theta6
+
+theta1 --> theta2 : 𝒮 (Structure)
+theta2 --> theta3 : 𝒯 (Tasks)
+theta3 --> theta4 : 𝒜 (Allocation)
+theta4 --> theta5 : ℛ (Results)
+theta5 --> theta6 : 𝒟 (Deliverable)
+theta6 --> W : 𝒦 (Knowledge)\nupdate
+
+' Task Algebra Relations
+T --> seq
+T --> par
+T --> cond
+T --> iter
+
+' Optimization Flow
+Omega --> obj : optimize
+obj --> lag : formulate
+lag --> kkt : solve
+kkt --> bellman : dynamic programming
+
+' Learning Flow
+R --> k_update
+theta6 --> pattern
+pattern --> strategy
+strategy --> W : feedback
+
+note top of Omega
+  **Central Execution Engine**
+  • Integral representation over time
+  • Variational principle (minimize action)
+  • Six-phase decomposition
+  • Categorical structure
+end note
+
+note bottom of phases
+  **Phase Colors**
+  🟢 Planning phases (θ₁, θ₂, θ₃)
+  🔵 Execution phases (θ₄, θ₅)
+  🟡 Learning phase (θ₆)
+end note
+
+legend right
+  |= Symbol |= Space/Function |
+  | 𝒲 | World Space (topological + measure) |
+  | ℐ | Intent Space (vector space) |
+  | ℛ | Result Space (metric space) |
+  | 𝒯 | Task Space (DAG structure) |
+  | Ω | Omega function (I × W → R) |
+  | θ₁-θ₆ | Six execution phases |
+  | ∘ | Sequential composition |
+  | ⊗ | Parallel composition |
+  | ⊕ | Conditional branching |
+  | * | Iteration |
+endlegend
+
+@enduml

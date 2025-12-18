@@ -1,0 +1,231 @@
+{% extends "base.yaml.j2" %}
+
+{% block header %}
+# ═══════════════════════════════════════════════════════════════════════════
+# Step-back Question Method - Generated YAML
+# ═══════════════════════════════════════════════════════════════════════════
+{% endblock %}
+
+{% block metadata %}
+# Generated from: miyabi_def/templates/step_back_question_method.yaml.j2
+# Variables from: miyabi_def/variables/step_back_question_method.yaml
+# Generator: miyabi_def/generate.py
+# Version: {{ step_back_method.metadata.version }}
+# Created: {{ step_back_method.metadata.created_at }}
+{% endblock %}
+
+{% block content %}
+# ═══════════════════════════════════════════════════════════════════════════
+# Step-back Question Method
+#
+# Mathematical Formula:
+#   F(Goal, Q) = ∫_{A}^{Z} f(step, Q) d(step) = Result
+#
+# Where:
+#   F: Goal Achievement Function
+#   f: Step Execution Function
+#   Q: Set of Step-back Questions
+#   [A, Z]: 26-step process range
+# ═══════════════════════════════════════════════════════════════════════════
+
+step_back_question_method:
+  # ─────────────────────────────────────────────────────────────────────────
+  # Metadata
+  # ─────────────────────────────────────────────────────────────────────────
+  metadata:
+    name: "{{ step_back_method.metadata.name }}"
+    version: "{{ step_back_method.metadata.version }}"
+    author: "{{ step_back_method.metadata.author }}"
+    license: "{{ step_back_method.metadata.license }}"
+    based_on: "{{ step_back_method.metadata.based_on }}"
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Mathematical Definition
+  # ─────────────────────────────────────────────────────────────────────────
+  mathematical_definition:
+    function_signature: "{{ step_back_method.mathematical_definition.function_signature }}"
+    formula: "{{ step_back_method.mathematical_definition.formula }}"
+
+    symbols:
+{% for symbol_name, symbol_data in step_back_method.mathematical_definition.symbols.items() %}
+      {{ symbol_name }}:
+        name: "{{ symbol_data.name }}"
+{% if symbol_data.type %}
+        type: "{{ symbol_data.type }}"
+{% endif %}
+{% if symbol_data.notation %}
+        notation: "{{ symbol_data.notation }}"
+{% endif %}
+{% if symbol_data.meaning %}
+        meaning: "{{ symbol_data.meaning }}"
+{% endif %}
+{% if symbol_data.steps %}
+        steps: {{ symbol_data.steps }}
+{% endif %}
+{% endfor %}
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Step-back Questions Definition
+  # ─────────────────────────────────────────────────────────────────────────
+  step_back_questions:
+    definition:
+      type: "{{ step_back_method.step_back_questions.definition.type }}"
+      purpose: "{{ step_back_method.step_back_questions.definition.purpose }}"
+      depth: "{{ step_back_method.step_back_questions.definition.depth }}"
+
+    categories:
+{% for category_name, category_data in step_back_method.step_back_questions.categories.items() %}
+      {{ category_name }}:
+        purpose: "{{ category_data.purpose }}"
+        examples:
+{% for example in category_data.examples %}
+          - "{{ example }}"
+{% endfor %}
+{% endfor %}
+
+    standard_questions:
+{% for q_key, q_value in step_back_method.step_back_questions.standard_questions.items() %}
+      {{ q_key }}: "{{ q_value }}"
+{% endfor %}
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # A to Z Process Steps (26 steps)
+  # ─────────────────────────────────────────────────────────────────────────
+  process_steps:
+{% for step_key, step_data in step_back_method.process_steps.items() %}
+    {{ step_key }}:
+      name: "{{ step_data.name }}"
+      name_ja: "{{ step_data.name_ja }}"
+      formula: "{{ step_data.formula }}"
+      step_back_question: "{{ step_data.step_back_question }}"
+      input: "{{ step_data.input }}"
+      output: "{{ step_data.output }}"
+      operations:
+{% for operation in step_data.operations %}
+        - "{{ operation }}"
+{% endfor %}
+{% endfor %}
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Step Execution Function
+  # ─────────────────────────────────────────────────────────────────────────
+  step_execution_function:
+    signature: "{{ step_back_method.step_execution_function.signature }}"
+    formula: "{{ step_back_method.step_execution_function.formula }}"
+
+    components:
+{% for comp_name, comp_data in step_back_method.step_execution_function.components.items() %}
+      {{ comp_name }}:
+        description: "{{ comp_data.description }}"
+        operations:
+{% for operation in comp_data.operations %}
+          - "{{ operation }}"
+{% endfor %}
+{% endfor %}
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Quality Metrics
+  # ─────────────────────────────────────────────────────────────────────────
+  quality_metrics:
+    process_quality:
+      formula: "{{ step_back_method.quality_metrics.process_quality.formula }}"
+      range: "{{ step_back_method.quality_metrics.process_quality.range }}"
+
+    step_quality:
+      formula: "{{ step_back_method.quality_metrics.step_quality.formula }}"
+      weights:
+{% for weight_name, weight_value in step_back_method.quality_metrics.step_quality.weights.items() %}
+        {{ weight_name }}: {{ weight_value }}
+{% endfor %}
+
+    step_back_effect:
+      formula: "{{ step_back_method.quality_metrics.step_back_effect.formula }}"
+      empirical_value: "{{ step_back_method.quality_metrics.step_back_effect.empirical_value }}"
+      description: "{{ step_back_method.quality_metrics.step_back_effect.description }}"
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Implementation Mapping
+  # ─────────────────────────────────────────────────────────────────────────
+  implementation:
+    rust_types:
+{% for type_name, type_data in step_back_method.implementation.rust_types.items() %}
+      {{ type_name }}:
+        type: "{{ type_data.type }}"
+        fields:
+{% for field in type_data.fields %}
+          - "{{ field }}"
+{% endfor %}
+{% endfor %}
+
+    rust_functions:
+{% for func_name, func_data in step_back_method.implementation.rust_functions.items() %}
+      {{ func_name }}:
+        signature: "{{ func_data.signature }}"
+        implementation: |
+{{ func_data.implementation | indent(10, first=True) }}
+{% endfor %}
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Examples
+  # ─────────────────────────────────────────────────────────────────────────
+  examples:
+{% for example_key, example_data in step_back_method.examples.items() %}
+    {{ example_key }}:
+      goal: "{{ example_data.goal }}"
+
+      step_back_questions:
+{% for question in example_data.step_back_questions %}
+        - "{{ question }}"
+{% endfor %}
+
+      process_snippet:
+{% for step_key, step_result in example_data.process_snippet.items() %}
+        {{ step_key }}:
+          question: "{{ step_result.question }}"
+          answer: "{{ step_result.answer }}"
+{% if step_result.convergence %}
+          convergence: "{{ step_result.convergence }}"
+{% endif %}
+{% endfor %}
+
+      result:
+        deliverable: "{{ example_data.result.deliverable }}"
+        quality_score: {{ example_data.result.quality_score }}
+        metadata:
+{% for meta_key, meta_value in example_data.result.metadata.items() %}
+          {{ meta_key }}: {{ meta_value }}
+{% endfor %}
+{% endfor %}
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # Parameters
+  # ─────────────────────────────────────────────────────────────────────────
+  parameters:
+    step_count: {{ step_back_method.parameters.step_count }}
+    min_questions_per_step: {{ step_back_method.parameters.min_questions_per_step }}
+    recommended_questions: "{{ step_back_method.parameters.recommended_questions }}"
+    quality_threshold: {{ step_back_method.parameters.quality_threshold }}
+    convergence_epsilon: {{ step_back_method.parameters.convergence_epsilon }}
+
+{% endblock %}
+
+{% block footer %}
+# ═══════════════════════════════════════════════════════════════════════════
+# End of Step-back Question Method Definition
+# ═══════════════════════════════════════════════════════════════════════════
+#
+# Usage:
+#   1. Define your Goal
+#   2. Formulate Step-back Questions (3-5 recommended)
+#   3. Execute F(Goal, Questions) through 26 steps
+#   4. Validate each step with step-back questions
+#   5. Converge to optimal solution (Step Z)
+#
+# Formula:
+#   Result = ∫_{A}^{Z} f(step, Q) d(step)
+#          = ∑_{i=1}^{26} Execute(step_i) ⊗ Validate(step_i, Q) ⊗ Learn(step_i)
+#
+# Quality Improvement:
+#   Step-back Effect ≈ 1.5 ~ 2.0× quality improvement
+# ═══════════════════════════════════════════════════════════════════════════
+{% endblock %}

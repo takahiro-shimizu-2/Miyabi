@@ -1,0 +1,431 @@
+# Shunsuke's World Model Logic (SWML) - Machine-Readable Definition
+# シュンスケ式世界モデルロジック - YAML定義
+# Version: 1.0.0
+# Created: 2025-11-01
+
+swml:
+  metadata:
+    name: "Shunsuke's World Model Logic"
+    abbreviation: "SWML"
+    version: "1.0.0"
+    created_at: "2025-11-01T00:00:00+09:00"
+    author: "Shunsuke Hayashi"
+    copyright: "© 2025 Miyabi Team"
+    license: "Apache-2.0"
+    mathematical_foundation:
+      - "Category Theory"
+      - "Type Theory"
+      - "Process Algebra"
+      - "Optimization Theory"
+      - "Information Theory"
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # §0 公理系 (Axioms)
+  # ═══════════════════════════════════════════════════════════════════════
+  axioms:
+    A0_1_existence:
+      name: "存在公理 (Existence Axiom)"
+      formula: "∀ t ∈ ℝ⁺: ∃! W(t) ∈ 𝒲"
+      description: "任意の正の時刻に対して、唯一の世界状態が存在する"
+
+    A0_2_causality:
+      name: "因果律 (Causality Axiom)"
+      formula: "∀ t₁, t₂ ∈ ℝ⁺: t₁ < t₂ ⟹ W(t₁) ⊢ W(t₂)"
+      description: "時刻が先行すれば、世界状態も因果的に決定される"
+
+    A0_3_determinism:
+      name: "決定性公理 (Determinism Axiom)"
+      formula: "∀ I ∈ ℐ, ∀ W ∈ 𝒲: ∃! R = Ω(I, W)"
+      description: "意図と世界が与えられれば、結果は一意に定まる"
+
+    A0_4_composability:
+      name: "合成可能性公理 (Composability Axiom)"
+      formula: "∀ T₁, T₂ ∈ 𝒯: valid(T₁) ∧ valid(T₂) ⟹ valid(T₁ ∘ T₂)"
+      description: "有効なタスクの合成は常に有効である"
+
+    A0_5_information_conservation:
+      name: "情報保存則 (Information Conservation)"
+      formula: "∀ process p: ℋ(input) ≤ ℋ(output) + ℋ(environment)"
+      description: "情報エントロピーは保存される（環境への散逸を含む）"
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # §1 基本定義 (Fundamental Definitions)
+  # ═══════════════════════════════════════════════════════════════════════
+  fundamental_definitions:
+    world_space:
+      symbol: "𝒲"
+      name: "World Space"
+      set_theoretic_definition: "𝒲 = {W | W: (t, s, c, r, e) → State}"
+
+      topological_structure:
+        notation: "(𝒲, τ_W, d_W)"
+        topology: "τ_W = {open sets in World topology}"
+        metric: "d_W: 𝒲 × 𝒲 → ℝ⁺"
+
+      measure_space:
+        notation: "(𝒲, Σ_W, μ_W)"
+        sigma_algebra: "Σ_W = σ-algebra of measurable world states"
+        measure: "μ_W: Σ_W → [0, ∞]"
+
+      dimensions:
+        temporal: "t: ℝ⁺ × Constraints_t → Temporal"
+        spatial: "s: Physical × Digital × Abstract → Spatial"
+        contextual: "c: Domain × User × System → Contextual"
+        resources: "r: Compute × Human × Information × Financial → Resources"
+        environmental: "e: Load × Dependencies × Constraints × External → Environmental"
+
+    intent_space:
+      symbol: "ℐ"
+      name: "Intent Space"
+      set_theoretic_definition: "ℐ = {I | I: (g, p, o, m) → Objective}"
+
+      vector_space_structure:
+        isomorphism: "ℐ ≅ ℝⁿ"
+        vector_form: "I = ⟨g₁, g₂, ..., gₙ⟩"
+
+      dimensions:
+        goals: "g: Goals → Primary × Secondary × Implicit"
+        preferences: "p: Preferences → Quality/Speed × Cost/Performance"
+        objectives: "o: Objectives → Functional × Non-Functional × Quality"
+        modality: "m: Modality → Text × Code × Visual × Data × Hybrid"
+
+      partial_order:
+        notation: "(ℐ, ≼)"
+        definition: "I₁ ≼ I₂ ⟺ specificity(I₁) ≤ specificity(I₂)"
+
+    result_space:
+      symbol: "ℛ"
+      name: "Result Space"
+      set_theoretic_definition: "ℛ = {R | R: (a, m, q) → Deliverable}"
+
+      dimensions:
+        artifacts: "a: Artifacts → Code × Docs × Data × Config"
+        metadata: "m: Metadata → Timing × Resources × Dependencies"
+        quality: "q: Quality → Completeness × Accuracy × Efficiency"
+
+      quality_metric_space:
+        function: "Q: ℛ → [0, 1]"
+        formula: "Q(R) = ω₁·C(R) + ω₂·A(R) + ω₃·E(R)"
+        weights:
+          completeness: 0.4
+          accuracy: 0.3
+          efficiency: 0.3
+        constraint: "ω₁ + ω₂ + ω₃ = 1"
+
+    task_space:
+      symbol: "𝒯"
+      name: "Task Space"
+      set_theoretic_definition: "𝒯 = {T | T: (f, i, o, d, c) → Execution}"
+
+      dimensions:
+        function: "f: Input → Output"
+        input: "i: Input_Schema × Constraints"
+        output: "o: Output_Schema × Guarantees × Side_Effects"
+        dependencies: "d: DAG_Dependencies"
+        constraints: "c: Temporal_Constraints × Resource_Constraints × Logical_Constraints"
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # §5 Ω関数の定義 (Definition of Ω Function)
+  # ═══════════════════════════════════════════════════════════════════════
+  omega_function:
+    signature: "Ω: ℐ × 𝒲 → ℛ"
+
+    integral_representation:
+      formula: "Ω(I, W) = ∫_{t₀}^{t₁} 𝔼(I(τ), W(τ)) dτ"
+      components:
+        execution_engine: "𝔼"
+        time_interval: "[t₀, t₁]"
+
+    variational_principle:
+      formula: "Ω(I, W) = arg min_{R ∈ ℛ} 𝒮[I, W, R]"
+      action_functional: "𝒮[I, W, R] = ∫_{t₀}^{t₁} ℒ(I, W, Ṙ, t) dt"
+
+    six_phase_decomposition:
+      composition: "Ω = θ₆ ∘ θ₅ ∘ θ₄ ∘ θ₃ ∘ θ₂ ∘ θ₁"
+
+      phases:
+        theta1_understanding:
+          signature: "θ₁: ℐ × 𝒲 → 𝒮"
+          name: "Understanding"
+          formula: "S = Parse(I) ⊗ Contextualize(I, W) ⊗ Validate(I, W)"
+
+        theta2_generation:
+          signature: "θ₂: 𝒮 × 𝒲 → 𝒯"
+          name: "Generation"
+          formula: "𝕋 = Decompose(S) → Prioritize(·) → Optimize(·, W)"
+
+        theta3_allocation:
+          signature: "θ₃: 𝒯 × 𝒲.r → 𝒜"
+          name: "Allocation"
+          formula: "A = arg min_{a ∈ Allocations} Cost(a, W.r)"
+
+        theta4_execution:
+          signature: "θ₄: 𝒜 → ℛ"
+          name: "Execution"
+          formula: "R = ⨁_{i=1}^{n} Execute(T_i, A(T_i))"
+
+        theta5_integration:
+          signature: "θ₅: ℛ → 𝒟"
+          name: "Integration"
+          formula: "D = Aggregate(R) → Synthesize(·) → Validate(·, I)"
+
+        theta6_learning:
+          signature: "θ₆: 𝒟 × ℐ × 𝒲 → 𝒦"
+          name: "Learning"
+          formula: "K = Evaluate(D, I) → Learn(·) → Update(Knowledge, ΔK)"
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # §6 実行エンジンの代数的構造 (Algebraic Structure)
+  # ═══════════════════════════════════════════════════════════════════════
+  execution_algebra:
+    monoid_structure:
+      notation: "(𝔼, ∘, id)"
+      composition: "∘: 𝔼 × 𝔼 → 𝔼"
+      identity: "id"
+
+      laws:
+        associativity: "(e₁ ∘ e₂) ∘ e₃ = e₁ ∘ (e₂ ∘ e₃)"
+        identity: "id ∘ e = e ∘ id = e"
+
+    category_structure:
+      name: "Execution Category 𝓔"
+      objects: ["ℐ", "𝒲", "𝒮", "𝒯", "𝒜", "ℛ", "𝒟", "𝒦"]
+      morphisms: ["θ₁", "θ₂", "θ₃", "θ₄", "θ₅", "θ₆"]
+
+      laws:
+        identity_morphism: "∀ A: ∃ id_A : A → A"
+        composition: "∀ f: A → B, g: B → C: g ∘ f : A → C"
+        associativity: "h ∘ (g ∘ f) = (h ∘ g) ∘ f"
+        identity_law: "id_B ∘ f = f = f ∘ id_A"
+
+    functor:
+      name: "World State Functor"
+      notation: "F_W: 𝓔 → 𝓔"
+      on_objects: "F_W(X) = X × 𝒲"
+      on_morphisms: "F_W(f) = f × id_W"
+
+      properties:
+        preserve_identity: "F_W(id_X) = id_{F_W(X)}"
+        preserve_composition: "F_W(g ∘ f) = F_W(g) ∘ F_W(f)"
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # §7 タスク代数 (Task Algebra)
+  # ═══════════════════════════════════════════════════════════════════════
+  task_algebra:
+    operations:
+      sequential_composition:
+        symbol: "∘"
+        signature: "∘: 𝒯 × 𝒯 → 𝒯"
+        definition: "(T₁ ∘ T₂)(x) = T₂(T₁(x))"
+
+      parallel_composition:
+        symbol: "⊗"
+        signature: "⊗: 𝒯 × 𝒯 → 𝒯"
+        definition: "(T₁ ⊗ T₂)(x₁, x₂) = (T₁(x₁), T₂(x₂))"
+
+      conditional:
+        symbol: "⊕"
+        signature: "⊕: 𝒯 × 𝒯 → 𝒯"
+        definition: "(T₁ ⊕ T₂)(x) = if condition(x) then T₁(x) else T₂(x)"
+
+      iteration:
+        symbol: "*"
+        signature: "*: 𝒯 → 𝒯"
+        definition: "T* = ⨁_{n=0}^{∞} Tⁿ"
+
+    laws:
+      associativity:
+        sequential: "(T₁ ∘ T₂) ∘ T₃ = T₁ ∘ (T₂ ∘ T₃)"
+        parallel: "(T₁ ⊗ T₂) ⊗ T₃ = T₁ ⊗ (T₂ ⊗ T₃)"
+
+      commutativity:
+        parallel: "T₁ ⊗ T₂ = T₂ ⊗ T₁  (if independent)"
+
+      distributivity: "T₁ ∘ (T₂ ⊗ T₃) = (T₁ ∘ T₂) ⊗ (T₁ ∘ T₃)"
+
+      identity:
+        sequential: "id ∘ T = T ∘ id = T"
+        parallel: "id ⊗ T = T ⊗ id = T"
+
+    dag_structure:
+      definition: "G = (V, E, w)"
+      vertices: "V = {T₁, T₂, ..., Tₙ}"
+      edges: "E ⊆ V × V"
+      weights: "w: E → ℝ⁺"
+
+      topological_order: "∃ σ: V → {1, 2, ..., n} such that (T_i, T_j) ∈ E ⟹ σ(T_i) < σ(T_j)"
+
+      critical_path: "CP = arg max_{path p in G} ∑_{e ∈ p} w(e)"
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # §8 時間発展方程式 (Time Evolution Equation)
+  # ═══════════════════════════════════════════════════════════════════════
+  time_evolution:
+    world_evolution:
+      schrodinger_type: "iℏ ∂/∂t |W(t)⟩ = Ĥ_W |W(t)⟩"
+      hamiltonian: "Ĥ_W = T̂ + V̂ + Ŵ_interaction"
+
+    intent_evolution:
+      langevin_equation: "dI/dt = -∇V(I, W) + √(2D) ξ(t)"
+      components:
+        potential: "V(I, W)"
+        diffusion: "D"
+        noise: "ξ(t)"
+
+    result_evolution:
+      fokker_planck: "∂ρ(R,t)/∂t = -∇·(v(R)ρ) + D∇²ρ"
+      components:
+        probability_density: "ρ(R,t)"
+        drift_velocity: "v(R)"
+        diffusion_constant: "D"
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # §9 最適化理論 (Optimization Theory)
+  # ═══════════════════════════════════════════════════════════════════════
+  optimization:
+    objective_function:
+      formula: "max Q(Ω(I, W))"
+      constraints:
+        resource: "resource_usage(Ω) ≤ W.r"
+        time: "execution_time(Ω) ≤ W.t.horizon"
+        quality: "quality(Ω(I, W)) ≥ I.o.min_quality"
+
+    lagrangian:
+      formula: "ℒ(I, W, R, λ, μ, ν) = Q(R) - λ(resource_usage(R) - W.r) - μ(execution_time(R) - W.t.horizon) - ν(I.o.min_quality - quality(R))"
+
+    kkt_conditions:
+      - "∇_R ℒ = 0"
+      - "λ, μ, ν ≥ 0"
+      - "λ(resource_usage(R) - W.r) = 0"
+      - "μ(execution_time(R) - W.t.horizon) = 0"
+      - "ν(I.o.min_quality - quality(R)) = 0"
+
+    bellman_equation:
+      formula: "V*(I, W) = max_{a ∈ Actions} [r(I, W, a) + γV*(I', W')]"
+      components:
+        value_function: "V*"
+        reward: "r"
+        discount_factor: "γ"
+        next_state: "(I', W')"
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # §10 学習理論 (Learning Theory)
+  # ═══════════════════════════════════════════════════════════════════════
+  learning:
+    knowledge_update:
+      gradient_ascent: "K_{t+1} = K_t + α∇Q(R_t, I_t, W_t)"
+      exponential_moving_average: "K_{t+1} = βK_t + (1-β)ΔK_t"
+
+    pattern_extraction:
+      frequency_based: "P(H) = arg max_{p ∈ 𝒫} freq(p, H)"
+      entropy_minimization: "P* = arg min_{p ∈ 𝒫} ℋ(H | p)"
+
+    strategy_optimization:
+      expected_quality: "S* = arg max_{s ∈ 𝒮} 𝔼_W[Q(s, W)]"
+      adaptive_learning: "S_{t+1}(W) = S_t(W) + α∇_S Q(S_t, W)"
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # §11 定理 (Theorems)
+  # ═══════════════════════════════════════════════════════════════════════
+  theorems:
+    composability_theorem:
+      statement: "∀ T₁, T₂ ∈ 𝒯: valid(T₁) ∧ valid(T₂) ⟹ valid(T₁ ∘ T₂)"
+      proof_sketch: "合成関数の型整合性と制約伝播により証明"
+
+    convergence_theorem:
+      statement: "lim_{n→∞} Ωⁿ(I, W) → R*"
+      proof_sketch: "単調増加有界列の収束定理により証明"
+
+    continuity_theorem:
+      statement: "∀ ε > 0, ∃ δ > 0: d_W(W, W') < δ ⟹ d_R(Ω(I,W), Ω(I,W')) < ε"
+      proof_sketch: "Lipschitz連続性により証明"
+
+    information_conservation_theorem:
+      statement: "ℋ(I) + ℋ(W) = ℋ(R) + ℋ(env)"
+      proof_sketch: "データ処理不等式と連鎖律により証明"
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # §12 実装への写像 (Implementation Mapping)
+  # ═══════════════════════════════════════════════════════════════════════
+  implementation:
+    type_system_mapping:
+      world:
+        rust_type: "struct World"
+        fields: ["temporal", "spatial", "contextual", "resources", "environmental"]
+
+      intent:
+        rust_type: "struct Intent"
+        fields: ["goals", "preferences", "objectives", "modality"]
+
+      result:
+        rust_type: "struct Result"
+        fields: ["artifacts", "metadata", "quality"]
+
+      omega_function:
+        rust_function: "fn omega(intent: Intent, world: World) -> Result"
+
+    data_structures:
+      task_dag:
+        rust_type: "DiGraph<Task, DataFlow>"
+        library: "petgraph"
+
+    optimization:
+      gradient_descent:
+        rust_function: "fn gradient_descent"
+        library: "optimization"
+
+    parallel_execution:
+      tokio_runtime:
+        rust_function: "async fn execute_parallel"
+        library: "tokio"
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # Parameters & Constants
+  # ═══════════════════════════════════════════════════════════════════════
+  parameters:
+    quality_weights:
+      completeness: 0.4
+      accuracy: 0.3
+      efficiency: 0.3
+
+    learning_parameters:
+      learning_rate: 0.01
+      momentum: 0.9
+      discount_factor: 0.99
+
+    optimization_thresholds:
+      autonomous_threshold: 0.95
+      human_review_threshold: 0.80
+      reject_threshold: 0.50
+
+  symbols:
+    sets:
+      world_space: "𝒲"
+      intent_space: "ℐ"
+      result_space: "ℛ"
+      task_space: "𝒯"
+      structure_space: "𝒮"
+      allocation_space: "𝒜"
+      deliverable_space: "𝒟"
+      knowledge_space: "𝒦"
+
+    operators:
+      omega: "Ω"
+      theta1: "θ₁"
+      theta2: "θ₂"
+      theta3: "θ₃"
+      theta4: "θ₄"
+      theta5: "θ₅"
+      theta6: "θ₆"
+      sequential_composition: "∘"
+      parallel_composition: "⊗"
+      conditional: "⊕"
+      iteration: "*"
+
+    functions:
+      quality_score: "Q(R)"
+      completeness: "C(R)"
+      accuracy: "A(R)"
+      efficiency: "E(R)"
+      entropy: "ℋ(X)"
+      distance: "d(x,y)"

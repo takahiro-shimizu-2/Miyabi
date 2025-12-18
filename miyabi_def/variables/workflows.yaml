@@ -1,0 +1,627 @@
+# Miyabi Workflow Definitions - 5 Core Workflows
+# Version: 1.0.0
+# Description: Issue-driven development lifecycle workflows
+# Philosophy: "Everything starts with an Issue. Workflows define the journey."
+
+workflows:
+  # Workflow 1: Issue Creation & Triage
+  W1_Issue_Creation_Triage:
+    id: "W1"
+    name: "Issue Creation & Triage"
+    description: "IssueがMiyabiシステムに登録され、初期トリアージが実行される"
+    trigger: "Issue created on GitHub"
+    duration: "~5 minutes"
+
+    stages:
+      - stage: 1
+        name: "Issue Created"
+        entity: "E1_Issue"
+        state_label: "state:pending"
+        actions:
+          - "GitHub Issue作成"
+          - "state:pending ラベル自動付与"
+          - "IssueAgentトリガー"
+
+      - stage: 2
+        name: "Auto-Triage"
+        entity: "E3_Agent"
+        agent: "IssueAgent"
+        state_label: "state:pending"
+        actions:
+          - "Issue本文解析"
+          - "type/priority/severity推定"
+          - "good-first-issue判定"
+          - "関連Issue検索"
+          - "推奨Labelリスト生成"
+
+      - stage: 3
+        name: "Label Assignment"
+        entity: "E5_Label"
+        actions:
+          - "推奨Labelを付与"
+          - "Manual review flag（必要に応じて）"
+
+    outputs:
+      - "Issue with initial labels"
+      - "Triage report in comment"
+
+    next_workflow: "W2_Task_Decomposition_Planning"
+
+    handlers:
+      success: "Proceed to W2"
+      manual_review_required: "Notify Guardian, wait for approval"
+      error: "Log error, notify Guardian"
+
+  # Workflow 2: Task Decomposition & Planning
+  W2_Task_Decomposition_Planning:
+    id: "W2"
+    name: "Task Decomposition & Planning"
+    description: "CoordinatorAgentがIssueをTask配列に分解し、DAGを構築する"
+    trigger: "trigger:agent-execute label added OR manual /agent-run command"
+    duration: "~10-30 minutes"
+
+    stages:
+      - stage: 1
+        name: "Coordination Start"
+        entity: "E3_Agent"
+        agent: "CoordinatorAgent"
+        state_label: "state:analyzing"
+        actions:
+          - "agent:coordinator ラベル付与"
+          - "state:analyzing へ遷移"
+          - "Issue本文読み込み"
+
+      - stage: 2
+        name: "Task Extraction"
+        entity: "E2_Task"
+        actions:
+          - "AIによる意図理解"
+          - "タスク抽出（チェックリスト または 自動推定）"
+          - "各Taskに type/priority/severity 付与"
+
+      - stage: 3
+        name: "Dependency Analysis"
+        entity: "E11_DAG"
+        actions:
+          - "依存関係抽出（キーワード: after, requires, depends on）"
+          - "DAG構築（ノード = Task, エッジ = 依存関係）"
+          - "トポロジカルソート"
+          - "循環依存チェック"
+
+      - stage: 4
+        name: "Agent Assignment"
+        entity: "E2_Task"
+        actions:
+          - "各TaskにAgentを割り当て"
+          - "CodeGenAgent → feature/bug/refactor"
+          - "DeploymentAgent → deployment"
+          - "ReviewAgent → レビュータスク"
+
+      - stage: 5
+        name: "Complexity Estimation"
+        actions:
+          - "推定時間算出（各Task）"
+          - "全体推定時間算出"
+          - "複雑度判定（小/中/大/特大）"
+
+      - stage: 6
+        name: "Plan Generation"
+        outputs:
+          - "TaskDecomposition report"
+          - "DAG visualization"
+          - "Execution plan comment"
+        actions:
+          - "GitHub commentに計画を投稿"
+          - "Guardian承認待ち（大規模タスクの場合）"
+
+    outputs:
+      - "Task[] with dependencies"
+      - "DAG structure"
+      - "Execution plan"
+      - "Estimated duration"
+
+    next_workflow: "W3_Code_Implementation"
+
+    handlers:
+      success: "Proceed to W3"
+      cycles_detected: "Report error, escalate to TechLead"
+      complexity_too_high: "Escalate to TechLead for approval"
+      error: "Log error, escalate to Guardian"
+
+  # Workflow 3: Code Implementation
+  W3_Code_Implementation:
+    id: "W3"
+    name: "Code Implementation"
+    description: "CodeGenAgentがTaskを並列実行し、コードを生成・テストする"
+    trigger: "Task decomposition completed"
+    duration: "~30-120 minutes"
+
+    stages:
+      - stage: 1
+        name: "Implementation Start"
+        entity: "E3_Agent"
+        agent: "CodeGenAgent"
+        state_label: "state:implementing"
+        actions:
+          - "agent:codegen ラベル付与"
+          - "state:implementing へ遷移"
+
+      - stage: 2
+        name: "Worktree Setup"
+        entity: "E12_Worktree"
+        actions:
+          - "並列実行用Worktree作成"
+          - "git worktree add .worktrees/issue-{N} -b feature/agent-issue-{N}"
+          - "各TaskをWorktreeに割り当て"
+
+      - stage: 3
+        name: "Parallel Execution"
+        entity: "E2_Task"
+        parallelization: true
+        actions:
+          - "DAGのレベル0（依存なし）を並列実行"
+          - "レベル0完了後、レベル1を並列実行"
+          - "以降同様に、依存順序を守りながら並列実行"
+
+      - stage: 4
+        name: "Code Generation (per Task)"
+        entity: "E3_Agent"
+        agent: "CodeGenAgent"
+        actions:
+          - "プロンプトファイル読み込み (.claude/agents/prompts/codegen-agent-prompt.md)"
+          - "Claude Sonnet 4によるコード生成"
+          - "TypeScript Strict mode対応"
+          - "テストコード生成"
+          - "コミット作成"
+
+      - stage: 5
+        name: "Verification (per Task)"
+        actions:
+          - "pnpm typecheck"
+          - "pnpm test"
+          - "eslint実行"
+          - "全チェック通過確認"
+
+      - stage: 6
+        name: "Integration"
+        entity: "E4_PR"
+        agent: "PRAgent"
+        actions:
+          - "全Task完了後、mainブランチにマージ準備"
+          - "PR作成（Draft）"
+          - "Conventional Commits形式のタイトル生成"
+          - "PR本文生成（変更サマリ、テスト結果）"
+
+      - stage: 7
+        name: "LDD Logging"
+        entity: "E10_LDDLog"
+        actions:
+          - "実行ログ記録 (.ai/logs/YYYY-MM-DD.md)"
+          - "Codex Prompt Chain記録"
+          - "Tool Invocations記録"
+
+    outputs:
+      - "Generated code (committed)"
+      - "Test results"
+      - "Draft PR"
+      - "LDD logs"
+
+    next_workflow: "W4_Code_Review_QA"
+
+    handlers:
+      success: "Proceed to W4"
+      test_failed: "Re-analyze, fix, retry"
+      timeout: "Log timeout, escalate to Guardian"
+      escalation_needed: "Trigger escalation workflow"
+      error: "Log error, rollback changes, escalate"
+
+  # Workflow 4: Code Review & QA
+  W4_Code_Review_QA:
+    id: "W4"
+    name: "Code Review & QA"
+    description: "ReviewAgentがコード品質を評価し、QualityReportを生成する"
+    trigger: "Draft PR created"
+    duration: "~10-20 minutes"
+
+    stages:
+      - stage: 1
+        name: "Review Start"
+        entity: "E3_Agent"
+        agent: "ReviewAgent"
+        state_label: "state:reviewing"
+        actions:
+          - "agent:review ラベル付与"
+          - "state:reviewing へ遷移"
+
+      - stage: 2
+        name: "Static Analysis"
+        actions:
+          - "ESLint実行（全ファイル）"
+          - "TypeScript compiler実行"
+          - "エラー・警告カウント"
+
+      - stage: 3
+        name: "Security Scan"
+        actions:
+          - "npm audit実行"
+          - "Snyk scan（オプション）"
+          - "OWASP Top 10チェック"
+          - "脆弱性カウント"
+
+      - stage: 4
+        name: "Test Coverage Analysis"
+        actions:
+          - "Jest coverage report取得"
+          - "カバレッジ率計算"
+          - "80%未満の場合、警告"
+
+      - stage: 5
+        name: "Quality Scoring"
+        entity: "E6_QualityReport"
+        actions:
+          - "ESLintスコア計算（40%）"
+          - "TypeScriptスコア計算（30%）"
+          - "セキュリティスコア計算（20%）"
+          - "カバレッジスコア計算（10%）"
+          - "総合スコア算出（100点満点）"
+
+      - stage: 6
+        name: "Quality Judgment"
+        decision_point: true
+        criteria:
+          pass: "score >= 80"
+          fail: "score < 80"
+        actions:
+          - "passed判定（score >= 80）"
+          - "quality Label付与（excellent/good/needs-improvement/poor）"
+
+      - stage: 7
+        name: "Report Generation"
+        entity: "E6_QualityReport"
+        actions:
+          - "QualityReport生成"
+          - "推奨事項リスト作成"
+          - "PR commentに投稿"
+
+      - stage: 8
+        name: "Approval / Rejection"
+        decision_point: true
+        branches:
+          approved:
+            condition: "qualityReport.passed === true"
+            actions:
+              - "PR approve"
+              - "state:done へ遷移予定"
+              - "Proceed to W5 (Deployment)"
+          rejected:
+            condition: "qualityReport.passed === false"
+            actions:
+              - "PR request changes"
+              - "state:implementing へ戻す（再実装）"
+              - "CodeGenAgentに改善指示"
+
+    outputs:
+      - "QualityReport"
+      - "PR review comment"
+      - "quality Label"
+
+    next_workflow:
+      if_approved: "W5_Deployment"
+      if_rejected: "W3_Code_Implementation (retry)"
+
+    handlers:
+      approved: "Proceed to W5"
+      rejected: "Return to W3 with improvement suggestions"
+      error: "Log error, escalate to Guardian"
+
+  # Workflow 5: Deployment & Monitoring
+  W5_Deployment:
+    id: "W5"
+    name: "Deployment & Monitoring"
+    description: "DeploymentAgentがstaging/productionへデプロイし、ヘルスチェックを実行する"
+    trigger: "PR approved and merged"
+    duration: "~10-30 minutes"
+
+    stages:
+      - stage: 1
+        name: "Pre-Deployment Check"
+        actions:
+          - "All tests passed確認"
+          - "Quality score >= 80確認"
+          - "No critical vulnerabilities確認"
+
+      - stage: 2
+        name: "Staging Deployment"
+        entity: "E3_Agent"
+        agent: "DeploymentAgent"
+        environment: "staging"
+        actions:
+          - "Firebase staging環境へデプロイ"
+          - "firebase deploy --only hosting,functions --project miyabi-staging"
+          - "デプロイURL取得"
+
+      - stage: 3
+        name: "Staging Health Check"
+        entity: "E9_Deployment"
+        actions:
+          - "Health check endpoint呼び出し"
+          - "200 OK確認"
+          - "Basic smoke test実行"
+
+      - stage: 4
+        name: "Staging Verification"
+        decision_point: true
+        criteria:
+          pass: "health check passed"
+          fail: "health check failed"
+        branches:
+          passed:
+            actions:
+              - "Staging deployment success"
+              - "Proceed to production"
+          failed:
+            actions:
+              - "Auto rollback"
+              - "Escalate to DevOps"
+
+      - stage: 5
+        name: "Production Deployment"
+        entity: "E3_Agent"
+        agent: "DeploymentAgent"
+        environment: "production"
+        guardian_approval_required: true
+        actions:
+          - "Guardian承認待ち"
+          - "Firebase production環境へデプロイ"
+          - "firebase deploy --only hosting,functions --project miyabi-production"
+          - "デプロイURL取得"
+
+      - stage: 6
+        name: "Production Health Check"
+        entity: "E9_Deployment"
+        actions:
+          - "Health check endpoint呼び出し"
+          - "200 OK確認"
+          - "Comprehensive smoke test実行"
+
+      - stage: 7
+        name: "Production Verification"
+        decision_point: true
+        criteria:
+          pass: "health check passed"
+          fail: "health check failed"
+        branches:
+          passed:
+            actions:
+              - "Production deployment success"
+              - "state:done へ遷移"
+              - "Issueクローズ"
+          failed:
+            actions:
+              - "Auto rollback"
+              - "Escalate to CTO + DevOps"
+
+      - stage: 8
+        name: "Post-Deployment Monitoring"
+        duration: "24 hours"
+        actions:
+          - "エラー率監視"
+          - "パフォーマンス監視"
+          - "ユーザーフィードバック収集"
+
+      - stage: 9
+        name: "Completion"
+        entity: "E1_Issue"
+        state_label: "state:done"
+        actions:
+          - "state:done ラベル付与"
+          - "Issueクローズ"
+          - "メトリクス更新"
+          - "Slack/Discord通知"
+
+    outputs:
+      - "DeploymentResult (staging)"
+      - "DeploymentResult (production)"
+      - "Health check results"
+      - "Monitoring dashboard URL"
+
+    next_workflow: "None (Workflow complete)"
+
+    handlers:
+      success: "Issue完了、メトリクス更新"
+      staging_failed: "Auto rollback, escalate to DevOps"
+      production_failed: "Auto rollback, escalate to CTO + DevOps"
+      error: "Log error, escalate to CTO"
+
+# Cross-Workflow Entities
+cross_workflow_entities:
+  E1_Issue:
+    workflows: ["W1", "W2", "W5"]
+    state_transitions:
+      - "pending → analyzing (W1 → W2)"
+      - "analyzing → implementing (W2 → W3)"
+      - "implementing → reviewing (W3 → W4)"
+      - "reviewing → done (W4 → W5)"
+
+  E2_Task:
+    workflows: ["W2", "W3"]
+    lifecycle: "Created in W2, executed in W3"
+
+  E3_Agent:
+    workflows: ["W1", "W2", "W3", "W4", "W5"]
+    agents_by_workflow:
+      W1: "IssueAgent"
+      W2: "CoordinatorAgent"
+      W3: "CodeGenAgent, PRAgent"
+      W4: "ReviewAgent"
+      W5: "DeploymentAgent"
+
+  E4_PR:
+    workflows: ["W3", "W4", "W5"]
+    lifecycle: "Created in W3, reviewed in W4, merged in W5"
+
+  E5_Label:
+    workflows: ["W1", "W2", "W3", "W4", "W5"]
+    usage: "State tracking across all workflows"
+
+  E6_QualityReport:
+    workflows: ["W4"]
+    lifecycle: "Generated in W4"
+
+  E9_Deployment:
+    workflows: ["W5"]
+    lifecycle: "Created in W5"
+
+  E10_LDDLog:
+    workflows: ["W1", "W2", "W3", "W4", "W5"]
+    usage: "Logged by all agents in all workflows"
+
+  E11_DAG:
+    workflows: ["W2", "W3"]
+    lifecycle: "Created in W2, consumed in W3"
+
+  E12_Worktree:
+    workflows: ["W3"]
+    lifecycle: "Created and destroyed in W3"
+
+# Workflow Orchestration Rules
+orchestration:
+  sequential_workflows:
+    description: "Workflows must execute in order"
+    order: ["W1", "W2", "W3", "W4", "W5"]
+
+  parallel_task_execution:
+    description: "Tasks within W3 can execute in parallel"
+    constraints: "Must respect DAG dependencies"
+
+  retry_logic:
+    W3_implementation:
+      max_retries: 2
+      retry_on: ["test_failed", "lint_error"]
+    W4_review:
+      max_retries: 1
+      retry_on: ["quality_score_below_60"]
+    W5_deployment:
+      max_retries: 0
+      rollback_on_failure: true
+
+  escalation_rules:
+    complexity_threshold:
+      condition: "estimated_duration > 4 hours"
+      escalate_to: "TechLead"
+    security_vulnerability:
+      condition: "severity >= Sev.2-High"
+      escalate_to: "CISO"
+    deployment_failure:
+      condition: "production health check failed"
+      escalate_to: "CTO + DevOps"
+
+# Workflow State Machine
+state_machine:
+  states:
+    - "pending"
+    - "analyzing"
+    - "implementing"
+    - "reviewing"
+    - "done"
+    - "blocked"
+    - "failed"
+    - "paused"
+
+  transitions:
+    - from: "pending"
+      to: "analyzing"
+      trigger: "W1 complete"
+    - from: "analyzing"
+      to: "implementing"
+      trigger: "W2 complete"
+    - from: "implementing"
+      to: "reviewing"
+      trigger: "W3 complete"
+    - from: "reviewing"
+      to: "done"
+      trigger: "W4 approved AND W5 complete"
+    - from: "reviewing"
+      to: "implementing"
+      trigger: "W4 rejected (retry)"
+    - from: "*"
+      to: "blocked"
+      trigger: "Error condition requiring Guardian intervention"
+    - from: "*"
+      to: "failed"
+      trigger: "Fatal error"
+    - from: "blocked"
+      to: "analyzing"
+      trigger: "Guardian resolved"
+
+# Integration Points
+integrations:
+  github:
+    issue_creation: "W1 trigger"
+    label_change: "W1, W2 trigger"
+    pr_creation: "W3 output"
+    pr_merge: "W5 trigger"
+
+  slack_discord:
+    notifications:
+      - "W1: Issue created"
+      - "W2: Task decomposition complete"
+      - "W3: Implementation complete, PR created"
+      - "W4: Quality report generated"
+      - "W5: Deployment complete"
+
+  firebase:
+    staging_deployment: "W5 stage 2"
+    production_deployment: "W5 stage 5"
+
+  ldd_logs:
+    logging: "All workflows, all agents"
+    location: ".ai/logs/YYYY-MM-DD.md"
+
+# Performance Metrics
+metrics:
+  workflow_duration:
+    W1: "~5 minutes"
+    W2: "~10-30 minutes"
+    W3: "~30-120 minutes"
+    W4: "~10-20 minutes"
+    W5: "~10-30 minutes"
+    total: "~65-205 minutes (1-3.5 hours)"
+
+  success_rates:
+    W1: "99%"
+    W2: "95%"
+    W3: "85%"
+    W4: "90%"
+    W5: "98%"
+    overall: "~70% (first attempt)"
+
+  retry_rates:
+    W3: "~15% (implementation failures)"
+    W4: "~10% (quality score < 80)"
+    W5: "~2% (deployment failures)"
+
+# Summary
+metadata:
+  total_workflows: 5
+  total_stages: 38
+  total_decision_points: 4
+
+  workflow_types:
+    analysis: ["W1", "W2"]
+    execution: ["W3"]
+    validation: ["W4"]
+    deployment: ["W5"]
+
+  agent_coverage:
+    W1: 1  # IssueAgent
+    W2: 1  # CoordinatorAgent
+    W3: 2  # CodeGenAgent, PRAgent
+    W4: 1  # ReviewAgent
+    W5: 1  # DeploymentAgent
+
+  entity_coverage:
+    primary: ["E1_Issue", "E2_Task", "E3_Agent", "E4_PR", "E5_Label"]
+    secondary: ["E6_QualityReport", "E9_Deployment", "E10_LDDLog", "E11_DAG", "E12_Worktree"]
+
+  philosophy: "Everything starts with an Issue. Workflows define the journey."

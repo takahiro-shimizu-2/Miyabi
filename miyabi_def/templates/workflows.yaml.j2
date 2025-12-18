@@ -1,0 +1,129 @@
+{% extends "base.yaml.j2" %}
+
+{% block content %}
+# Miyabi Workflow Definitions - Complete Specification
+# Generated from: variables/workflows.yaml
+# Template: templates/workflows.yaml.j2
+# Philosophy: "Everything starts with an Issue. Workflows define the journey."
+
+workflows:
+  total_count: {{ workflows | length }}
+  total_stages: {{ workflows.values() | map(attribute='stages') | map('length') | sum }}
+
+  definitions:
+{% for workflow_key, workflow in workflows.items() %}
+    {{ workflow_key }}:
+      id: "{{ workflow.id }}"
+      name: "{{ workflow.name }}"
+      description: "{{ workflow.description }}"
+      trigger: "{{ workflow.trigger }}"
+      duration: "{{ workflow.duration }}"
+
+      stages:
+{% for stage in workflow.stages %}
+        - stage: {{ stage.stage }}
+          name: "{{ stage.name }}"
+{% if stage.entity is defined %}
+          entity: "{{ stage.entity }}"
+{% endif %}
+{% if stage.agent is defined %}
+          agent: "{{ stage.agent }}"
+{% endif %}
+{% if stage.state_label is defined %}
+          state_label: "{{ stage.state_label }}"
+{% endif %}
+{% if stage.actions is defined %}
+          actions:
+{% for action in stage.actions %}
+            - "{{ action }}"
+{% endfor %}
+{% endif %}
+{% if stage.outputs is defined %}
+          outputs:
+{% for output in stage.outputs %}
+            - "{{ output }}"
+{% endfor %}
+{% endif %}
+{% if stage.decision_point is defined %}
+          decision_point:
+            condition: "{{ stage.decision_point.condition }}"
+            if_true: "{{ stage.decision_point.if_true }}"
+            if_false: "{{ stage.decision_point.if_false }}"
+{% endif %}
+{% if stage.parallel_execution is defined %}
+          parallel_execution: {{ stage.parallel_execution }}
+{% endif %}
+{% if stage.tools is defined %}
+          tools:
+{% for tool in stage.tools %}
+            - "{{ tool }}"
+{% endfor %}
+{% endif %}
+{% if stage.metrics is defined %}
+          metrics:
+{% for metric in stage.metrics %}
+            - "{{ metric }}"
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+{% if workflow.outputs is defined %}
+      outputs:
+{% for output in workflow.outputs %}
+        - "{{ output }}"
+{% endfor %}
+{% endif %}
+
+{% if workflow.next_workflow is defined %}
+      next_workflow: "{{ workflow.next_workflow }}"
+{% endif %}
+
+{% if workflow.handlers is defined %}
+      handlers:
+{% for handler_key, handler_value in workflow.handlers.items() %}
+        {{ handler_key }}: "{{ handler_value }}"
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+
+# Workflow Visualization
+workflow_flow: |
+  W1: Issue Creation & Triage      (~5 min)
+    ↓
+  W2: Task Decomposition & Planning (~10-30 min)
+    ↓
+  W3: Code Implementation           (~30-120 min)
+    ↓
+  W4: Code Review & QA              (~10-20 min)
+    ↓
+  W5: Deployment & Monitoring       (~10-30 min)
+
+  Total Duration: ~65-205 minutes (1-3.5 hours)
+
+# Metadata
+metadata:
+  generated_at: "{{ global.project.generated_at if global.project.generated_at is defined else 'N/A' }}"
+  total_workflows: {{ workflows | length }}
+  total_stages: {{ workflows.values() | map(attribute='stages') | map('length') | sum }}
+  source_file: "variables/workflows.yaml"
+  template_file: "templates/workflows.yaml.j2"
+
+{% if metadata is defined and metadata.workflow_statistics is defined %}
+  workflow_statistics:
+{% for stat_key, stat_value in metadata.workflow_statistics.items() %}
+    {{ stat_key }}: {{ stat_value }}
+{% endfor %}
+
+  duration_breakdown:
+{% for workflow_id, duration in metadata.duration_breakdown.items() %}
+    {{ workflow_id }}: "{{ duration }}"
+{% endfor %}
+
+  agent_involvement:
+{% for agent_name, workflows_list in metadata.agent_involvement.items() %}
+    {{ agent_name }}: {{ workflows_list }}
+{% endfor %}
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,152 @@
+# Miyabi Skills Variable Definitions
+# Version: 1.0.0
+
+skills:
+  development:
+    - name: "rust-development"
+      category: "development"
+      description: "Comprehensive Rust workflow (build, test, clippy, fmt)"
+      tools:
+        - "cargo build"
+        - "cargo test"
+        - "cargo clippy"
+        - "cargo fmt"
+
+    - name: "debugging-troubleshooting"
+      category: "development"
+      description: "Systematic debugging for Rust"
+      tools:
+        - "cargo test"
+        - "RUST_BACKTRACE=1"
+        - "gdb/lldb"
+
+    - name: "dependency-management"
+      category: "development"
+      description: "Cargo dependency updates & vulnerability resolution"
+      tools:
+        - "cargo update"
+        - "cargo-audit"
+        - "cargo-deny"
+
+    - name: "performance-analysis"
+      category: "development"
+      description: "Profiling, benchmarking, optimization"
+      tools:
+        - "criterion"
+        - "flamegraph"
+        - "perf"
+
+    - name: "security-audit"
+      category: "development"
+      description: "Security scanning (cargo-audit, clippy, secrets)"
+      tools:
+        - "cargo-audit"
+        - "cargo-deny"
+        - "clippy"
+
+  operations:
+    - name: "agent-execution"
+      category: "operations"
+      description: "Execute Miyabi Agents with Git Worktree isolation"
+      tools:
+        - "git worktree"
+        - "cargo run"
+        - "miyabi CLI"
+
+    - name: "git-workflow"
+      category: "operations"
+      description: "Automated Git operations (commit, PR, merge)"
+      tools:
+        - "git"
+        - "gh (GitHub CLI)"
+        - "Conventional Commits"
+
+    - name: "documentation-generation"
+      category: "operations"
+      description: "Generate docs from Entity-Relation Model"
+      tools:
+        - "rustdoc"
+        - "mdbook"
+        - "custom generators"
+
+    - name: "issue-analysis"
+      category: "operations"
+      description: "Analyze Issues and infer labels (57-label system)"
+      tools:
+        - "gh issue"
+        - "label inference"
+
+    - name: "project-setup"
+      category: "operations"
+      description: "Initialize new Miyabi projects"
+      tools:
+        - "cargo init"
+        - "miyabi setup"
+        - "git init"
+
+  business:
+    - name: "business-strategy-planning"
+      category: "business"
+      description: "Business plan & strategy formulation"
+      phases:
+        - "Self-analysis"
+        - "Market research"
+        - "Persona design"
+        - "Product concept"
+
+    - name: "content-marketing-strategy"
+      category: "business"
+      description: "Content & SNS strategy"
+      phases:
+        - "Content creation"
+        - "SNS strategy"
+        - "YouTube optimization"
+
+    - name: "market-research-analysis"
+      category: "business"
+      description: "Market research (20+ companies)"
+      tools:
+        - "Competitor analysis"
+        - "TAM/SAM/SOM calculation"
+
+    - name: "sales-crm-management"
+      category: "business"
+      description: "Sales process & customer management"
+      features:
+        - "Lead generation"
+        - "Sales funnel optimization"
+        - "Customer success"
+
+    - name: "growth-analytics-dashboard"
+      category: "business"
+      description: "KPI tracking & PDCA cycle"
+      metrics:
+        - "CAC"
+        - "LTV"
+        - "NRR"
+        - "Churn rate"
+
+  specialized:
+    - name: "voicevox"
+      category: "specialized"
+      description: "Generate Yukkuri-style voice narration from Git commits using VOICEVOX Engine"
+      features:
+        - "Text-to-speech conversion"
+        - "Queue-based synthesis"
+        - "Git commit narration"
+
+    - name: "lark-integration"
+      category: "specialized"
+      description: "Lark (Feishu) integration via MCP"
+      features:
+        - "Message sending"
+        - "Document management"
+        - "Bot operations"
+
+    - name: "knowledge-search"
+      category: "specialized"
+      description: "Qdrant vector search for knowledge retrieval"
+      features:
+        - "Semantic search"
+        - "Context retrieval"
+        - "Knowledge insertion"

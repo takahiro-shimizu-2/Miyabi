@@ -1,0 +1,523 @@
+{% extends "base.yaml.j2" %}
+
+{% block header %}
+# ═══════════════════════════════════════════════════════════════════════════
+# Miyabi World Definition - Generated YAML
+# ═══════════════════════════════════════════════════════════════════════════
+{% endblock %}
+
+{% block metadata %}
+# Generated from: miyabi_def/templates/world_definition.yaml.j2
+# Variables from: miyabi_def/variables/world_definition.yaml
+# Generator: miyabi_def/generate.py
+# Format: Ω-System World Space Definition
+# Version: {{ world.metadata.world_version }}
+{% endblock %}
+
+{% block content %}
+# ═══════════════════════════════════════════════════════════════════════════
+# Ω: I × W → R
+#
+# W (World Space): Complete definition of the execution environment
+#
+# Mathematical Representation:
+#   Ψ(W) = ∫[t₀→t₁] ∇(s, c, r, e) dt
+#
+# Components:
+#   t: Temporal Dimension (時間次元)
+#   s: Spatial Dimension (空間次元)
+#   c: Contextual Dimension (文脈次元)
+#   r: Resources Dimension (リソース次元)
+#   e: Environmental Dimension (環境次元)
+# ═══════════════════════════════════════════════════════════════════════════
+
+world_definition:
+  # ─────────────────────────────────────────────────────────────────────────
+  # § 1. World Metadata
+  # ─────────────────────────────────────────────────────────────────────────
+  metadata:
+    world_id: "{{ world.metadata.world_id }}"
+    world_name: "{{ world.metadata.world_name }}"
+    world_version: "{{ world.metadata.world_version }}"
+    format_version: "{{ world.metadata.format_version }}"
+    created_at: "{{ world.metadata.created_at }}"
+    last_updated: "{{ world.metadata.last_updated }}"
+    maintainer: "{{ world.metadata.maintainer }}"
+    license: "{{ world.metadata.license }}"
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # § 2. Temporal Dimension (t)
+  # ─────────────────────────────────────────────────────────────────────────
+  temporal:
+    current_time:
+      format: "{{ world.temporal.current_time.format }}"
+      timezone: "{{ world.temporal.current_time.timezone }}"
+      example: "{{ world.temporal.current_time.example }}"
+
+    horizon:
+      project_duration: "{{ world.temporal.horizon.project_duration }}"
+      sprint_duration: "{{ world.temporal.horizon.sprint_duration }}"
+      task_timeout: "{{ world.temporal.horizon.task_timeout }}"
+
+    constraints:
+      business_hours: "{{ world.temporal.constraints.business_hours }}"
+      maintenance_window: "{{ world.temporal.constraints.maintenance_window }}"
+      deployment_window: "{{ world.temporal.constraints.deployment_window }}"
+
+    timezones:
+      primary: "{{ world.temporal.timezones.primary }}"
+      secondary:
+{% for tz in world.temporal.timezones.secondary %}
+        - "{{ tz }}"
+{% endfor %}
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # § 3. Spatial Dimension (s)
+  # ─────────────────────────────────────────────────────────────────────────
+  spatial:
+    physical:
+      location: "{{ world.spatial.physical.location }}"
+      datacenter: "{{ world.spatial.physical.datacenter }}"
+      edge_locations:
+{% for edge in world.spatial.physical.edge_locations %}
+        - "{{ edge }}"
+{% endfor %}
+
+    digital:
+      repository:
+        primary: "{{ world.spatial.digital.repository.primary }}"
+        public: "{{ world.spatial.digital.repository.public }}"
+        private: "{{ world.spatial.digital.repository.private }}"
+
+      deployment:
+        production: "{{ world.spatial.digital.deployment.production }}"
+        staging: "{{ world.spatial.digital.deployment.staging }}"
+        preview: "{{ world.spatial.digital.deployment.preview }}"
+
+      api:
+        rest: "{{ world.spatial.digital.api.rest }}"
+        graphql: "{{ world.spatial.digital.api.graphql }}"
+        websocket: "{{ world.spatial.digital.api.websocket }}"
+
+    abstract:
+      conceptual_layers:
+{% for key, value in world.spatial.abstract.conceptual_layers.items() %}
+        {{ key }}: "{{ value }}"
+{% endfor %}
+
+      mathematical_spaces:
+{% for key, value in world.spatial.abstract.mathematical_spaces.items() %}
+        {{ key }}: "{{ value }}"
+{% endfor %}
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # § 4. Contextual Dimension (c)
+  # ─────────────────────────────────────────────────────────────────────────
+  contextual:
+    domain:
+      primary: "{{ world.contextual.domain.primary }}"
+      sub_domains:
+{% for domain in world.contextual.domain.sub_domains %}
+        - "{{ domain }}"
+{% endfor %}
+
+    user:
+      types:
+{% for type in world.contextual.user.types %}
+        - "{{ type }}"
+{% endfor %}
+
+      personas:
+{% for persona in world.contextual.user.personas %}
+        - name: "{{ persona.name }}"
+          description: "{{ persona.description }}"
+          needs:
+{% for need in persona.needs %}
+            - "{{ need }}"
+{% endfor %}
+{% endfor %}
+
+    system:
+      project_type: "{{ world.contextual.system.project_type }}"
+
+      architecture:
+        primary: "{{ world.contextual.system.architecture.primary }}"
+        patterns:
+{% for pattern in world.contextual.system.architecture.patterns %}
+          - "{{ pattern }}"
+{% endfor %}
+
+      tech_stack:
+        backend:
+          primary: "{{ world.contextual.system.tech_stack.backend.primary }}"
+          frameworks:
+{% for fw in world.contextual.system.tech_stack.backend.frameworks %}
+            - "{{ fw }}"
+{% endfor %}
+
+        frontend:
+          primary: "{{ world.contextual.system.tech_stack.frontend.primary }}"
+          frameworks:
+{% for fw in world.contextual.system.tech_stack.frontend.frameworks %}
+            - "{{ fw }}"
+{% endfor %}
+
+        infrastructure:
+          cloud: "{{ world.contextual.system.tech_stack.infrastructure.cloud }}"
+          edge: "{{ world.contextual.system.tech_stack.infrastructure.edge }}"
+          database: "{{ world.contextual.system.tech_stack.infrastructure.database }}"
+
+        ai:
+          llms:
+{% for llm in world.contextual.system.tech_stack.ai.llms %}
+            - "{{ llm }}"
+{% endfor %}
+          tools:
+{% for tool in world.contextual.system.tech_stack.ai.tools %}
+            - "{{ tool }}"
+{% endfor %}
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # § 5. Resources Dimension (r)
+  # ─────────────────────────────────────────────────────────────────────────
+  resources:
+    compute:
+      local:
+        device: "{{ world.resources.compute.local.device }}"
+        cpu: "{{ world.resources.compute.local.cpu }}"
+        ram: "{{ world.resources.compute.local.ram }}"
+        storage: "{{ world.resources.compute.local.storage }}"
+        gpu: "{{ world.resources.compute.local.gpu }}"
+
+      cloud:
+        gcp:
+          compute_engine: "{{ world.resources.compute.cloud.gcp.compute_engine }}"
+          cloud_run: "{{ world.resources.compute.cloud.gcp.cloud_run }}"
+          cloud_build: "{{ world.resources.compute.cloud.gcp.cloud_build }}"
+
+        vercel:
+          edge_functions: "{{ world.resources.compute.cloud.vercel.edge_functions }}"
+          serverless_functions: "{{ world.resources.compute.cloud.vercel.serverless_functions }}"
+
+      limits:
+        max_parallel_agents: {{ world.resources.compute.limits.max_parallel_agents }}
+        max_worktrees: {{ world.resources.compute.limits.max_worktrees }}
+        max_file_descriptors: {{ world.resources.compute.limits.max_file_descriptors }}
+
+    human:
+      team_size: {{ world.resources.human.team_size }}
+      ai_assistants:
+{% for assistant in world.resources.human.ai_assistants %}
+        - name: "{{ assistant.name }}"
+          role: "{{ assistant.role }}"
+          availability: "{{ assistant.availability }}"
+{% endfor %}
+
+      external_contributors: "{{ world.resources.human.external_contributors }}"
+
+    information:
+      documentation:
+        internal: "{{ world.resources.information.documentation.internal }}"
+        external: "{{ world.resources.information.documentation.external }}"
+        generated: "{{ world.resources.information.documentation.generated }}"
+
+      knowledge_base:
+        vector_db: "{{ world.resources.information.knowledge_base.vector_db }}"
+        embeddings: "{{ world.resources.information.knowledge_base.embeddings }}"
+        documents: "{{ world.resources.information.knowledge_base.documents }}"
+
+      external_sources:
+{% for source in world.resources.information.external_sources %}
+        - "{{ source }}"
+{% endfor %}
+
+    financial:
+      budget:
+        monthly: "{{ world.resources.financial.budget.monthly }}"
+        breakdown:
+{% for key, value in world.resources.financial.budget.breakdown.items() %}
+          {{ key }}: "{{ value }}"
+{% endfor %}
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # § 6. Environmental Dimension (e)
+  # ─────────────────────────────────────────────────────────────────────────
+  environmental:
+    load:
+      current:
+        cpu_usage: "{{ world.environmental.load.current.cpu_usage }}"
+        ram_usage: "{{ world.environmental.load.current.ram_usage }}"
+        disk_usage: "{{ world.environmental.load.current.disk_usage }}"
+
+      thresholds:
+        cpu_alert: "{{ world.environmental.load.thresholds.cpu_alert }}"
+        ram_alert: "{{ world.environmental.load.thresholds.ram_alert }}"
+        disk_alert: "{{ world.environmental.load.thresholds.disk_alert }}"
+
+      monitoring:
+        tool: "{{ world.environmental.load.monitoring.tool }}"
+        metrics:
+{% for metric in world.environmental.load.monitoring.metrics %}
+          - "{{ metric }}"
+{% endfor %}
+        alerts: "{{ world.environmental.load.monitoring.alerts }}"
+
+    dependencies:
+      rust_crates: "{{ world.environmental.dependencies.rust_crates }}"
+      critical_crates:
+{% for crate in world.environmental.dependencies.critical_crates %}
+        - "{{ crate }}"
+{% endfor %}
+
+      npm_packages: "{{ world.environmental.dependencies.npm_packages }}"
+      critical_packages:
+{% for pkg in world.environmental.dependencies.critical_packages %}
+        - "{{ pkg }}"
+{% endfor %}
+
+      system_dependencies:
+{% for dep in world.environmental.dependencies.system_dependencies %}
+        - "{{ dep }}"
+{% endfor %}
+
+    constraints:
+      technical:
+        rust_edition: "{{ world.environmental.constraints.technical.rust_edition }}"
+        msrv: "{{ world.environmental.constraints.technical.msrv }}"
+        node_version: "{{ world.environmental.constraints.technical.node_version }}"
+        typescript_version: "{{ world.environmental.constraints.technical.typescript_version }}"
+
+      business:
+        license: "{{ world.environmental.constraints.business.license }}"
+        pricing: "{{ world.environmental.constraints.business.pricing }}"
+        support: "{{ world.environmental.constraints.business.support }}"
+
+      legal:
+        gdpr_compliance: {{ world.environmental.constraints.legal.gdpr_compliance | lower }}
+        ccpa_compliance: {{ world.environmental.constraints.legal.ccpa_compliance | lower }}
+        data_residency: "{{ world.environmental.constraints.legal.data_residency }}"
+
+      security:
+        vulnerability_scanning: "{{ world.environmental.constraints.security.vulnerability_scanning }}"
+        dependency_review: "{{ world.environmental.constraints.security.dependency_review }}"
+        secrets_scanning: "{{ world.environmental.constraints.security.secrets_scanning }}"
+        code_scanning: "{{ world.environmental.constraints.security.code_scanning }}"
+
+    external:
+      api_rate_limits:
+{% for api, limits in world.environmental.external.api_rate_limits.items() %}
+        {{ api }}:
+{% for key, value in limits.items() %}
+          {{ key }}: "{{ value }}"
+{% endfor %}
+{% endfor %}
+
+      service_availability:
+        target_uptime: "{{ world.environmental.external.service_availability.target_uptime }}"
+        sla: "{{ world.environmental.external.service_availability.sla }}"
+
+      geographic:
+        primary_region: "{{ world.environmental.external.geographic.primary_region }}"
+        supported_regions:
+{% for region in world.environmental.external.geographic.supported_regions %}
+          - "{{ region }}"
+{% endfor %}
+        restricted_regions: {{ world.environmental.external.geographic.restricted_regions }}
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # § 7. State Management
+  # ─────────────────────────────────────────────────────────────────────────
+  state:
+    project:
+      phase: "{{ world.state.project.phase }}"
+      progress: "{{ world.state.project.progress }}"
+      next_milestone: "{{ world.state.project.next_milestone }}"
+
+    system:
+      health: "{{ world.state.system.health }}"
+      last_build: "{{ world.state.system.last_build }}"
+      last_deploy: "{{ world.state.system.last_deploy }}"
+
+    git:
+      branch: "{{ world.state.git.branch }}"
+      last_commit: "{{ world.state.git.last_commit }}"
+      open_prs: {{ world.state.git.open_prs }}
+      open_issues: {{ world.state.git.open_issues }}
+
+    worktrees:
+      active: {{ world.state.worktrees.active }}
+      max_concurrent: {{ world.state.worktrees.max_concurrent }}
+      cleanup_policy: "{{ world.state.worktrees.cleanup_policy }}"
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # § 8. Ω-System Integration
+  # ─────────────────────────────────────────────────────────────────────────
+  omega_system:
+    signature: "{{ world.omega_system.signature }}"
+
+    execution_engine:
+      phases:
+{% for phase_key, phase_data in world.omega_system.execution_engine.phases.items() %}
+        {{ phase_key }}:
+          input: "{{ phase_data.input }}"
+          output: "{{ phase_data.output }}"
+          handler: "{{ phase_data.handler }}"
+{% endfor %}
+
+    task_algebra:
+{% for key, value in world.omega_system.task_algebra.items() %}
+      {{ key }}: "{{ value }}"
+{% endfor %}
+
+    quality_metrics:
+      formula: "{{ world.omega_system.quality_metrics.formula }}"
+      weights:
+{% for key, value in world.omega_system.quality_metrics.weights.items() %}
+        {{ key }}: {{ value }}
+{% endfor %}
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # § 9. Evolution & Adaptation
+  # ─────────────────────────────────────────────────────────────────────────
+  evolution:
+    meta_learning:
+      enabled: {{ world.evolution.meta_learning.enabled | lower }}
+      learning_rate: {{ world.evolution.meta_learning.learning_rate }}
+      pattern_extraction: "{{ world.evolution.meta_learning.pattern_extraction }}"
+      strategy_optimization: "{{ world.evolution.meta_learning.strategy_optimization }}"
+
+    adaptation:
+      world_state_monitoring: "{{ world.evolution.adaptation.world_state_monitoring }}"
+      auto_scaling: {{ world.evolution.adaptation.auto_scaling | lower }}
+      resource_reallocation: "{{ world.evolution.adaptation.resource_reallocation }}"
+
+    strategy:
+      mutation_rate: {{ world.evolution.strategy.mutation_rate }}
+      selection: "{{ world.evolution.strategy.selection }}"
+      elitism: {{ world.evolution.strategy.elitism | lower }}
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # § 10. Governance
+  # ─────────────────────────────────────────────────────────────────────────
+  governance:
+    decision_making:
+      autonomous_threshold: {{ world.governance.decision_making.autonomous_threshold }}
+      human_review_threshold: {{ world.governance.decision_making.human_review_threshold }}
+      reject_threshold: {{ world.governance.decision_making.reject_threshold }}
+
+    label_system:
+      categories: {{ world.governance.label_system.categories }}
+      total_labels: {{ world.governance.label_system.total_labels }}
+      auto_labeling: {{ world.governance.label_system.auto_labeling | lower }}
+
+    workflows:
+      total: {{ world.governance.workflows.total }}
+      stages: {{ world.governance.workflows.stages }}
+      automation_level: "{{ world.governance.workflows.automation_level }}"
+
+    agents:
+      total: {{ world.governance.agents.total }}
+      coding: {{ world.governance.agents.coding }}
+      business: {{ world.governance.agents.business }}
+      orchestration: "{{ world.governance.agents.orchestration }}"
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # § 11. Observability
+  # ─────────────────────────────────────────────────────────────────────────
+  observability:
+    logging:
+      level: "{{ world.observability.logging.level }}"
+      format: "{{ world.observability.logging.format }}"
+      destinations:
+{% for dest in world.observability.logging.destinations %}
+        - "{{ dest }}"
+{% endfor %}
+
+    metrics:
+      system:
+{% for metric in world.observability.metrics.system %}
+        - "{{ metric }}"
+{% endfor %}
+      application:
+{% for metric in world.observability.metrics.application %}
+        - "{{ metric }}"
+{% endfor %}
+      business:
+{% for metric in world.observability.metrics.business %}
+        - "{{ metric }}"
+{% endfor %}
+
+    tracing:
+      enabled: {{ world.observability.tracing.enabled | lower }}
+      tool: "{{ world.observability.tracing.tool }}"
+      sampling_rate: {{ world.observability.tracing.sampling_rate }}
+
+    alerting:
+      channels:
+{% for channel in world.observability.alerting.channels %}
+        - "{{ channel }}"
+{% endfor %}
+      severity_levels:
+{% for level in world.observability.alerting.severity_levels %}
+        - "{{ level }}"
+{% endfor %}
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # § 12. Extensibility
+  # ─────────────────────────────────────────────────────────────────────────
+  extensibility:
+    plugins:
+      supported: {{ world.extensibility.plugins.supported | lower }}
+      plugin_dir: "{{ world.extensibility.plugins.plugin_dir }}"
+      marketplace: "{{ world.extensibility.plugins.marketplace }}"
+
+    custom_agents:
+      supported: {{ world.extensibility.custom_agents.supported | lower }}
+      agent_dir: "{{ world.extensibility.custom_agents.agent_dir }}"
+      registration: "{{ world.extensibility.custom_agents.registration }}"
+
+    custom_skills:
+      supported: {{ world.extensibility.custom_skills.supported | lower }}
+      skill_dir: "{{ world.extensibility.custom_skills.skill_dir }}"
+      activation: "{{ world.extensibility.custom_skills.activation }}"
+
+    mcp_integration:
+      enabled: {{ world.extensibility.mcp_integration.enabled | lower }}
+      servers:
+{% for server in world.extensibility.mcp_integration.servers %}
+        - "{{ server }}"
+{% endfor %}
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # § 13. Future Roadmap
+  # ─────────────────────────────────────────────────────────────────────────
+  roadmap:
+{% for phase_key, phase_data in world.roadmap.items() %}
+    {{ phase_key }}:
+      focus: "{{ phase_data.focus }}"
+      features:
+{% for feature in phase_data.features %}
+        - "{{ feature }}"
+{% endfor %}
+{% endfor %}
+
+{% endblock %}
+
+{% block footer %}
+# ═══════════════════════════════════════════════════════════════════════════
+# End of World Definition
+# ═══════════════════════════════════════════════════════════════════════════
+#
+# This World (W) is used in: Ω: I × W → R
+#
+# Next steps:
+#   1. Define Intent (I) - User's goal and preferences
+#   2. Execute Ω-System - Generate and execute workflow
+#   3. Produce Result (R) - Deliverable artifacts
+#   4. Learn from execution - Update knowledge base (θ₆)
+#
+# For more information:
+#   - See: miyabi_def/UNIVERSAL_SYSTEM.md
+#   - See: miyabi_def/generated/universal_task_execution.yaml
+# ═══════════════════════════════════════════════════════════════════════════
+{% endblock %}

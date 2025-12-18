@@ -1,0 +1,21 @@
+@startuml miyabi_agents
+
+title Miyabi Agent Architecture (21 Agents: 7 Coding + 14 Business)
+
+package "Coding Agents (7)" {
+  component [CoordinatorAgent] as CoordinatorAgent
+  component [CodeGenAgent] as CodeGenAgent
+  note right of CodeGenAgent: AI-driven code generation with Claude So
+  component [ReviewAgent] as ReviewAgent
+  note right of ReviewAgent: Code quality assessment and security sca
+  component [IssueAgent] as IssueAgent
+  note right of IssueAgent: Issue analysis and 57-label system class
+  component [PRAgent] as PRAgent
+  note right of PRAgent: Pull Request automation with Conventiona
+  component [DeploymentAgent] as DeploymentAgent
+  note right of DeploymentAgent: CI/CD deployment with Firebase auto-depl
+  component [RefresherAgent] as RefresherAgent
+  note right of RefresherAgent: Issue state monitoring and auto-update
+}
+
+@enduml

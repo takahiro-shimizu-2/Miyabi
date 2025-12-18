@@ -1,0 +1,41 @@
+# Miyabi Global Variables
+# These variables are used across all Jinja2 templates
+# Version: 1.0.0
+
+global:
+  project:
+    name: "Miyabi"
+    full_name: "Miyabi - Autonomous Development Framework"
+    version: "0.1.1"
+    codename: "Water Spider"
+    edition: "Rust 2021"
+
+  repository:
+    primary: "https://github.com/ShunsukeHayashi/Miyabi"
+    organization: "ShunsukeHayashi"
+    private_owner: "customer-cloud"
+    private_repo: "miyabi-private"
+    local_path: "/Users/shunsuke/Dev/01-miyabi/_core/miyabi-private"
+
+  metadata:
+    generated_at: "2025-10-31T19:54:00+09:00"
+    format_version: "1.0.0"
+    schema: "Miyabi Definition with Jinja2"
+
+  rust:
+    toolchain_version: "1.89.0"
+    edition: "2021"
+    channel: "stable"
+
+  counts:
+    crates: 15
+    agents_total: 21
+    agents_coding: 7
+    agents_business: 14
+    skills: 18
+    labels: 57
+    entities: 14
+    relations: 39
+    templates: 88
+    workflows: 13
+    worktrees_active: 12

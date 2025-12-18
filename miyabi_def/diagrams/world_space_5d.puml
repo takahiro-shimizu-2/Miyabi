@@ -1,0 +1,291 @@
+@startuml World Space - 5-Dimensional Structure
+!theme blueprint
+skinparam backgroundColor #F8F9FA
+
+title World Space (𝒲) - 5-Dimensional Structure\nΨ(W) = ∫[t₀→t₁] ∇(s, c, r, e) dt\nVersion 1.0.0
+
+' === World Space Container ===
+
+package "**𝒲 (World Space)**\n(𝒲, τ_W, d_W) | (𝒲, Σ_W, μ_W)" as world_space #LightCyan {
+
+  ' === Dimension 1: Temporal ===
+
+  package "**§1 Temporal Dimension (t)**\nt: ℝ⁺ × Constraints_t → Temporal" as temporal #LightYellow {
+
+    object "Time Components" as t_comp {
+      **Current Time**
+      • now: DateTime
+      • timezone: String
+      • offset: Duration
+      --
+      **Time Horizon**
+      • planning_horizon: Duration
+      • execution_horizon: Duration
+      • evaluation_horizon: Duration
+      --
+      **Constraints**
+      • deadlines: Vec<DateTime>
+      • schedules: Vec<TimeSlot>
+      • business_hours: TimeRange
+    }
+
+    object "Temporal Metrics" as t_metrics {
+      **Measurements**
+      • elapsed_time: Duration
+      • remaining_time: Duration
+      • time_utilization: f64
+      --
+      **Historical**
+      • past_executions: Vec<Execution>
+      • performance_trends: TimeSeries
+    }
+  }
+
+  ' === Dimension 2: Spatial ===
+
+  package "**§2 Spatial Dimension (s)**\ns: Physical × Digital × Abstract → Spatial" as spatial #LightGreen {
+
+    object "Physical Space" as s_phys {
+      **Location**
+      • datacenter: String
+      • region: String
+      • availability_zone: String
+      --
+      **Network**
+      • latency: Milliseconds
+      • bandwidth: Mbps
+      • topology: Graph
+    }
+
+    object "Digital Space" as s_dig {
+      **Repository**
+      • git_repo: URL
+      • worktrees: Vec<WorktreePath>
+      • branches: Vec<Branch>
+      --
+      **Filesystem**
+      • project_root: PathBuf
+      • working_dir: PathBuf
+      • cache_dir: PathBuf
+    }
+
+    object "Abstract Space" as s_abs {
+      **Conceptual**
+      • domain_model: EntityRelationModel
+      • ontology: OntologyGraph
+      • semantic_space: VectorSpace
+      --
+      **Knowledge**
+      • knowledge_base: KnowledgeGraph
+      • embeddings: EmbeddingSpace
+    }
+  }
+
+  ' === Dimension 3: Contextual ===
+
+  package "**§3 Contextual Dimension (c)**\nc: Domain × User × System → Contextual" as contextual #LightBlue {
+
+    object "Domain Context" as c_domain {
+      **Project**
+      • name: "Miyabi"
+      • version: "0.1.1"
+      • language: "Rust 2021"
+      --
+      **Business**
+      • industry: Software
+      • use_case: Autonomous Development
+      • stakeholders: Vec<Stakeholder>
+    }
+
+    object "User Context" as c_user {
+      **Identity**
+      • user_id: UUID
+      • device: String
+      • session: SessionID
+      --
+      **Preferences**
+      • quality_priority: f64
+      • speed_priority: f64
+      • cost_priority: f64
+      --
+      **History**
+      • past_intents: Vec<Intent>
+      • interaction_patterns: Patterns
+    }
+
+    object "System Context" as c_sys {
+      **Runtime**
+      • os: String
+      • rust_version: String
+      • dependencies: Vec<Dependency>
+      --
+      **State**
+      • current_tasks: Vec<Task>
+      • active_agents: Vec<Agent>
+      • resource_usage: ResourceMetrics
+    }
+  }
+
+  ' === Dimension 4: Resources ===
+
+  package "**§4 Resources Dimension (r)**\nr: Compute × Human × Information × Financial → Resources" as resources #LightPink {
+
+    object "Compute Resources" as r_comp {
+      **CPU**
+      • cores: usize
+      • utilization: f64
+      • throttling: Option<f64>
+      --
+      **Memory**
+      • total: Bytes
+      • available: Bytes
+      • usage: f64
+      --
+      **Storage**
+      • disk_space: Bytes
+      • iops: usize
+    }
+
+    object "Human Resources" as r_human {
+      **Agents**
+      • total_agents: 21
+      • active_agents: usize
+      • agent_capacity: Vec<Capacity>
+      --
+      **Attention**
+      • focus_budget: f64
+      • context_switches: usize
+    }
+
+    object "Information Resources" as r_info {
+      **Data**
+      • knowledge_base_size: Bytes
+      • embeddings_count: usize
+      • cache_hit_rate: f64
+      --
+      **Context**
+      • context_window: usize
+      • token_budget: usize
+      • token_usage: usize
+    }
+
+    object "Financial Resources" as r_fin {
+      **Budget**
+      • total_budget: Currency
+      • spent: Currency
+      • remaining: Currency
+      --
+      **Costs**
+      • api_cost: Currency
+      • compute_cost: Currency
+      • storage_cost: Currency
+    }
+  }
+
+  ' === Dimension 5: Environmental ===
+
+  package "**§5 Environmental Dimension (e)**\ne: Load × Dependencies × Constraints × External → Environmental" as environmental #Lavender {
+
+    object "System Load" as e_load {
+      **Current Load**
+      • cpu_load: f64
+      • memory_pressure: f64
+      • disk_io: f64
+      --
+      **Network Load**
+      • bandwidth_usage: f64
+      • connection_pool: usize
+      • request_rate: f64
+    }
+
+    object "Dependencies" as e_deps {
+      **External Services**
+      • github_api: ServiceStatus
+      • llm_api: ServiceStatus
+      • database: ServiceStatus
+      --
+      **Libraries**
+      • crates: Vec<Crate>
+      • versions: Vec<Version>
+      • compatibility: Matrix
+    }
+
+    object "Constraints" as e_constraints {
+      **Technical**
+      • rust_edition: "2021"
+      • min_rust_version: "1.89.0"
+      • platform: Vec<String>
+      --
+      **Business**
+      • sla: SLA
+      • compliance: Vec<Standard>
+      • policies: Vec<Policy>
+    }
+
+    object "External Environment" as e_ext {
+      **Market**
+      • competition: Vec<Competitor>
+      • trends: Vec<Trend>
+      --
+      **Ecosystem**
+      • community: Community
+      • standards: Vec<Standard>
+      • best_practices: Vec<Practice>
+    }
+  }
+}
+
+' === Relationships between dimensions ===
+
+temporal --> spatial : constrains
+temporal --> resources : allocates over time
+spatial --> contextual : provides location
+contextual --> resources : determines needs
+resources --> environmental : affects load
+environmental --> temporal : impacts timing
+
+' === Integration Formula ===
+
+note top of world_space
+  **World State Function**
+  W(t) = ⟨t, s, c, r, e⟩
+
+  **Evolution Equation**
+  ∂W/∂t = F(W, I, ∇W)
+
+  **Measure Functional**
+  Ψ(W) = ∫[t₀→t₁] ∇(s, c, r, e) dt
+end note
+
+' === Ω Function Integration ===
+
+note bottom of world_space
+  **Ω Function Integration**
+
+  Ω: ℐ × 𝒲 → ℛ
+
+  Each phase uses specific dimensions:
+  • θ₁ (Understanding): Uses c (context)
+  • θ₂ (Generation): Uses t (time), s (space)
+  • θ₃ (Allocation): Uses r (resources)
+  • θ₄ (Execution): Uses e (environment)
+  • θ₅ (Integration): Uses all dimensions
+  • θ₆ (Learning): Updates W
+end note
+
+legend right
+  |= Dimension |= Symbol |= Space |
+  | Temporal | t | ℝ⁺ × Constraints_t |
+  | Spatial | s | Phys × Dig × Abs |
+  | Contextual | c | Dom × User × Sys |
+  | Resources | r | Comp × Hum × Info × Fin |
+  | Environmental | e | Load × Deps × Cons × Ext |
+
+  |= Operators |= Meaning |
+  | ∇ | Gradient/Change |
+  | ∫ | Integration over time |
+  | ⊗ | Tensor product |
+  | × | Cartesian product |
+endlegend
+
+@enduml

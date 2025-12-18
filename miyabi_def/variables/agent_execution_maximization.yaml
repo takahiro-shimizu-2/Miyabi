@@ -1,0 +1,206 @@
+# Λ-System Variable Definitions
+# Provides structured data for agent_execution_maximization.yaml.j2
+
+lambda_system:
+  control:
+    state:
+      init: "defined"
+      transition: "deterministic"
+      term: "guaranteed"
+    process:
+      sequence: "strict_order"
+      sync: "barrier_based"
+      resource: "reservation"
+    monitor:
+      observe: "full"
+      trace: "complete"
+      debug: "enabled"
+    pre_conditions:
+      - "Worktree is clean and up to date"
+      - "Required agents registered in configuration"
+      - "Environment variables validated"
+    invariants:
+      - "No uncontrolled side effects during execution"
+      - "Agent assignments remain deterministic"
+      - "Audit trail is written for every step"
+    post_conditions:
+      - "All tasks transitioned to terminal state"
+      - "Deliverable stored with metadata"
+      - "Worktree cleanup protocol executed"
+
+  roles:
+    - name: "CoordinatorAgent"
+      capability: "Task decomposition and dependency resolution"
+      responsibility: "Generate execution DAG and assign agents"
+      authority: "Architectural decisions, escalation to TechLead"
+      preconditions: ["Issue triaged", "Labels assigned"]
+      postconditions: ["Plans.md updated", "Tasks registered"]
+      dependencies: []
+    - name: "IssueAgent"
+      capability: "Issue analysis and labeling"
+      responsibility: "Ensure correct taxonomy and metadata"
+      authority: "Label decisions, escalation to Product Owner"
+      preconditions: ["Issue description available"]
+      postconditions: ["Labels applied", "Analysis summary generated"]
+      dependencies: ["CoordinatorAgent"]
+    - name: "CodeGenAgent"
+      capability: "Implementation and automated test generation"
+      responsibility: "Apply code changes via delegated skills"
+      authority: "Refactor within scope, escalate architectural risk"
+      preconditions: ["Execution context ready", "Dependencies resolved"]
+      postconditions: ["Changes staged", "Tests implemented"]
+      dependencies: ["IssueAgent"]
+    - name: "ReviewAgent"
+      capability: "Static analysis and quality scoring"
+      responsibility: "Run clippy/check/audit, produce quality report"
+      authority: "Block merge on quality regression"
+      preconditions: ["Code changes available"]
+      postconditions: ["QualityReport stored", "Issues flagged"]
+      dependencies: ["CodeGenAgent"]
+    - name: "PRAgent"
+      capability: "Pull request authoring"
+      responsibility: "Assemble changelog, ensure templates completed"
+      authority: "Open PR, request reviewers"
+      preconditions: ["Quality report pass"]
+      postconditions: ["PR created", "Reviewers assigned"]
+      dependencies: ["ReviewAgent"]
+    - name: "DeploymentAgent"
+      capability: "CI/CD orchestration"
+      responsibility: "Trigger pipelines, monitor deployment status"
+      authority: "Promote artifacts, rollback if needed"
+      preconditions: ["PR approved", "Release window open"]
+      postconditions: ["Deployment report archived"]
+      dependencies: ["PRAgent"]
+
+  context:
+    essential:
+      - "Issue description and acceptance criteria"
+      - "Relevant source files and modules"
+      - "Existing regression tests and fixtures"
+      - "Current environment constraints"
+    supportive:
+      - "Historical quality reports"
+      - "Related roadmap items"
+      - "Team communication summaries"
+    necessity_threshold: 0.15
+    sufficiency_threshold: 0.95
+    task:
+      definition: "Execute autonomous agent workflow to deliver scoped change"
+    input:
+      schema: "ExecutionContextSchema"
+      constraints:
+        - "Context must reference canonical repository paths"
+        - "All environment variables documented"
+    output:
+      schema: "ExecutionResultSchema"
+      requirements:
+        - "Records agent states and timestamps"
+        - "Links to generated artifacts"
+    domain:
+      ontology: "miyabi_agent_system"
+      rules:
+        - "CoordinatorAgent always executes first"
+        - "ReviewAgent cannot run before CodeGenAgent success"
+        - "DeploymentAgent requires ReviewAgent score ≥ 90"
+      examples:
+        - "Issue #451 unit test expansion"
+        - "Issue #449 clippy integration"
+    constraints:
+      time: "<= 60 minutes"
+      resource: "<= 1GB memory per agent execution"
+      quality: "Quality score must remain ≥ 85"
+
+  tools:
+    available:
+      - name: "agent-execution"
+        category: "skill"
+        capabilities: ["run_agents", "manage_worktrees", "record_logs"]
+        preconditions: ["Coordinator plan exists"]
+        postconditions: ["Execution logs stored", "Plan status updated"]
+        cost: "medium"
+      - name: "rust-development"
+        category: "skill"
+        capabilities: ["cargo_build", "cargo_test", "cargo_clippy"]
+        preconditions: ["Rust toolchain installed"]
+        postconditions: ["Build artifacts validated", "Diagnostics captured"]
+        cost: "medium"
+      - name: "documentation-generation"
+        category: "skill"
+        capabilities: ["summaries", "architecture_updates"]
+        preconditions: ["Context7 synced"]
+        postconditions: ["Docs appended", "Knowledge base updated"]
+      - name: "git-workflow"
+        category: "skill"
+        capabilities: ["branch_manage", "commit", "push"]
+        preconditions: ["Repository clean state"]
+        postconditions: ["Branches updated", "Commit history recorded"]
+    requirements:
+      functional:
+        - "Support delegated execution via MCP"
+        - "Ensure deterministic tooling versions"
+        - "Provide rollback capability"
+      non_functional:
+        - "Logging coverage ≥ 95%"
+        - "Execution telemetry exported to .ai/logs"
+        - "Secrets never written to repository"
+
+  deliverable:
+    id: "deliverable_lambda_system"
+    name: "Lambda-System Execution Blueprint"
+    version: "1.0.0"
+    description: "Operational specification for maximizing autonomous agent execution"
+    audience: "Miyabi maintainers and automation engineers"
+    purpose: "Standardize agent orchestration with explicit control guarantees"
+    format: "YAML"
+    schema: "LambdaSystemSpec"
+    examples:
+      - "Lambda blueprint for issue triage automation"
+      - "Lambda blueprint for regression fixes"
+      - "Lambda blueprint for release promotion"
+    metrics:
+      - name: "quality_score"
+        type: "percentage"
+        target: ">= 90"
+        measurement: "ReviewAgent quality score"
+      - name: "execution_time"
+        type: "duration"
+        target: "<= 45 minutes"
+        measurement: "Coordinator start to deployment completion"
+    deadline: "2025-11-15T23:59:59+09:00"
+    milestones:
+      - name: "Spec Draft"
+        date: "2025-11-05"
+        criteria: "Control and context sections approved"
+      - name: "Integration Test"
+        date: "2025-11-10"
+        criteria: "Dry run executed with mock issue"
+      - name: "Production Adoption"
+        date: "2025-11-15"
+        criteria: "Applied to two real issues"
+    quality:
+      completeness: "All five components documented"
+      accuracy: "Verified against live agent runs"
+      consistency: "Aligned with miyabi_def canonical definitions"
+    acceptance:
+      - "Control invariants verified in coordinator logs"
+      - "Role sequence executed without deadlocks"
+      - "Context size under 4k tokens"
+      - "Tools audit trail captured"
+      - "Deliverable stored in knowledge base"
+    validation:
+      tests:
+        - "Dry run #1 with IssueAgent + CodeGenAgent"
+        - "Dry run #2 with ReviewAgent escalation"
+        - "Dry run #3 end-to-end deployment rehearsal"
+      reviewers:
+        - "TechLead"
+        - "CoordinatorAgent maintainer"
+        - "Automation QA"
+      threshold: "All reviewers sign-off required"
+
+  monitoring:
+    progress: 0
+    current_role: "CoordinatorAgent"
+    context_size: "0"
+    tools_used: "[]"
+    deliverable_status: "pending"

@@ -1,0 +1,137 @@
+{# Miyabi Skills Definition Template #}
+{% extends "base.yaml.j2" %}
+
+{% block header %}Miyabi Skills Definition{% endblock %}
+
+{% block content %}
+skills:
+  summary:
+    total_skills: {{ global.counts.skills }}
+    categories:
+      development: {{ skills.development | length }}
+      operations: {{ skills.operations | length }}
+      business: {{ skills.business | length }}
+      specialized: {{ skills.specialized | length }}
+
+  location: ".claude/skills/"
+  invocation: "Skill tool with command \"<skill-name>\""
+
+  categories:
+    development:
+      description: "開発・デバッグ・セキュリティに関するスキル群"
+      count: {{ skills.development | length }}
+      skills:
+{% for skill in skills.development %}
+        - name: "{{ skill.name }}"
+          category: "{{ skill.category }}"
+          description: "{{ skill.description }}"
+          skill_file: ".claude/skills/{{ skill.name }}.md"
+{% if skill.tools is defined %}
+          tools:
+{% for tool in skill.tools %}
+            - "{{ tool }}"
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+    operations:
+      description: "運用・自動化・ドキュメント生成に関するスキル群"
+      count: {{ skills.operations | length }}
+      skills:
+{% for skill in skills.operations %}
+        - name: "{{ skill.name }}"
+          category: "{{ skill.category }}"
+          description: "{{ skill.description }}"
+          skill_file: ".claude/skills/{{ skill.name }}.md"
+{% if skill.tools is defined %}
+          tools:
+{% for tool in skill.tools %}
+            - "{{ tool }}"
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+    business:
+      description: "ビジネス戦略・マーケティング・営業に関するスキル群"
+      count: {{ skills.business | length }}
+      skills:
+{% for skill in skills.business %}
+        - name: "{{ skill.name }}"
+          category: "{{ skill.category }}"
+          description: "{{ skill.description }}"
+          skill_file: ".claude/skills/{{ skill.name }}.md"
+{% if skill.phases is defined %}
+          phases:
+{% for phase in skill.phases %}
+            - "{{ phase }}"
+{% endfor %}
+{% endif %}
+{% if skill.tools is defined %}
+          tools:
+{% for tool in skill.tools %}
+            - "{{ tool }}"
+{% endfor %}
+{% endif %}
+{% if skill.features is defined %}
+          features:
+{% for feature in skill.features %}
+            - "{{ feature }}"
+{% endfor %}
+{% endif %}
+{% if skill.metrics is defined %}
+          metrics:
+{% for metric in skill.metrics %}
+            - "{{ metric }}"
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+    specialized:
+      description: "特殊用途スキル（音声合成・Lark統合等）"
+      count: {{ skills.specialized | length }}
+      skills:
+{% for skill in skills.specialized %}
+        - name: "{{ skill.name }}"
+          category: "{{ skill.category }}"
+          description: "{{ skill.description }}"
+          skill_file: ".claude/skills/{{ skill.name }}.md"
+          features:
+{% for feature in skill.features %}
+            - "{{ feature }}"
+{% endfor %}
+{% endfor %}
+
+  usage_protocol:
+    invocation_method: "Skill tool"
+    command_format: "command: \"<skill-name>\""
+    execution_context: "Main conversation"
+    example: |
+      Skill tool with command "rust-development"
+
+  skill_execution_flow:
+    stages:
+      - name: "invocation"
+        description: "Skillコマンド発行"
+      - name: "expansion"
+        description: "Skillプロンプト展開"
+      - name: "execution"
+        description: "タスク実行"
+      - name: "reporting"
+        description: "結果報告"
+
+  integration_with_agents:
+    description: "SkillはAgentから呼び出される再利用可能なモジュール"
+    relation: "Agent --N2--> Skill (many-to-many)"
+    examples:
+      - agent: "CodeGenAgent"
+        skills:
+          - "rust-development"
+          - "debugging-troubleshooting"
+      - agent: "ReviewAgent"
+        skills:
+          - "security-audit"
+          - "performance-analysis"
+      - agent: "DeploymentAgent"
+        skills:
+          - "git-workflow"
+{% endblock %}

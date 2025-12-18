@@ -1,0 +1,124 @@
+{# Miyabi Agents Definition Template #}
+{% extends "base.yaml.j2" %}
+
+{% block header %}Miyabi Agents Definition{% endblock %}
+
+{% block content %}
+agents:
+  summary:
+    total_agents: {{ global.counts.agents_total }}
+    coding_agents: {{ global.counts.agents_coding }}
+    business_agents: {{ global.counts.agents_business }}
+
+  coding_agents:
+    count: {{ agents.coding | length }}
+    description: "自律的にコード生成・レビュー・デプロイを実行するエージェント群"
+
+    agents:
+{% for agent in agents.coding %}
+      - name: "{{ agent.name }}"
+        role: "{{ agent.role }}"
+        description: "{{ agent.description }}"
+        label: "{{ agent.label }}"
+        character_name: "{{ agent.character }}"
+        crate: "miyabi-agents"
+        spec_file: ".claude/agents/specs/{{ agent.name }}.md"
+{% endfor %}
+
+  business_agents:
+    count: {{ agents.business.strategy_planning | length + agents.business.marketing | length + agents.business.sales_crm | length }}
+    description: "ビジネス戦略・マーケティング・営業CRMを担当するエージェント群"
+
+    categories:
+      strategy_planning:
+        count: {{ agents.business.strategy_planning | length }}
+        description: "戦略企画・コンセプト設計・ペルソナ定義"
+        agents:
+{% for agent in agents.business.strategy_planning %}
+          - name: "{{ agent.name }}"
+            phase: {{ agent.phase }}
+            description: "{{ agent.description }}"
+            label: "{{ agent.label }}"
+            character_name: "{{ agent.character }}"
+            crate: "miyabi-agent-business"
+            spec_file: ".claude/agents/specs/{{ agent.name }}.md"
+{% endfor %}
+
+      marketing:
+        count: {{ agents.business.marketing | length }}
+        description: "市場調査・コンテンツ制作・SNS戦略"
+        agents:
+{% for agent in agents.business.marketing %}
+          - name: "{{ agent.name }}"
+            phase: {{ agent.phase }}
+            description: "{{ agent.description }}"
+            label: "{{ agent.label }}"
+            character_name: "{{ agent.character }}"
+            crate: "miyabi-agent-business"
+            spec_file: ".claude/agents/specs/{{ agent.name }}.md"
+{% endfor %}
+
+      sales_crm:
+        count: {{ agents.business.sales_crm | length }}
+        description: "営業プロセス・顧客管理・データ分析"
+        agents:
+{% for agent in agents.business.sales_crm %}
+          - name: "{{ agent.name }}"
+            phase: {{ agent.phase }}
+            description: "{{ agent.description }}"
+            label: "{{ agent.label }}"
+            character_name: "{{ agent.character }}"
+            crate: "miyabi-agent-business"
+            spec_file: ".claude/agents/specs/{{ agent.name }}.md"
+{% endfor %}
+
+  execution_model:
+    trigger: "GitHub Issue"
+    isolation: "Git Worktree"
+    concurrency: "Parallel (DAG-based)"
+    reporting: ".ai/logs/"
+
+  agent_lifecycle:
+    stages:
+      - name: "initialization"
+        description: "エージェント設定読み込み"
+      - name: "issue_assignment"
+        description: "Issueに基づくタスク割り当て"
+      - name: "worktree_setup"
+        description: "専用Worktree作成"
+      - name: "execution"
+        description: "タスク実行"
+      - name: "review"
+        description: "レビュー実施"
+      - name: "pr_creation"
+        description: "PR自動生成"
+      - name: "cleanup"
+        description: "リソース解放"
+
+  agent_configuration:
+    config_file: "crates/miyabi-agents/src/config.rs"
+    spec_directory: ".claude/agents/specs/"
+    prompt_directory: ".claude/agents/prompts/"
+    character_file: ".claude/agents/AGENT_CHARACTERS.md"
+
+  integration_points:
+    github:
+      - "Issue operations"
+      - "Label management"
+      - "PR automation"
+
+    llm:
+      - "Claude Sonnet 4"
+      - "Claude Haiku"
+      - "GPT-4o (fallback)"
+
+    worktree:
+      - "Isolated workspace"
+      - "Parallel execution"
+      - "Automatic cleanup"
+
+    knowledge:
+      - "Vector search"
+      - "Context retrieval"
+      - "Learning from history"
+{% endblock %}

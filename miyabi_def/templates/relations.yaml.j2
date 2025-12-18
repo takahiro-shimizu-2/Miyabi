@@ -1,0 +1,184 @@
+{% extends "base.yaml.j2" %}
+
+{% block content %}
+# Miyabi Relation Definitions - Complete Specification
+# Generated from: variables/relations.yaml
+# Template: templates/relations.yaml.j2
+# Notation: N1 (1:1), N2 (1:N), N3 (N:N)
+
+relations:
+  total_count: {{ relations | length }}
+
+  definitions:
+{% for relation_key, relation in relations.items() %}
+    {{ relation_key }}:
+      id: "{{ relation.id }}"
+      name: "{{ relation.name }}"
+      source: "{{ relation.source }}"
+      target: "{{ relation.target }}"
+      cardinality: "{{ relation.cardinality }}"
+      notation: "{{ relation.notation }}"
+      description: "{{ relation.description }}"
+
+{% if relation.implementation is defined %}
+      implementation:
+{% if relation.implementation.trigger is defined %}
+        trigger: "{{ relation.implementation.trigger }}"
+{% endif %}
+{% if relation.implementation.method is defined %}
+        method: "{{ relation.implementation.method }}"
+{% endif %}
+{% if relation.implementation.agent is defined %}
+        agent: "{{ relation.implementation.agent }}"
+{% endif %}
+{% if relation.implementation.file is defined %}
+        file: "{{ relation.implementation.file }}"
+{% endif %}
+{% if relation.implementation.pr_title_format is defined %}
+        pr_title_format: "{{ relation.implementation.pr_title_format }}"
+{% endif %}
+{% if relation.implementation.actions is defined %}
+        actions:
+{% for action in relation.implementation.actions %}
+          - "{{ action }}"
+{% endfor %}
+{% endif %}
+{% if relation.implementation.algorithm is defined %}
+        algorithm:
+{% for step in relation.implementation.algorithm %}
+          - "{{ step }}"
+{% endfor %}
+{% endif %}
+{% if relation.implementation.auto_assignment_timing is defined %}
+        auto_assignment_timing:
+{% for timing in relation.implementation.auto_assignment_timing %}
+          - "{{ timing }}"
+{% endfor %}
+{% endif %}
+{% if relation.implementation.pr_body_includes is defined %}
+        pr_body_includes:
+{% for item in relation.implementation.pr_body_includes %}
+          - "{{ item }}"
+{% endfor %}
+{% endif %}
+{% if relation.implementation.when is defined %}
+        when: "{{ relation.implementation.when }}"
+{% endif %}
+{% if relation.implementation.handler is defined %}
+        handler: "{{ relation.implementation.handler }}"
+{% endif %}
+{% if relation.implementation.event is defined %}
+        event: "{{ relation.implementation.event }}"
+{% endif %}
+{% if relation.implementation.condition is defined %}
+        condition: "{{ relation.implementation.condition }}"
+{% endif %}
+{% if relation.implementation.operations is defined %}
+        operations:
+{% for op in relation.implementation.operations %}
+          - "{{ op }}"
+{% endfor %}
+{% endif %}
+{% if relation.implementation.escalation_levels is defined %}
+        escalation_levels: {{ relation.implementation.escalation_levels }}
+{% endif %}
+{% if relation.implementation.notification_channels is defined %}
+        notification_channels: {{ relation.implementation.notification_channels }}
+{% endif %}
+{% if relation.implementation.tools is defined %}
+        tools:
+{% for tool in relation.implementation.tools %}
+          - "{{ tool }}"
+{% endfor %}
+{% endif %}
+{% if relation.implementation.outputs is defined %}
+        outputs:
+{% for output in relation.implementation.outputs %}
+          - "{{ output }}"
+{% endfor %}
+{% endif %}
+{% if relation.implementation.storage is defined %}
+        storage: "{{ relation.implementation.storage }}"
+{% endif %}
+{% if relation.implementation.purpose is defined %}
+        purpose: "{{ relation.implementation.purpose }}"
+{% endif %}
+{% if relation.implementation.mechanism is defined %}
+        mechanism: "{{ relation.implementation.mechanism }}"
+{% endif %}
+{% if relation.implementation.workflow is defined %}
+        workflow:
+{% for step in relation.implementation.workflow %}
+          - "{{ step }}"
+{% endfor %}
+{% endif %}
+{% if relation.implementation.dependency_types is defined %}
+        dependency_types: {{ relation.implementation.dependency_types }}
+{% endif %}
+{% if relation.implementation.validation is defined %}
+        validation: "{{ relation.implementation.validation }}"
+{% endif %}
+{% if relation.implementation.structure is defined %}
+        structure: "{{ relation.implementation.structure }}"
+{% endif %}
+{% if relation.implementation.hierarchy_examples is defined %}
+        hierarchy_examples:
+{% for example in relation.implementation.hierarchy_examples %}
+          - "{{ example }}"
+{% endfor %}
+{% endif %}
+{% if relation.implementation.relationship_types is defined %}
+        relationship_types: {{ relation.implementation.relationship_types }}
+{% endif %}
+{% if relation.implementation.use_cases is defined %}
+        use_cases:
+{% for use_case in relation.implementation.use_cases %}
+          - "{{ use_case }}"
+{% endfor %}
+{% endif %}
+{% if relation.implementation.channels is defined %}
+        channels: {{ relation.implementation.channels }}
+{% endif %}
+{% if relation.implementation.message_types is defined %}
+        message_types: {{ relation.implementation.message_types }}
+{% endif %}
+{% if relation.implementation.notification_events is defined %}
+        notification_events: {{ relation.implementation.notification_events }}
+{% endif %}
+{% if relation.implementation.sync_direction is defined %}
+        sync_direction: "{{ relation.implementation.sync_direction }}"
+{% endif %}
+{% if relation.implementation.sync_events is defined %}
+        sync_events: {{ relation.implementation.sync_events }}
+{% endif %}
+{% endif %}
+
+{% if relation.example is defined %}
+      example: |
+        {{ relation.example | indent(8) }}
+{% endif %}
+
+{% endfor %}
+
+# Metadata
+metadata:
+  generated_at: "{{ global.project.generated_at if global.project.generated_at is defined else 'N/A' }}"
+  total_relations: {{ relations | length }}
+  source_file: "variables/relations.yaml"
+  template_file: "templates/relations.yaml.j2"
+
+{% if metadata is defined and metadata.cardinality_breakdown is defined %}
+  statistics:
+    total_relations: {{ metadata.total_relations }}
+    cardinality_breakdown:
+      n1_one_to_one: {{ metadata.cardinality_breakdown.n1_one_to_one }}
+      n2_one_to_many: {{ metadata.cardinality_breakdown.n2_one_to_many }}
+      n3_many_to_many: {{ metadata.cardinality_breakdown.n3_many_to_many }}
+
+  relation_categories:
+{% for category, relation_list in metadata.relation_categories.items() %}
+    {{ category }}: {{ relation_list }}
+{% endfor %}
+{% endif %}
+
+{% endblock %}

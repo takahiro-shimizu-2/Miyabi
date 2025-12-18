@@ -1,0 +1,162 @@
+@startuml miyabi_def - Generation Sequence
+!theme blueprint
+skinparam backgroundColor #F8F9FA
+
+title miyabi_def System - YAML Generation Sequence\nVersion 1.0.0
+
+actor "Developer" as dev
+participant "generate.py" as gen
+participant "MiyabiDefinitionGenerator" as generator
+participant "Jinja2 Environment" as jinja
+database "variables/\n(15 files)" as vars
+database "templates/\n(11 files)" as tmpls
+database "generated/\n(11 files)" as output
+
+== Phase 1: Initialization ==
+
+dev -> gen : python generate.py
+activate gen
+
+gen -> generator : __init__(base_dir)
+activate generator
+
+generator -> jinja : Environment(\n  loader=FileSystemLoader,\n  autoescape=True,\n  trim_blocks=True\n)
+activate jinja
+jinja --> generator : Jinja2 Environment
+deactivate jinja
+
+generator --> gen : generator instance
+deactivate generator
+
+== Phase 2: Load Variables ==
+
+gen -> generator : load_all_variables()
+activate generator
+
+loop for each *.yaml in variables/
+  generator -> vars : glob("*.yaml")
+  activate vars
+  vars --> generator : yaml_file
+  deactivate vars
+
+  generator -> vars : open(yaml_file)
+  activate vars
+  vars --> generator : file handle
+  deactivate vars
+
+  generator -> generator : yaml.safe_load()
+  note right
+    **Loaded Variables**
+    • global
+    • entities (14)
+    • relations (39)
+    • labels (57)
+    • workflows (5)
+    • agents (21)
+    • crates (15)
+    • skills (18)
+    • world
+    • swml
+    • omega
+  end note
+end
+
+generator --> gen : variables dict
+deactivate generator
+
+== Phase 3: Process Templates ==
+
+gen -> generator : generate_all()
+activate generator
+
+loop for each *.j2 in templates/
+  generator -> tmpls : glob("*.j2")
+  activate tmpls
+  tmpls --> generator : template_file
+  deactivate tmpls
+
+  alt if template is base.yaml.j2
+    generator -> generator : skip (inheritance only)
+  else other templates
+    generator -> jinja : get_template(template_name)
+    activate jinja
+    jinja -> tmpls : load template
+    activate tmpls
+    tmpls --> jinja : template content
+    deactivate tmpls
+    jinja --> generator : Template object
+    deactivate jinja
+
+    generator -> jinja : template.render(**variables)
+    activate jinja
+
+    note over jinja
+      **Template Rendering**
+      1. Extend base.yaml.j2
+      2. Substitute variables
+      3. Apply filters
+      4. Trim/lstrip blocks
+    end note
+
+    jinja --> generator : rendered_content
+    deactivate jinja
+
+    generator -> output : write(output_path, content)
+    activate output
+
+    note right of output
+      **Generated Files**
+      • entities.yaml (39KB)
+      • relations.yaml (25KB)
+      • labels.yaml (14KB)
+      • workflows.yaml (13KB)
+      • agents.yaml (9.4KB)
+      • crates.yaml (6.3KB)
+      • skills.yaml (7.6KB)
+      • world_definition.yaml (21KB)
+      • step_back_question_method.yaml (18KB)
+      • universal_task_execution.yaml (21KB)
+      • agent_execution_maximization.yaml (23KB)
+
+      **Total: 191KB**
+    end note
+
+    output --> generator : success
+    deactivate output
+
+    generator -> generator : print("✓ Generated {filename}")
+  end
+end
+
+generator --> gen : generation complete
+deactivate generator
+
+== Phase 4: Summary ==
+
+gen -> gen : print_summary()
+activate gen
+
+note over gen
+  **Generation Summary**
+  ══════════════════════
+  Output: generated/
+  Files:  11 YAML files
+  Size:   191KB total
+  Time:   ~500ms
+  Status: ✓ Complete
+end note
+
+gen --> dev : exit(0)
+deactivate gen
+
+legend right
+  |= Component |= Purpose |
+  | generate.py | Entry point script |
+  | MiyabiDefinitionGenerator | Core generator class |
+  | Jinja2 Environment | Template engine |
+  | variables/ | Source data (15 files) |
+  | templates/ | Jinja2 templates (11 files) |
+  | generated/ | Output YAML (11 files) |
+endlegend
+
+@enduml

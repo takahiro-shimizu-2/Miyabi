@@ -1,0 +1,997 @@
+# Miyabi Relation Definitions - 39 Relations
+# Version: 1.0.0
+# Source: docs/architecture/ENTITY_RELATION_MODEL.md
+# Notation: N1/N2/N3 (Cardinality: 1:1, 1:N, N:N)
+
+relations:
+  # Issue Relations (R1-R4, R36)
+  R1_Issue_analyzed_by_Agent:
+    id: "R1"
+    name: "analyzed-by"
+    source: "E1_Issue"
+    target: "E3_Agent"
+    cardinality: "1:1"
+    notation: "N1"
+    description: "IssueがIssueAgentにより分析される"
+
+    implementation:
+      trigger: "Issue作成時、またはLabel変更時"
+      method: "issueAgent.analyzeIssue(issue)"
+      actions:
+        - "Label自動付与: type, priority, severity"
+        - "関連Issue検索"
+        - "good-first-issue判定"
+      file: ".claude/agents/specs/issue-agent.md"
+
+    example: |
+      const analysis = await issueAgent.analyzeIssue(issue);
+      await issueAgent.addLabels(issue.number, analysis.suggestedLabels);
+
+  R2_Issue_decomposed_into_Task:
+    id: "R2"
+    name: "decomposed-into"
+    source: "E1_Issue"
+    target: "E2_Task"
+    cardinality: "1:N"
+    notation: "N2"
+    description: "IssueがCoordinatorAgentによりTask配列に分解される"
+
+    implementation:
+      agent: "CoordinatorAgent"
+      method: "coordinator.decomposeIssue(issue)"
+      algorithm:
+        - "Issue本文解析（AIによる意図理解）"
+        - "タスク抽出（チェックリスト形式、または自動推定）"
+        - "依存関係抽出（キーワード: after, requires, depends on）"
+        - "DAG構築（トポロジカルソート）"
+        - "循環依存チェック"
+      file: ".claude/agents/specs/coordinator-agent.md"
+
+    example: |
+      const decomposition: TaskDecomposition = await coordinator.decomposeIssue(issue);
+      const tasks: Task[] = decomposition.tasks;
+      const dag: DAG = decomposition.dag;
+
+  R3_Issue_tagged_with_Label:
+    id: "R3"
+    name: "tagged-with"
+    source: "E1_Issue"
+    target: "E5_Label"
+    cardinality: "1:N"
+    notation: "N2"
+    description: "IssueにLabel配列が付与される"
+
+    implementation:
+      method: "GitHub API (octokit.issues.addLabels)"
+      auto_assignment_timing:
+        - "Issue作成時: state:pending"
+        - "Agent起動時: agent:coordinator, state:analyzing"
+        - "タスク割り当て時: agent:codegen, state:implementing"
+        - "PR作成時: state:reviewing"
+        - "マージ時: state:done"
+      file: "docs/guides/LABEL_SYSTEM_GUIDE.md"
+
+    example: |
+      await octokit.issues.addLabels({
+        owner, repo,
+        issue_number: issue.number,
+        labels: ['🤖 agent:codegen', '✨ type:feature']
+      });
+
+  R4_Issue_creates_PR:
+    id: "R4"
+    name: "creates"
+    source: "E1_Issue"
+    target: "E4_PR"
+    cardinality: "1:1 (or 1:N)"
+    notation: "N1/N2"
+    description: "IssueからPRが作成される（複数PR可能性あり）"
+
+    implementation:
+      agent: "PRAgent"
+      method: "prAgent.createPR"
+      pr_title_format: "Conventional Commits"
+      pr_body_includes:
+        - "Closes #{issue.number}"
+        - "Summary"
+        - "Test plan"
+        - "🤖 Generated with Claude Code"
+        - "Co-Authored-By: Claude <noreply@anthropic.com>"
+      file: ".claude/agents/specs/pr-agent.md"
+
+    example: |
+      const prResult = await prAgent.createPR({
+        title: generateConventionalCommitTitle(issue),
+        body: generatePRBody(issue, tasks, metrics),
+        issueNumber: issue.number,
+        draft: true
+      });
+
+  R36_Issue_parent_of_SubIssue:
+    id: "R36"
+    name: "parent-of"
+    source: "E1_Issue"
+    target: "E14_SubIssue"
+    cardinality: "1:N"
+    notation: "N2"
+    description: "IssueがSubIssue（子Issue）を持つ"
+
+    implementation:
+      method: "issueAgent.createSubIssue"
+      labels: ["🌳 hierarchy:root", "📂 hierarchy:parent"]
+      auto_tracking:
+        - "子Issueのチェックリスト管理"
+        - "完了率の自動計算"
+        - "親Issue本文に「## Child Issues」セクション追加"
+      file: "packages/coding-agents/issue/issue-agent.ts"
+
+    example: |
+      const subIssue = await issueAgent.createSubIssue({
+        title: "子タスク",
+        body: "詳細",
+        parentIssueNumber: 100,
+        labels: ["type:feature"]
+      });
+
+  # Task Relations (R5-R8)
+  R5_Task_assigned_to_Agent:
+    id: "R5"
+    name: "assigned-to"
+    source: "E2_Task"
+    target: "E3_Agent"
+    cardinality: "N:1"
+    notation: "N1"
+    description: "TaskがAgentに割り当てられる"
+
+    implementation:
+      agent: "CoordinatorAgent"
+      assignment_logic: |
+        switch (task.type) {
+          case 'feature':
+          case 'bug':
+          case 'refactor':
+            return 'CodeGenAgent';
+          case 'deployment':
+            return 'DeploymentAgent';
+          case 'docs':
+            return 'CodeGenAgent';
+          default:
+            return 'CoordinatorAgent';
+        }
+      file: "agents/coordinator/coordinator-agent.ts"
+
+    example: |
+      task.assignedAgent = assignAgent(task);
+
+  R6_Task_depends_on_Task:
+    id: "R6"
+    name: "depends-on"
+    source: "E2_Task"
+    target: "E2_Task"
+    cardinality: "N:N"
+    notation: "N3"
+    description: "TaskがTask（依存関係）に依存する"
+
+    implementation:
+      representation: "dependencies: string[] (依存TaskIDリスト)"
+      dag_construction: "buildDAG(tasks)"
+      topological_sort: "sortedLevels = topologicalSort(dag)"
+      file: "agents/types/index.ts:37-52"
+
+    example: |
+      const tasks = [
+        { id: 'T1', title: 'データモデル設計', dependencies: [] },
+        { id: 'T2', title: 'API実装', dependencies: ['T1'] },
+        { id: 'T3', title: 'UI実装', dependencies: ['T2'] },
+        { id: 'T4', title: 'テスト作成', dependencies: ['T2', 'T3'] }
+      ];
+
+  R7_Task_part_of_DAG:
+    id: "R7"
+    name: "part-of"
+    source: "E2_Task"
+    target: "E11_DAG"
+    cardinality: "N:1"
+    notation: "N1"
+    description: "TaskがDAGに含まれる"
+
+    implementation:
+      structure: |
+        DAG {
+          nodes: Task[]
+          edges: Array<{ from: string; to: string }>
+          levels: string[][]  // 並列実行レベル
+        }
+      file: "agents/types/index.ts:66-70"
+
+    example: |
+      const dag: DAG = {
+        nodes: [T1, T2, T3, T4],
+        edges: [
+          { from: 'T1', to: 'T2' },
+          { from: 'T2', to: 'T3' },
+          { from: 'T2', to: 'T4' },
+          { from: 'T3', to: 'T4' }
+        ],
+        levels: [['T1'], ['T2'], ['T3'], ['T4']]
+      };
+
+  R8_Task_runs_in_Worktree:
+    id: "R8"
+    name: "runs-in"
+    source: "E2_Task"
+    target: "E12_Worktree"
+    cardinality: "1:1"
+    notation: "N1"
+    description: "TaskがWorktree内で実行される"
+
+    implementation:
+      worktree_creation: "git worktree add .worktrees/issue-270 -b feature/agent-issue-270"
+      execution: "cd .worktrees/issue-270 && <task execution>"
+      path_convention: ".worktrees/issue-{ISSUE_NUMBER}/task-{TASK_ID}/"
+      file: "CLAUDE.md (Git Worktree並列実行アーキテクチャ)"
+
+    example: |
+      cd .worktrees/issue-270
+      # プロンプトファイル読み込み
+      # .claude/agents/prompts/codegen-agent-prompt.md
+
+  # Agent Relations (R9-R15)
+  R9_Agent_executes_Task:
+    id: "R9"
+    name: "executes"
+    source: "E3_Agent"
+    target: "E2_Task"
+    cardinality: "1:N"
+    notation: "N2"
+    description: "AgentがTaskを実行する"
+
+    implementation:
+      base_class: "BaseAgent"
+      method: "execute(task: Task): Promise<AgentResult>"
+      steps:
+        - "Task検証"
+        - "実行"
+        - "結果記録"
+        - "LDDログ出力"
+      file: "agents/base-agent.ts"
+
+    example: |
+      class CodeGenAgent extends BaseAgent {
+        async execute(task: Task): Promise<AgentResult> {
+          const code = await this.generateCode(task);
+          const tests = await this.generateTests(code);
+          return { status: 'success', data: { code, tests } };
+        }
+      }
+
+  R10_Agent_generates_PR:
+    id: "R10"
+    name: "generates"
+    source: "E3_Agent"
+    target: "E4_PR"
+    cardinality: "N:1"
+    notation: "N1"
+    description: "Agent（複数）がPR生成に関与する"
+
+    implementation:
+      involved_agents:
+        - "CodeGenAgent: コード生成、commit作成"
+        - "PRAgent: PR作成、Conventional Commitsタイトル生成"
+        - "ReviewAgent: 品質レポート添付"
+      file: ".claude/agents/specs/pr-agent.md"
+
+    example: |
+      const pr = await prAgent.createPR({
+        title: 'feat: Issue #270 - ユーザー認証実装',
+        body: generatePRBody(issue, qualityReport),
+        draft: true,
+        issueNumber: 270
+      });
+
+  R11_Agent_creates_QualityReport:
+    id: "R11"
+    name: "creates"
+    source: "E3_Agent"
+    target: "E6_QualityReport"
+    cardinality: "1:1"
+    notation: "N1"
+    description: "Agent（ReviewAgent）がQualityReportを作成する"
+
+    implementation:
+      agent: "ReviewAgent"
+      method: "reviewAgent.evaluateQuality"
+      scoring_criteria:
+        - "ESLintエラー: -20点/件"
+        - "TypeScriptエラー: -30点/件"
+        - "重大な脆弱性: -40点/件"
+        - "カバレッジ不足: -10点（80%未満）"
+      passing_score: 80
+      file: ".claude/agents/specs/review-agent.md"
+
+    example: |
+      const qualityReport: QualityReport = await reviewAgent.evaluateQuality({
+        files: changedFiles,
+        branch: 'feature/agent-issue-270'
+      });
+      qualityReport.passed = qualityReport.score >= 80;
+
+  R12_Agent_triggers_Escalation:
+    id: "R12"
+    name: "triggers"
+    source: "E3_Agent"
+    target: "E8_Escalation"
+    cardinality: "N:1"
+    notation: "N1"
+    description: "AgentがEscalationをトリガーする"
+
+    implementation:
+      method: "baseAgent.escalate"
+      conditions:
+        TechLead: "複雑度超過、アーキテクチャ問題"
+        CISO: "セキュリティ脆弱性（Sev.1-2）"
+        PO: "要件不明確"
+        CTO: "システムレベル障害"
+        DevOps: "デプロイ失敗"
+      notifications:
+        - "GitHub Issue comment"
+        - "Slack/Discord通知"
+      file: "agents/base-agent.ts (escalate メソッド)"
+
+    example: |
+      await this.escalate(
+        "アーキテクチャ複雑度超過",
+        "TechLead",
+        "Sev.2-High",
+        { complexity: 8.5, threshold: 7.0 }
+      );
+
+  R13_Agent_performs_Deployment:
+    id: "R13"
+    name: "performs"
+    source: "E3_Agent"
+    target: "E9_Deployment"
+    cardinality: "1:1"
+    notation: "N1"
+    description: "Agent（DeploymentAgent）がDeploymentを実行する"
+
+    implementation:
+      agent: "DeploymentAgent"
+      method: "deploymentAgent.deploy"
+      steps:
+        - "Firebase/Cloud自動デプロイ"
+        - "ヘルスチェック"
+        - "自動Rollback（失敗時）"
+      file: ".claude/agents/specs/deployment-agent.md"
+
+    example: |
+      const deploymentResult = await deploymentAgent.deploy({
+        environment: 'staging',
+        version: '1.2.3',
+        projectId: 'miyabi-staging',
+        targets: ['hosting', 'functions'],
+        autoRollback: true,
+        healthCheckUrl: 'https://staging.example.com/health'
+      });
+
+  R14_Agent_logs_to_LDDLog:
+    id: "R14"
+    name: "logs-to"
+    source: "E3_Agent"
+    target: "E10_LDDLog"
+    cardinality: "N:N"
+    notation: "N3"
+    description: "全てのAgentがLDDLogに出力する"
+
+    implementation:
+      method: "baseAgent.logToLDD"
+      log_format: "Markdown"
+      output_location: ".ai/logs/YYYY-MM-DD.md"
+      content:
+        - "Session ID"
+        - "Codex Prompt Chain (Intent, Plan, Implementation, Verification)"
+        - "Tool Invocations"
+        - "Memory Bank Updates"
+        - "Next Steps"
+      file: "agents/base-agent.ts (logToLDD メソッド)"
+
+    example: |
+      await this.logToLDD(
+        codexPromptChain,
+        toolInvocations
+      );
+
+  R15_Command_invokes_Agent:
+    id: "R15"
+    name: "invoked-by"
+    source: "E7_Command"
+    target: "E3_Agent"
+    cardinality: "1:1 or 1:N"
+    notation: "N1/N2"
+    description: "CommandがAgentを起動する"
+
+    implementation:
+      command_agent_mapping:
+        "/agent-run": "CoordinatorAgent"
+        "/deploy": "DeploymentAgent"
+        "/security-scan": "ReviewAgent"
+        "/generate-docs": "CodeGenAgent"
+      file: ".claude/commands/*.md"
+
+    example: |
+      <!-- .claude/commands/agent-run.md -->
+      ```bash
+      npm run agents:parallel:exec -- --issue=$ISSUE_NUMBER
+      ```
+
+  # Label Relations (R16-R18)
+  R16_Label_triggers_Agent:
+    id: "R16"
+    name: "triggers"
+    source: "E5_Label"
+    target: "E3_Agent"
+    cardinality: "1:1"
+    notation: "N1"
+    description: "特定LabelがAgent起動をトリガーする"
+
+    implementation:
+      trigger_labels:
+        "trigger:agent-execute": "CoordinatorAgent"
+        "trigger:generate-report": "ReportAgent (未実装)"
+        "trigger:deploy-staging": "DeploymentAgent"
+        "trigger:deploy-production": "DeploymentAgent"
+      workflow: ".github/workflows/autonomous-agent.yml"
+      condition: "if: contains(github.event.label.name, 'trigger:agent-execute')"
+      file: "docs/guides/LABEL_SYSTEM_GUIDE.md"
+
+    example: |
+      on:
+        issues:
+          types: [labeled]
+      jobs:
+        execute:
+          if: contains(github.event.label.name, 'trigger:agent-execute')
+          runs-on: ubuntu-latest
+
+  R17_Label_defines_state_Issue:
+    id: "R17"
+    name: "defines-state"
+    source: "E5_Label"
+    target: "E1_Issue"
+    cardinality: "N:1"
+    notation: "N1"
+    description: "Label（複数）がIssue状態を定義する"
+
+    implementation:
+      state_transition: |
+        pending → analyzing → implementing → reviewing → done
+                    ↓            ↓            ↓
+                 blocked      blocked      blocked
+                    ↓            ↓            ↓
+                 failed       failed       failed
+      method: "getIssueState(labels: string[]): string"
+      file: "docs/guides/LABEL_SYSTEM_GUIDE.md"
+
+    example: |
+      const getIssueState = (labels: string[]): string => {
+        if (labels.includes('state:pending')) return 'pending';
+        if (labels.includes('state:analyzing')) return 'analyzing';
+        if (labels.includes('state:implementing')) return 'implementing';
+        if (labels.includes('state:reviewing')) return 'reviewing';
+        if (labels.includes('state:done')) return 'done';
+        return 'unknown';
+      };
+
+  R18_Label_categorizes_Task:
+    id: "R18"
+    name: "categorizes"
+    source: "E5_Label"
+    target: "E2_Task"
+    cardinality: "N:1"
+    notation: "N1"
+    description: "Label（複数）がTaskを分類する"
+
+    implementation:
+      type_labels:
+        - "type:feature"
+        - "type:bug"
+        - "type:refactor"
+        - "type:docs"
+        - "type:test"
+        - "type:deployment"
+      method: "getTaskType(labels: string[]): Task['type']"
+      file: "agents/types/index.ts, docs/guides/LABEL_SYSTEM_GUIDE.md"
+
+    example: |
+      const getTaskType = (labels: string[]): Task['type'] => {
+        if (labels.includes('type:feature')) return 'feature';
+        if (labels.includes('type:bug')) return 'bug';
+        return 'feature'; // デフォルト
+      };
+
+  # PR Relations (R19-R21)
+  R19_PR_reviewed_by_Agent:
+    id: "R19"
+    name: "reviewed-by"
+    source: "E4_PR"
+    target: "E3_Agent"
+    cardinality: "1:1"
+    notation: "N1"
+    description: "PRがReviewAgentによりレビューされる"
+
+    implementation:
+      agent: "ReviewAgent"
+      method: "reviewAgent.reviewPR"
+      output: "GitHub PR comment with QualityReport"
+      format: |
+        ## 🤖 ReviewAgent Report
+        ### Quality Score: 85/100 ✅
+        **Breakdown**: ESLint: 95/100, TypeScript: 100/100, ...
+      file: ".claude/agents/specs/review-agent.md"
+
+    example: |
+      const reviewResult = await reviewAgent.reviewPR({
+        files: pr.changedFiles,
+        branch: pr.headBranch,
+        context: pr.body
+      });
+      await octokit.issues.createComment({
+        owner, repo,
+        issue_number: pr.number,
+        body: formatReviewComment(reviewResult)
+      });
+
+  R20_PR_has_QualityReport:
+    id: "R20"
+    name: "has"
+    source: "E4_PR"
+    target: "E6_QualityReport"
+    cardinality: "1:1"
+    notation: "N1"
+    description: "PRがQualityReportを持つ"
+
+    implementation:
+      attachment: "GitHub PR comment"
+      quality_labels:
+        "⭐ quality:excellent": "90-100点"
+        "✅ quality:good": "80-89点"
+        "⚠️ quality:needs-improvement": "60-79点"
+        "🔴 quality:poor": "0-59点"
+      file: "agents/types/index.ts:108-130"
+
+    example: |
+      await octokit.issues.createComment({
+        owner, repo,
+        issue_number: pr.number,
+        body: formatQualityReport(qualityReport)
+      });
+      const qualityLabel = getQualityLabel(qualityReport.score);
+      await octokit.issues.addLabels({
+        owner, repo,
+        issue_number: pr.number,
+        labels: [qualityLabel]
+      });
+
+  R21_PR_attached_to_Issue:
+    id: "R21"
+    name: "attached-to"
+    source: "E4_PR"
+    target: "E1_Issue"
+    cardinality: "N:1"
+    notation: "N1"
+    description: "PRがIssueに紐づく"
+
+    implementation:
+      link_method: "PR body with 'Closes #{issue.number}'"
+      auto_link: "GitHub auto-linking"
+      file: ".claude/agents/specs/pr-agent.md"
+
+    example: |
+      const prBody = `
+      Closes #${issue.number}
+
+      ## Summary
+      ...
+      `;
+
+  # QualityReport Relations (R22-R23)
+  R22_QualityReport_evaluated_by_Agent:
+    id: "R22"
+    name: "evaluated-by"
+    source: "E6_QualityReport"
+    target: "E3_Agent"
+    cardinality: "1:1"
+    notation: "N1"
+    description: "QualityReportがReviewAgentにより評価される"
+
+    note: "Same as R11 (inverse relation)"
+
+  R23_QualityReport_attached_to_PR:
+    id: "R23"
+    name: "attached-to"
+    source: "E6_QualityReport"
+    target: "E4_PR"
+    cardinality: "1:1"
+    notation: "N1"
+    description: "QualityReportがPRに添付される"
+
+    note: "Same as R20 (inverse relation)"
+
+  # DAG Relations (R24-R25)
+  R24_DAG_decomposed_from_Issue:
+    id: "R24"
+    name: "decomposed-from"
+    source: "E11_DAG"
+    target: "E1_Issue"
+    cardinality: "1:1"
+    notation: "N1"
+    description: "DAGがIssueから分解される"
+
+    implementation:
+      agent: "CoordinatorAgent"
+      method: "coordinator.decomposeIssue(issue)"
+      output: |
+        TaskDecomposition {
+          originalIssue: Issue
+          tasks: Task[]
+          dag: DAG
+          estimatedTotalDuration: number
+          hasCycles: boolean
+          recommendations: string[]
+        }
+      file: "agents/coordinator/coordinator-agent.ts"
+
+    example: |
+      const taskDecomposition = await coordinator.decomposeIssue(issue);
+      const dag = taskDecomposition.dag;
+
+  R25_DAG_contains_Task:
+    id: "R25"
+    name: "contains"
+    source: "E11_DAG"
+    target: "E2_Task"
+    cardinality: "1:N"
+    notation: "N2"
+    description: "DAGがTask配列を含む"
+
+    implementation:
+      structure: |
+        DAG {
+          nodes: Task[]  // 全Task
+          edges: Array<{ from: string; to: string }>
+        }
+      file: "agents/types/index.ts:66-70"
+
+    example: |
+      interface DAG {
+        nodes: Task[];
+        edges: Array<{ from: string; to: string }>;
+      }
+
+  # Worktree Relations (R26-R27)
+  R26_Worktree_executes_Task:
+    id: "R26"
+    name: "executes"
+    source: "E12_Worktree"
+    target: "E2_Task"
+    cardinality: "1:1"
+    notation: "N1"
+    description: "WorktreeがTaskを実行する"
+
+    implementation:
+      creation: "git worktree add .worktrees/issue-270 -b feature/agent-issue-270"
+      execution: "cd .worktrees/issue-270 && <agent execution>"
+      cleanup: "git checkout main && git merge feature/agent-issue-270"
+      file: "CLAUDE.md"
+
+    example: |
+      cd .worktrees/issue-270
+      # Claude Codeがプロンプト読み込み
+      # .claude/agents/prompts/codegen-agent-prompt.md
+
+  R27_Worktree_creates_PR:
+    id: "R27"
+    name: "creates"
+    source: "E12_Worktree"
+    target: "E4_PR"
+    cardinality: "1:1"
+    notation: "N1"
+    description: "WorktreeからPRが作成される"
+
+    implementation:
+      command: "gh pr create --title 'feat: Issue #270 - 機能実装' --draft"
+      location: "Worktree内で実行"
+      file: "scripts/parallel-executor.ts"
+
+    example: |
+      cd .worktrees/issue-270
+      gh pr create --title "feat: Issue #270 - 機能実装" --draft
+
+  # Discord Community Relations (R28-R35)
+  R28_Issue_notifies_to_DiscordCommunity:
+    id: "R28"
+    name: "notifies-to"
+    source: "E1_Issue"
+    target: "E13_DiscordCommunity"
+    cardinality: "N:1"
+    notation: "N1"
+    description: "IssueがDiscordCommunityに通知される"
+
+    implementation:
+      channels: ["#announcements", "#dev-general"]
+      trigger: "Issue作成時、ラベル変更時"
+      method: "discord webhook"
+      file: "docs/DISCORD_COMMUNITY_PLAN.md"
+
+    example: |
+      await sendWebhook(webhook.webhookUrl, {
+        content: `📢 **New Issue Created**\n\nIssue #${issue.number}: ${issue.title}\n${issue.url}`
+      });
+
+  R29_Agent_posts_to_DiscordCommunity:
+    id: "R29"
+    name: "posts-to"
+    source: "E3_Agent"
+    target: "E13_DiscordCommunity"
+    cardinality: "N:1"
+    notation: "N1"
+    description: "AgentがDiscordCommunityに投稿する"
+
+    implementation:
+      channels: ["#dev-general", "#dev-agents"]
+      trigger: "Agent実行開始時、完了時、失敗時"
+      method: "discord.post with embed"
+      file: "agents/base-agent.ts (Discord通知メソッド追加予定)"
+
+    example: |
+      await discord.post('#dev-general', {
+        embed: {
+          title: `🤖 ${agentType} Started`,
+          description: `Task: ${task.title}`,
+          color: 0x1976D2
+        }
+      });
+
+  R30_QualityReport_announces_in_DiscordCommunity:
+    id: "R30"
+    name: "announces-in"
+    source: "E6_QualityReport"
+    target: "E13_DiscordCommunity"
+    cardinality: "N:1"
+    notation: "N1"
+    description: "QualityReportがDiscordCommunityで発表される"
+
+    implementation:
+      channels: ["#dev-pull-requests"]
+      trigger: "QualityReport完成時"
+      format: "embed with score breakdown"
+      file: "agents/review/review-agent.ts"
+
+    example: |
+      await discord.post('#dev-pull-requests', {
+        embed: {
+          title: `📊 Quality Report - PR #${pr.number}`,
+          description: `Score: ${qualityReport.score}/100 ${qualityReport.passed ? '✅' : '❌'}`,
+          fields: [
+            { name: 'ESLint', value: `${qualityReport.breakdown.eslintScore}/100` }
+          ]
+        }
+      });
+
+  R31_PR_announces_in_DiscordCommunity:
+    id: "R31"
+    name: "announces-in"
+    source: "E4_PR"
+    target: "E13_DiscordCommunity"
+    cardinality: "N:1"
+    notation: "N1"
+    description: "PRがDiscordCommunityで発表される"
+
+    implementation:
+      channels: ["#release-notes", "#dev-pull-requests"]
+      trigger: "PR作成時、マージ時、クローズ時"
+      file: "agents/pr/pr-agent.ts"
+
+    example: |
+      await discord.post('#release-notes', {
+        content: `🎉 **New Pull Request**\n\nPR #${pr.number}: ${pr.title}\n${pr.url}`
+      });
+
+  R32_Deployment_notifies_to_DiscordCommunity:
+    id: "R32"
+    name: "notifies-to"
+    source: "E9_Deployment"
+    target: "E13_DiscordCommunity"
+    cardinality: "N:1"
+    notation: "N1"
+    description: "DeploymentがDiscordCommunityに通知される"
+
+    implementation:
+      channels: ["#announcements"]
+      trigger: "デプロイ成功時、失敗時、ロールバック時"
+      format: "embed with deployment details"
+      file: "agents/deployment/deployment-agent.ts"
+
+    example: |
+      await discord.post('#announcements', {
+        embed: {
+          title: `🚀 Deployment ${deploymentResult.status === 'success' ? 'Successful' : 'Failed'}`,
+          description: `Environment: ${deploymentResult.environment}\nVersion: ${deploymentResult.version}`
+        }
+      });
+
+  R33_Label_triggers_notification_to_DiscordCommunity:
+    id: "R33"
+    name: "triggers-notification-to"
+    source: "E5_Label"
+    target: "E13_DiscordCommunity"
+    cardinality: "N:1"
+    notation: "N1"
+    description: "特定LabelがDiscordCommunity通知をトリガーする"
+
+    implementation:
+      critical_labels:
+        - "priority:P0-Critical"
+        - "severity:Sev.1-Critical"
+        - "security"
+      channels: ["#help-general", "#announcements"]
+      mention: "@TechLead"
+      file: "agents/issue/issue-agent.ts"
+
+    example: |
+      const criticalLabels = ['priority:P0-Critical', 'severity:Sev.1-Critical', 'security'];
+      if (labels.some(l => criticalLabels.includes(l))) {
+        await discord.post('#help-general', {
+          content: `🚨 **Critical Issue Detected**\n\nIssue #${issue.number}\n${issue.url}`,
+          mention: '@TechLead'
+        });
+      }
+
+  R34_Escalation_notifies_to_DiscordCommunity:
+    id: "R34"
+    name: "notifies-to"
+    source: "E8_Escalation"
+    target: "E13_DiscordCommunity"
+    cardinality: "N:1"
+    notation: "N1"
+    description: "EscalationがDiscordCommunityに通知される"
+
+    implementation:
+      channels: ["#help-general"]
+      trigger: "エスカレーション発生時"
+      mention: "@{escalation.target}"
+      format: "embed with escalation details"
+      file: "agents/base-agent.ts (escalate メソッド)"
+
+    example: |
+      await discord.post('#help-general', {
+        embed: {
+          title: `⚠️ Escalation: ${escalation.target}`,
+          description: escalation.reason,
+          fields: [
+            { name: 'Severity', value: escalation.severity }
+          ]
+        },
+        mention: `@${escalation.target}`
+      });
+
+  R35_Command_integrated_with_DiscordCommunity:
+    id: "R35"
+    name: "integrated-with"
+    source: "E7_Command"
+    target: "E13_DiscordCommunity"
+    cardinality: "N:1"
+    notation: "N1"
+    description: "CommandがDiscordCommunity（カスタムBot）と統合される"
+
+    implementation:
+      bot_commands:
+        "/miyabi status": "システムステータス表示"
+        "/miyabi docs <query>": "ドキュメント検索"
+        "/miyabi agent <name>": "Agent情報表示"
+      bot: "Custom Miyabi Bot (未実装)"
+      file: "Custom Miyabi Bot (未実装)"
+
+    example: |
+      bot.onCommand('miyabi status', async (interaction) => {
+        const status = await getMiyabiStatus();
+        await interaction.reply({
+          embed: {
+            title: '🌸 Miyabi Status',
+            fields: [
+              { name: 'Active Agents', value: status.activeAgents.toString() }
+            ]
+          }
+        });
+      });
+
+  # SubIssue Relations (R37-R39)
+  R37_SubIssue_child_of_Issue:
+    id: "R37"
+    name: "child-of"
+    source: "E14_SubIssue"
+    target: "E1_Issue"
+    cardinality: "N:1"
+    notation: "N1"
+    description: "SubIssueがIssueの子である"
+
+    implementation:
+      attribute: "parentIssueNumber: number"
+      labels: ["📄 hierarchy:child"]
+      auto_actions:
+        - "Issue本文に親Issue参照を自動追加"
+        - "親Issueのチェックリストに自動追加"
+        - "完了時に親Issueの完了率を更新"
+      file: "packages/coding-agents/issue/issue-agent.ts"
+
+    note: "Inverse of R36"
+
+  R38_SubIssue_sibling_of_SubIssue:
+    id: "R38"
+    name: "sibling-of"
+    source: "E14_SubIssue"
+    target: "E14_SubIssue"
+    cardinality: "N:N"
+    notation: "N3"
+    description: "SubIssue同士が兄弟関係にある"
+
+    implementation:
+      attribute: "siblingIssueNumbers: number[]"
+      condition: "同じparentIssueNumberを持つSubIssue"
+      file: "packages/coding-agents/issue/issue-agent.ts"
+
+    example: |
+      // Issue #101 と Issue #104 は兄弟
+      // 両方とも parentIssueNumber: 100
+
+  R39_SubIssue_tracked_by_Label:
+    id: "R39"
+    name: "tracked-by"
+    source: "E14_SubIssue"
+    target: "E5_Label"
+    cardinality: "N:N"
+    notation: "N3"
+    description: "SubIssueがHIERARCHY Labelにより追跡される"
+
+    implementation:
+      hierarchy_labels:
+        - "🌳 hierarchy:root"
+        - "📂 hierarchy:parent"
+        - "📄 hierarchy:child"
+        - "🍃 hierarchy:leaf"
+      auto_assignment: "IssueAgent"
+      file: "docs/guides/LABEL_SYSTEM_GUIDE.md (HIERARCHY Labels)"
+
+    example: |
+      // Issue #100
+      labels: ["🌳 hierarchy:root", "📂 hierarchy:parent"]
+
+      // Issue #102
+      labels: ["📄 hierarchy:child", "🍃 hierarchy:leaf"]
+
+# Summary Statistics
+metadata:
+  total_relations: 39
+
+  relation_categories:
+    issue_workflow: 6  # R1-R4, R36, R37
+    task_execution: 4  # R5-R8
+    agent_operations: 7  # R9-R15
+    label_control: 3  # R16-R18
+    quality_management: 3  # R19-R21, R22-R23
+    dag_worktree: 4  # R24-R27
+    community_integration: 8  # R28-R35
+    hierarchy_management: 3  # R36-R39 (overlap with issue_workflow)
+
+  cardinality_distribution:
+    "1:1 (N1)": 21
+    "1:N (N2)": 12
+    "N:N (N3)": 6
+
+  implementation_status:
+    implemented: 31
+    partially_implemented: 5  # Discord integrations
+    planned: 3  # Custom Miyabi Bot commands
+
+  source_document: "docs/architecture/ENTITY_RELATION_MODEL.md"
+  notation_standard: "N1 (1:1), N2 (1:N), N3 (N:N)"

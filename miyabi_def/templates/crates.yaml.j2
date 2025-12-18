@@ -1,0 +1,147 @@
+{# Miyabi Crates Definition Template #}
+{% extends "base.yaml.j2" %}
+
+{% block header %}Miyabi Crates (Cargo Workspace) Definition{% endblock %}
+
+{% block content %}
+workspace:
+  type: "Cargo Workspace"
+  resolver: "2"
+  total_members: {{ global.counts.crates }}
+  root_manifest: "Cargo.toml"
+  rust_edition: "{{ global.rust.edition }}"
+  toolchain: "{{ global.rust.toolchain_version }}"
+
+categories:
+  core:
+    description: "コアライブラリとバイナリ"
+    count: {{ crates.core | length }}
+    crates:
+{% for crate in crates.core %}
+      - name: "{{ crate.name }}"
+        type: "{{ crate.type }}"
+        path: "{{ crate.path }}"
+        description: "{{ crate.description }}"
+        features:
+{% for feature in crate.features %}
+          - "{{ feature }}"
+{% endfor %}
+{% endfor %}
+
+  agents:
+    description: "エージェントシステム実装"
+    count: {{ crates.agents | length }}
+    crates:
+{% for crate in crates.agents %}
+      - name: "{{ crate.name }}"
+        type: "{{ crate.type }}"
+        path: "{{ crate.path }}"
+        description: "{{ crate.description }}"
+        agents_count: {{ crate.agents_count }}
+{% if crate.agent_types is defined %}
+        agent_types:
+{% for agent_type in crate.agent_types %}
+          - "{{ agent_type }}"
+{% endfor %}
+{% endif %}
+{% if crate.categories is defined %}
+        categories:
+{% for category in crate.categories %}
+          - "{{ category }}"
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+  integrations:
+    description: "外部サービス統合"
+    count: {{ crates.integrations | length }}
+    crates:
+{% for crate in crates.integrations %}
+      - name: "{{ crate.name }}"
+        type: "{{ crate.type }}"
+        path: "{{ crate.path }}"
+        description: "{{ crate.description }}"
+{% if crate.providers is defined %}
+        providers:
+{% for provider in crate.providers %}
+          - "{{ provider }}"
+{% endfor %}
+{% endif %}
+        features:
+{% for feature in crate.features %}
+          - "{{ feature }}"
+{% endfor %}
+{% endfor %}
+
+  utilities:
+    description: "ユーティリティライブラリ"
+    count: {{ crates.utilities | length }}
+    crates:
+{% for crate in crates.utilities %}
+      - name: "{{ crate.name }}"
+        type: "{{ crate.type }}"
+        path: "{{ crate.path }}"
+        description: "{{ crate.description }}"
+{% if crate.framework is defined %}
+        framework: "{{ crate.framework }}"
+{% endif %}
+        features:
+{% for feature in crate.features %}
+          - "{{ feature }}"
+{% endfor %}
+{% endfor %}
+
+  frontend:
+    description: "フロントエンドアプリケーション"
+    count: {{ crates.frontend | length }}
+    applications:
+{% for app in crates.frontend %}
+      - name: "{{ app.name }}"
+        type: "{{ app.type }}"
+        path: "{{ app.path }}"
+        description: "{{ app.description }}"
+{% if app.tech_stack is defined %}
+        tech_stack:
+{% for key, value in app.tech_stack.items() %}
+          {{ key }}: "{{ value }}"
+{% endfor %}
+{% endif %}
+{% if app.tech is defined %}
+        tech: "{{ app.tech }}"
+{% endif %}
+{% if app.features is defined %}
+        features:
+{% for feature in app.features %}
+          - "{{ feature }}"
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+dependency_management:
+  package_manager: "Cargo"
+  lock_file: "Cargo.lock"
+  security_scanning:
+    - "cargo-audit (daily)"
+    - "cargo-deny (pre-commit)"
+  update_strategy: "Manual review"
+
+build_configuration:
+  release_profile:
+    opt_level: 3
+    lto: "thin"
+    codegen_units: 1
+
+  dev_profile:
+    opt_level: 0
+    debug: true
+
+  test_profile:
+    opt_level: 1
+
+testing:
+  framework: "cargo test"
+  coverage: "cargo-tarpaulin"
+  coverage_target: 80
+  integration_tests: true
+  benchmark_tests: true
+{% endblock %}

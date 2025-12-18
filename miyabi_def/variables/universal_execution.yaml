@@ -1,0 +1,439 @@
+# Universal Task Execution System Variables
+# Version: 1.0.0
+
+# ═══════════════════════════════════════════════════════════════
+# World Parameters - 外部環境パラメータ
+# ═══════════════════════════════════════════════════════════════
+
+world:
+  time:
+    current: "2025-10-31T20:00:00+09:00"
+    horizon: "2025-11-30T23:59:59+09:00"
+    constraints:
+      - "business_hours: 09:00-18:00 JST"
+      - "deadline: 2025-11-15"
+
+  space:
+    physical:
+      location: "/Users/shunsuke/Dev/01-miyabi/_core/miyabi-private"
+      device: "MacBook Pro M1"
+    digital:
+      repositories:
+        - "github.com/ShunsukeHayashi/Miyabi"
+      cloud_services:
+        - "Firebase"
+        - "Vercel"
+        - "Google Cloud"
+    abstract:
+      domains:
+        - "software_development"
+        - "ai_agents"
+        - "automation"
+
+  context:
+    domain: "autonomous_development_framework"
+    user:
+      role: "developer"
+      expertise: "rust, typescript, ai_systems"
+      preferences:
+        quality_focus: true
+        automation_first: true
+    system:
+      platform: "darwin"
+      architecture: "arm64"
+      runtime: "rust-1.89.0"
+
+  resources:
+    compute:
+      cpu: "Apple M1 (8 cores)"
+      memory: "16GB"
+      storage: "500GB SSD"
+    human:
+      expertise:
+        - "Rust programming"
+        - "System architecture"
+        - "AI agent design"
+      availability: "full_time"
+    info:
+      kb: "miyabi-knowledge (Qdrant)"
+      sources:
+        - "GitHub Issues"
+        - "Documentation"
+        - "Code repository"
+
+  env:
+    load: "normal"
+    dependencies:
+      - "cargo"
+      - "git"
+      - "node"
+      - "python3"
+    constraints:
+      - "memory_limit: 80%"
+      - "cpu_limit: 90%"
+      - "no_breaking_changes"
+
+# ═══════════════════════════════════════════════════════════════
+# Intent Parameters - ユーザー意図パラメータ
+# ═══════════════════════════════════════════════════════════════
+
+intent:
+  goal:
+    primary: "Create ultra-generalized task execution system with Jinja2"
+    secondary:
+      - "Enable dynamic workflow generation"
+      - "Support multiple abstraction levels"
+    implicit:
+      - "Maintain code quality"
+      - "Ensure extensibility"
+
+  pref:
+    quality_speed: 0.8  # 0=speed優先, 1=quality優先
+    cost_performance: 0.6
+    simplicity_feature: 0.5
+
+  objectives:
+    - id: "obj_001"
+      type: "functional"
+      priority: 1
+      metrics: "completeness"
+    - id: "obj_002"
+      type: "non-functional"
+      priority: 2
+      metrics: "performance"
+    - id: "obj_003"
+      type: "quality"
+      priority: 1
+      metrics: "maintainability"
+
+  modality: "code"
+
+# ═══════════════════════════════════════════════════════════════
+# Task Template Parameters
+# ═══════════════════════════════════════════════════════════════
+
+task:
+  input:
+    schema:
+      type: "object"
+      properties:
+        user_input: "string"
+        world_state: "object"
+    constraints:
+      - "non-empty"
+      - "valid_yaml"
+    dependencies: []
+
+  output:
+    schema:
+      type: "object"
+      properties:
+        artifact: "any"
+        metadata: "object"
+    guarantees:
+      - "valid_structure"
+      - "complete"
+    side_effects:
+      - "file_creation"
+      - "state_update"
+
+  deps:
+    vertices:
+      - "understand"
+      - "generate"
+      - "execute"
+      - "integrate"
+    edges:
+      - ["understand", "generate"]
+      - ["generate", "execute"]
+      - ["execute", "integrate"]
+    order: "topological"
+
+  constraints:
+    time: "< 30 minutes"
+    resource: "< 1GB memory"
+    logic:
+      - "no_circular_dependencies"
+      - "deterministic_output"
+
+# ═══════════════════════════════════════════════════════════════
+# Workflow Instance Example
+# ═══════════════════════════════════════════════════════════════
+
+workflow:
+  id: "wf_universal_001"
+  name: "Universal Task Execution System Creation"
+
+  nodes:
+    - id: "n1"
+      type: "analysis"
+      function: "understand_intent"
+      inputs:
+        - source: "user_input"
+          transform: "parse_natural_language"
+      outputs:
+        - target: "structured_intent"
+          schema: "IntentSchema"
+      resources:
+        compute: "low"
+        time: "< 1 minute"
+      constraints:
+        - type: "quality"
+          condition: "confidence > 0.8"
+
+    - id: "n2"
+      type: "generation"
+      function: "generate_workflow"
+      inputs:
+        - source: "n1.structured_intent"
+          transform: "intent_to_tasks"
+      outputs:
+        - target: "workflow_definition"
+          schema: "WorkflowSchema"
+      resources:
+        compute: "medium"
+        time: "< 5 minutes"
+      constraints:
+        - type: "validity"
+          condition: "valid_dag"
+
+    - id: "n3"
+      type: "execution"
+      function: "execute_workflow"
+      inputs:
+        - source: "n2.workflow_definition"
+          transform: "instantiate"
+      outputs:
+        - target: "execution_results"
+          schema: "ResultSchema"
+      resources:
+        compute: "high"
+        time: "< 20 minutes"
+      constraints:
+        - type: "resource"
+          condition: "memory < 1GB"
+
+    - id: "n4"
+      type: "integration"
+      function: "integrate_results"
+      inputs:
+        - source: "n3.execution_results"
+          transform: "aggregate"
+      outputs:
+        - target: "final_artifact"
+          schema: "ArtifactSchema"
+      resources:
+        compute: "low"
+        time: "< 2 minutes"
+      constraints:
+        - type: "quality"
+          condition: "all_tests_pass"
+
+  edges:
+    - from: "n1"
+      to: "n2"
+      type: "sequential"
+      condition: "always"
+    - from: "n2"
+      to: "n3"
+      type: "sequential"
+      condition: "valid_workflow"
+    - from: "n3"
+      to: "n4"
+      type: "sequential"
+      condition: "execution_success"
+
+  execution:
+    parallelism: "maximum"
+    fault_tolerance: "retry_3_times"
+    optimization: "minimize_time"
+
+# ═══════════════════════════════════════════════════════════════
+# Tool Integration Examples
+# ═══════════════════════════════════════════════════════════════
+
+tools:
+  available:
+    - name: "file_operations"
+      category: "core"
+      operations:
+        - "read"
+        - "write"
+        - "edit"
+        - "glob"
+
+    - name: "code_execution"
+      category: "compute"
+      operations:
+        - "bash"
+        - "python"
+        - "rust"
+
+    - name: "agent_coordination"
+      category: "orchestration"
+      operations:
+        - "spawn_agent"
+        - "monitor_agent"
+        - "terminate_agent"
+
+    - name: "knowledge_management"
+      category: "intelligence"
+      operations:
+        - "vector_search"
+        - "knowledge_insert"
+        - "knowledge_update"
+
+  usage_patterns:
+    sequential:
+      - tool: "file_operations"
+        action: "read"
+        input: "requirements.txt"
+      - tool: "code_execution"
+        action: "bash"
+        command: "pip install -r requirements.txt"
+
+    parallel:
+      - tool: "agent_coordination"
+        action: "spawn_agent"
+        agents:
+          - "CodeGenAgent"
+          - "ReviewAgent"
+          - "TestAgent"
+
+    conditional:
+      - condition: "file_exists('config.yaml')"
+        then:
+          tool: "file_operations"
+          action: "read"
+        else:
+          tool: "file_operations"
+          action: "write"
+          content: "default_config"
+
+# ═══════════════════════════════════════════════════════════════
+# Command Stack Example
+# ═══════════════════════════════════════════════════════════════
+
+command_stack:
+  goal: "Create comprehensive Miyabi definition system"
+  deliverable: "Complete YAML definition files with Jinja2 templates"
+
+  commands:
+    - id: "C1"
+      name: "Structure Analysis"
+      description: "Analyze project structure and identify key entities"
+      input_prompt: |
+        Analyze the Miyabi project structure:
+        - Identify all major components
+        - Extract entity relationships
+        - Create hierarchical taxonomy
+
+    - id: "C2"
+      name: "Template Generation"
+      description: "Generate Jinja2 templates for each entity type"
+      input_prompt: |
+        For each identified entity:
+        - Create variable definition file
+        - Design Jinja2 template structure
+        - Define inheritance hierarchy
+
+    - id: "C3"
+      name: "Instantiation"
+      description: "Generate concrete YAML files from templates"
+      input_prompt: |
+        Execute template generation:
+        - Load all variables
+        - Render each template
+        - Validate output structure
+
+  execution_order:
+    - "C1"
+    - "C2"
+    - "C3"
+
+# ═══════════════════════════════════════════════════════════════
+# Output Configuration
+# ═══════════════════════════════════════════════════════════════
+
+output:
+  content:
+    primary:
+      format: "yaml"
+      structure: "hierarchical"
+    supplementary:
+      - format: "markdown"
+        type: "documentation"
+      - format: "python"
+        type: "generator_script"
+
+  metrics:
+    completeness: 0.95
+    accuracy: 0.98
+    coherence: 0.92
+
+  provenance:
+    sources:
+      - "user_intent"
+      - "project_analysis"
+      - "template_system"
+    transforms:
+      - "abstraction"
+      - "jinja2_rendering"
+      - "validation"
+
+  timestamp: "2025-10-31T20:00:00+09:00"
+
+# ═══════════════════════════════════════════════════════════════
+# User Input Example
+# ═══════════════════════════════════════════════════════════════
+
+user_input: "miyabi def: output yaml structure - 完全に秩序どおりに構造化されたmiyabiの定義をyamlで書き出し create dir miyabi_def - 一般化タスク実行ロジックとして一般化して抽象化し言葉のラベリングを抽象化オブジェクト化してJinja2の表記を用いて動的にUser Intentおよび外部環境の抽象化[world](Parm, , , , )に従って動的生成する"
+
+# ═══════════════════════════════════════════════════════════════
+# Execution Plan Example
+# ═══════════════════════════════════════════════════════════════
+
+execution_plan:
+  phases:
+    - phase: 1
+      name: "Intent Understanding"
+      tasks:
+        - "Parse user input"
+        - "Extract goals and constraints"
+        - "Contextualize with world state"
+      duration: "< 2 minutes"
+
+    - phase: 2
+      name: "Structure Design"
+      tasks:
+        - "Design directory structure"
+        - "Define entity abstractions"
+        - "Create template hierarchy"
+      duration: "< 5 minutes"
+
+    - phase: 3
+      name: "Implementation"
+      tasks:
+        - "Create variable files"
+        - "Write Jinja2 templates"
+        - "Implement generator script"
+      duration: "< 15 minutes"
+
+    - phase: 4
+      name: "Generation"
+      tasks:
+        - "Run generator"
+        - "Validate outputs"
+        - "Create documentation"
+      duration: "< 5 minutes"
+
+    - phase: 5
+      name: "Verification"
+      tasks:
+        - "Check completeness"
+        - "Validate structure"
+        - "Test generation process"
+      duration: "< 3 minutes"
+
+  total_estimated_time: "< 30 minutes"
+  parallelizable_phases: [3, 4]

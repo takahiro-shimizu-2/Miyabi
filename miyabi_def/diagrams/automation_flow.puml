@@ -1,0 +1,73 @@
+@startuml miyabi_automation_flow
+skinparam activityBackgroundColor #f8fafc
+skinparam activityBorderColor #2563eb
+skinparam activityDiamondBackgroundColor #e0f2fe
+skinparam activityDiamondBorderColor #2563eb
+skinparam shadowing false
+
+title Miyabi Intent → Automation Flow (Layered Detail)
+start
+
+partition "Intent" {
+  :1.0 Intent Overview;
+  partition "1.x Intent Detailing" {
+    :1.1 Compose Intent YAML\n      - project / intent / outputs / variables;\n      - reference docs/miyabi-def-automation.md;
+    :1.2 Schema Validation\n      - intent-schema.yaml\n      - enforce required keys & types;
+    :1.3 Persist Intent\n      - save under miyabi_def/intents/\n      - version via git commit;
+  }
+  note right
+    Key fields:\n    • project.name / summary\n    • intent.objective / constraints\n    • outputs.templates aliases\n    • variables.* overrides\n    • agents.include / exclude
+  end note
+}
+
+partition "Pipeline" {
+  partition "2.x Planning" {
+    :2.1 Resolve Template Aliases\n      - world → world_definition.yaml.j2\n      - agents → agents.yaml.j2;
+    :2.2 Build Template Plan\n      - order = DEFAULT_TEMPLATE_ORDER\n      - override via intent.outputs.templates;
+  }
+  partition "3.x Variable Handling" {
+    :3.1 Load Base Variables\n      - variables/*.yaml (entities, workflows…);
+    :3.2 Deep Merge Overrides\n      - intent.variables → base dict\n      - inject `intent` context;
+  }
+  partition "4.x Rendering" {
+    :4.1 Render Templates\n      - Environment: Jinja2\n      - Output: generated/*.yaml;
+    :4.2 Validate Outputs\n      - optional schema linting\n      - diff vs previous run;
+  }
+  partition "5.x Artefacts" {
+    :5.1 Generate PlantUML\n      - entities / agents / overview / automation_flow;
+    :5.2 Update Docs\n      - docs/miyabi-def-automation.md\n      - changelog / release notes;
+  }
+}
+
+partition "Knowledge Sync" {
+  :6.0 Knowledge Distribution;
+  partition "6.x Claude/Codex" {
+    :6.1 Update Agent Specs\n      - .claude/agents/specs\n      - .codex/agents/specs;
+    :6.2 Refresh Command Docs\n      - /tmux-control etc.\n      - INDEX.md に反映;
+    :6.3 Publish Guides\n      - guides/TMUX_AI_AGENT_CONTROL.md\n      - docs/miyabi-def-automation.md;
+  }
+}
+
+partition "Runtime" {
+  partition "7.x Automation" {
+    :7.1 CoordinatorAgent→Task DAG;
+    :7.2 CodeGen/Review/PRAgent Execution;
+    :7.3 DeploymentAgent handles delivery;
+    :7.4 TmuxControlAgent supervises tmux panes;
+  }
+  partition "8.x Monitoring" {
+    :8.1 Metrics Capture (.ai/metrics);
+    :8.2 Infinity Logs & Alerts;
+    :8.3 Reporting (/daily-update, /pattern3-report);
+    :8.4 Feedback to Intent Backlog;
+  }
+}
+
+repeat
+  if (Need intent refinement?) then (yes)
+    :Adjust intent YAML\n      - Update constraints/targets\n      - Append learnings & rerun;
+  endif
+repeat while (Need intent refinement?)
+stop
+
+@enduml

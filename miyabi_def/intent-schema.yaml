@@ -1,0 +1,87 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: Miyabi Intent Schema
+description: >
+  Top-level schema for describing a human intent that drives the dynamic
+  generation of Miyabi definition artifacts.
+type: object
+required:
+  - project
+  - outputs
+properties:
+  project:
+    type: object
+    description: High-level context for the automation run.
+    required:
+      - name
+      - summary
+    properties:
+      name:
+        type: string
+      summary:
+        type: string
+      stakeholders:
+        type: array
+        items:
+          type: string
+      priority:
+        type: string
+        enum: [low, normal, high, critical]
+      repository:
+        type: string
+        description: Git repository or path reference (optional)
+  intent:
+    type: object
+    description: Natural language objective and constraints.
+    properties:
+      objective:
+        type: string
+      constraints:
+        type: array
+        items:
+          type: string
+      success_criteria:
+        type: array
+        items:
+          type: string
+  outputs:
+    type: object
+    description: Generated deliverables requested by the user.
+    required:
+      - templates
+    properties:
+      templates:
+        description: >
+          List of template aliases or filenames to materialise.
+          If omitted the default template order will be used.
+        oneOf:
+          - type: array
+            items:
+              type: string
+          - type: string
+      extra_artifacts:
+        type: array
+        description: Optional list of non-templated artifacts to generate.
+        items:
+          type: string
+  variables:
+    type: object
+    description: Additional variables to merge into the template context.
+  agents:
+    type: object
+    description: Agent specific overrides.
+    properties:
+      include:
+        type: array
+        items:
+          type: string
+      exclude:
+        type: array
+        items:
+          type: string
+  notes:
+    type: array
+    description: Free-form notes for the automation pipeline.
+    items:
+      type: string
+
+additionalProperties: true

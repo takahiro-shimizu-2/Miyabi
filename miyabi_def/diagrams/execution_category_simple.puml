@@ -1,0 +1,251 @@
+@startuml SWML - Execution Category
+!theme blueprint
+skinparam backgroundColor #F8F9FA
+
+title SWML - Category Theoretic Structure\nExecution Category 𝓔\nVersion 1.0.0
+
+' === Core Category Definition ===
+
+class "Execution Category 𝓔" as category {
+  **Objects (Spaces)**
+  • ℐ (Intent)
+  • 𝒲 (World)
+  • 𝒮 (Structure)
+  • 𝒯 (Task)
+  • 𝒜 (Allocation)
+  • ℛ (Result)
+  • 𝒟 (Deliverable)
+  • 𝒦 (Knowledge)
+  --
+  **Morphisms (Phases)**
+  • θ₁: ℐ × 𝒲 → 𝒮
+  • θ₂: 𝒮 × 𝒲 → 𝒯
+  • θ₃: 𝒯 × 𝒲.r → 𝒜
+  • θ₄: 𝒜 → ℛ
+  • θ₅: ℛ → 𝒟
+  • θ₆: 𝒟 × ℐ × 𝒲 → 𝒦
+  --
+  **Laws**
+  • Identity: ∀ A: id_A : A → A
+  • Composition: g ∘ f : A → C
+  • Associativity: h ∘ (g ∘ f) = (h ∘ g) ∘ f
+}
+
+' === Monoid Structure ===
+
+class "Monoid (𝔼, ∘, id)" as monoid {
+  **Binary Operation**
+  ∘: 𝔼 × 𝔼 → 𝔼
+  --
+  **Identity Element**
+  id: A → A
+  --
+  **Laws**
+  • (e₁ ∘ e₂) ∘ e₃ = e₁ ∘ (e₂ ∘ e₃)
+  • id ∘ e = e ∘ id = e
+}
+
+' === Functor ===
+
+class "World State Functor F_W" as functor {
+  **Signature**
+  F_W: 𝓔 → 𝓔
+  --
+  **On Objects**
+  F_W(X) = X × 𝒲
+  --
+  **On Morphisms**
+  F_W(f) = f × id_W
+  --
+  **Laws**
+  • F_W(id_X) = id_{F_W(X)}
+  • F_W(g ∘ f) = F_W(g) ∘ F_W(f)
+}
+
+' === Natural Transformations ===
+
+class "Natural Transformation η" as eta {
+  **Signature**
+  η: Id → F_W
+  --
+  **Component at X**
+  η_X: X → X × 𝒲
+  --
+  **Naturality**
+  F_W(f) ∘ η_X = η_Y ∘ f
+}
+
+class "Natural Transformation ε" as epsilon {
+  **Signature**
+  ε: F_W → Id
+  --
+  **Component at X**
+  ε_X: X × 𝒲 → X
+  --
+  **Projection**
+  π₁: X × 𝒲 → X
+}
+
+' === Task Algebra ===
+
+class "Task Algebra" as task_algebra {
+  **Sequential Composition (∘)**
+  (T₁ ∘ T₂)(x) = T₂(T₁(x))
+  --
+  **Parallel Composition (⊗)**
+  (T₁ ⊗ T₂)(x₁, x₂) = (T₁(x₁), T₂(x₂))
+  --
+  **Conditional (⊕)**
+  (T₁ ⊕ T₂)(x) = if cond then T₁ else T₂
+  --
+  **Iteration (*)**
+  T* = ⨁_{n=0}^{∞} Tⁿ
+  --
+  **Laws**
+  • Associativity (∘, ⊗)
+  • Commutativity (⊗ for independent)
+  • Distributivity: T₁ ∘ (T₂ ⊗ T₃) = (T₁ ∘ T₂) ⊗ (T₁ ∘ T₃)
+}
+
+' === DAG Structure ===
+
+class "DAG Structure" as dag {
+  **Graph**
+  G = (V, E, w)
+  --
+  **Vertices**
+  V = {T₁, T₂, ..., Tₙ}
+  --
+  **Edges**
+  E ⊆ V × V
+  --
+  **Weights**
+  w: E → ℝ⁺
+  --
+  **Topological Order**
+  σ: V → {1, 2, ..., n}
+  --
+  **Critical Path**
+  CP = arg max_{path} ∑_{e ∈ path} w(e)
+}
+
+' === Theorems ===
+
+class "Composability Theorem" as thm1 {
+  **Statement**
+  ∀ T₁, T₂ ∈ 𝒯:
+    valid(T₁) ∧ valid(T₂)
+    ⟹ valid(T₁ ∘ T₂)
+  --
+  **Proof**
+  Type safety + constraint propagation
+}
+
+class "Functor Preservation" as thm2 {
+  **Statement**
+  F_W preserves all categorical structure
+  --
+  **Proof**
+  By functor laws + naturality
+}
+
+class "Yoneda Lemma" as thm3 {
+  **Statement**
+  Nat(Hom(A, -), F) ≅ F(A)
+  --
+  **Application**
+  Natural transformations ≅ functor values
+}
+
+' === Rust Implementation ===
+
+class "Category Trait (Rust)" as rust_cat {
+  trait Morphism<A, B> {
+    fn compose<C>(
+      g: impl Morphism<B, C>
+    ) -> impl Morphism<A, C>;
+
+    fn id() -> impl Morphism<A, A>;
+  }
+}
+
+class "Functor Trait (Rust)" as rust_func {
+  trait Functor<F> {
+    fn fmap<A, B>(
+      f: impl Fn(A) -> B
+    ) -> impl Fn(F<A>) -> F<B>;
+  }
+}
+
+class "WorldState Struct (Rust)" as rust_world {
+  struct WorldState<T> {
+    value: T,
+    world: World,
+  }
+  --
+  impl<T> Functor for WorldState<T> {
+    fn fmap<A, B>(f: fn(T) -> B)
+      -> fn(WorldState<T>) -> WorldState<B>
+  }
+}
+
+' === Relationships ===
+
+category --> monoid : has structure
+category --> functor : defines
+functor --> eta : via
+functor --> epsilon : via
+category --> task_algebra : operations
+task_algebra --> dag : implements
+
+thm1 --> category : proves property
+thm2 --> functor : proves property
+thm3 --> eta : applies to
+
+rust_cat --> rust_func
+rust_func --> rust_world
+
+' === Notes ===
+
+note top of category
+  **Execution Category 𝓔**
+  Provides categorical semantics
+  for the entire SWML system
+
+  Objects = Spaces (8)
+  Morphisms = Phase transitions (6)
+end note
+
+note bottom of functor
+  **World State Functor F_W**
+  Lifts every computation to
+  include world state tracking
+
+  Preserves identity & composition
+end note
+
+note right of task_algebra
+  **Algebraic Operations**
+  Enable compositional
+  task construction
+
+  ∘ : Sequential
+  ⊗ : Parallel
+  ⊕ : Conditional
+  * : Iteration
+end note
+
+legend right
+  |= Symbol |= Meaning |
+  | 𝓔 | Execution Category |
+  | 𝔼 | Execution Engine Monoid |
+  | F_W | World State Functor |
+  | η, ε | Natural Transformations |
+  | ∘ | Sequential Composition |
+  | ⊗ | Parallel Composition |
+  | ⊕ | Conditional |
+  | * | Iteration |
+  | θ₁-θ₆ | Six Execution Phases |
+endlegend
+
+@enduml

@@ -1,0 +1,519 @@
+{# Universal Task Execution Logic - Jinja2 Template #}
+{# Version: 1.0.0 - Ultra-Generalized Abstract System #}
+
+---
+# ═══════════════════════════════════════════════════════════════
+# Ω-System: Universal Task Execution Engine
+# ═══════════════════════════════════════════════════════════════
+
+meta:
+  system_name: "Ω-System"
+  version: "1.0.0"
+  abstraction_level: "∞"
+  description: "完全抽象化タスク実行ロジック - ユーザー意図とWorld状態から動的生成"
+
+# ═══════════════════════════════════════════════════════════════
+# § 1. World Abstraction - 外部環境の完全抽象化
+# ═══════════════════════════════════════════════════════════════
+
+World:
+  signature: "W(t, s, c, r, e) → State"
+
+  parameters:
+    temporal:
+      symbol: "t"
+      type: "TimeVector"
+      components:
+        - name: "current_time"
+          value: "{{ world.time.current }}"
+        - name: "time_horizon"
+          value: "{{ world.time.horizon }}"
+        - name: "temporal_constraints"
+          value: "{{ world.time.constraints }}"
+
+    spatial:
+      symbol: "s"
+      type: "SpaceVector"
+      components:
+        - name: "physical_space"
+          value: "{{ world.space.physical }}"
+        - name: "digital_space"
+          value: "{{ world.space.digital }}"
+        - name: "abstract_space"
+          value: "{{ world.space.abstract }}"
+
+    contextual:
+      symbol: "c"
+      type: "ContextTensor"
+      dimensions:
+        - name: "domain_context"
+          value: "{{ world.context.domain }}"
+        - name: "user_context"
+          value: "{{ world.context.user }}"
+        - name: "system_context"
+          value: "{{ world.context.system }}"
+
+    resources:
+      symbol: "r"
+      type: "ResourceManifold"
+      categories:
+        computational:
+          cpu: "{{ world.resources.compute.cpu }}"
+          memory: "{{ world.resources.compute.memory }}"
+          storage: "{{ world.resources.compute.storage }}"
+        human:
+          expertise: "{{ world.resources.human.expertise }}"
+          availability: "{{ world.resources.human.availability }}"
+        informational:
+          knowledge_base: "{{ world.resources.info.kb }}"
+          data_sources: "{{ world.resources.info.sources }}"
+
+    environmental:
+      symbol: "e"
+      type: "EnvironmentState"
+      factors:
+        - name: "system_load"
+          value: "{{ world.env.load }}"
+        - name: "external_dependencies"
+          value: "{{ world.env.dependencies }}"
+        - name: "constraints"
+          value: "{{ world.env.constraints }}"
+
+  state_function:
+    formula: "Ψ(W) = ∫[t₀→t₁] ∇(s, c, r, e) dt"
+    description: "World状態の時間積分による全体状態導出"
+
+# ═══════════════════════════════════════════════════════════════
+# § 2. Intent Abstraction - ユーザー意図の完全抽象化
+# ═══════════════════════════════════════════════════════════════
+
+Intent:
+  signature: "I(g, p, o, m) → Objective"
+
+  parameters:
+    goal:
+      symbol: "g"
+      type: "GoalVector"
+      structure:
+        primary: "{{ intent.goal.primary }}"
+        secondary: "{{ intent.goal.secondary }}"
+        implicit: "{{ intent.goal.implicit }}"
+
+    preferences:
+      symbol: "p"
+      type: "PreferenceMatrix"
+      dimensions:
+        quality_vs_speed: "{{ intent.pref.quality_speed }}"
+        cost_vs_performance: "{{ intent.pref.cost_performance }}"
+        simplicity_vs_feature: "{{ intent.pref.simplicity_feature }}"
+
+    objectives:
+      symbol: "o"
+      type: "ObjectiveSet"
+      elements:
+{% for objective in intent.objectives %}
+        - id: "{{ objective.id }}"
+          type: "{{ objective.type }}"
+          priority: "{{ objective.priority }}"
+          metrics: "{{ objective.metrics }}"
+{% endfor %}
+
+    modality:
+      symbol: "m"
+      type: "ModalitySpace"
+      supported:
+        - "text"
+        - "code"
+        - "visual"
+        - "data"
+        - "hybrid"
+
+  mapping_function:
+    formula: "Φ(I) = arg max[T∈𝕋] ⟨I, T⟩"
+    description: "意図空間からタスク空間への最適写像"
+
+# ═══════════════════════════════════════════════════════════════
+# § 3. Task Abstraction - タスクの完全抽象化
+# ═══════════════════════════════════════════════════════════════
+
+Task:
+  signature: "T(f, i, o, d, c) → Execution"
+
+  abstract_definition:
+    function:
+      symbol: "f"
+      type: "TransformFunction"
+      notation: "f: Input → Output"
+      properties:
+        - "deterministic or stochastic"
+        - "pure or impure"
+        - "atomic or composite"
+
+    input:
+      symbol: "i"
+      type: "InputManifold"
+      structure:
+        schema: "{{ task.input.schema }}"
+        constraints: "{{ task.input.constraints }}"
+        dependencies: "{{ task.input.dependencies }}"
+
+    output:
+      symbol: "o"
+      type: "OutputManifold"
+      structure:
+        schema: "{{ task.output.schema }}"
+        guarantees: "{{ task.output.guarantees }}"
+        side_effects: "{{ task.output.side_effects }}"
+
+    dependencies:
+      symbol: "d"
+      type: "DependencyGraph"
+      structure: "DAG(V, E)"
+      properties:
+        vertices: "{{ task.deps.vertices }}"
+        edges: "{{ task.deps.edges }}"
+        order: "{{ task.deps.order }}"
+
+    constraints:
+      symbol: "c"
+      type: "ConstraintSet"
+      categories:
+        temporal: "{{ task.constraints.time }}"
+        resource: "{{ task.constraints.resource }}"
+        logical: "{{ task.constraints.logic }}"
+
+  composition_algebra:
+    sequential: "T₁ ∘ T₂ = T₃"
+    parallel: "T₁ ⊗ T₂ = T₃"
+    conditional: "T₁ ⊕ T₂ = T₃"
+    iterative: "T* = ⊕[n=0→∞] Tⁿ"
+
+# ═══════════════════════════════════════════════════════════════
+# § 4. Execution Engine - 実行エンジンの抽象化
+# ═══════════════════════════════════════════════════════════════
+
+ExecutionEngine:
+  signature: "E(W, I, T) → Result"
+
+  phases:
+
+    # Phase 1: Intent Understanding
+    phase_understanding:
+      name: "Θ₁: Intent→Structure"
+      function: "θ₁(I, W) → S"
+      operations:
+        - name: "parse"
+          formula: "P(I) → I'"
+        - name: "contextualize"
+          formula: "C(I', W) → I''"
+        - name: "validate"
+          formula: "V(I'') → {valid, ¬valid}"
+      output: "Structured Intent (S)"
+
+    # Phase 2: Task Generation
+    phase_generation:
+      name: "Θ₂: Structure→Tasks"
+      function: "θ₂(S, W) → 𝕋"
+      operations:
+        - name: "decompose"
+          formula: "D(S) → {T₁, T₂, ..., Tₙ}"
+        - name: "prioritize"
+          formula: "π(𝕋) → 𝕋'"
+        - name: "optimize"
+          formula: "O(𝕋', W) → 𝕋*"
+      output: "Task Set (𝕋*)"
+
+    # Phase 3: Resource Allocation
+    phase_allocation:
+      name: "Θ₃: Tasks→Resources"
+      function: "θ₃(𝕋*, W.r) → A"
+      operations:
+        - name: "estimate"
+          formula: "ε(T) → r̂"
+        - name: "allocate"
+          formula: "α(𝕋*, W.r) → A"
+        - name: "schedule"
+          formula: "σ(A) → Schedule"
+      output: "Allocation Map (A)"
+
+    # Phase 4: Parallel Execution
+    phase_execution:
+      name: "Θ₄: Schedule→Results"
+      function: "θ₄(Schedule, A) → R"
+      operations:
+        - name: "dispatch"
+          formula: "δ(T, A) → Worker"
+        - name: "execute"
+          formula: "ε(Worker, T) → r"
+        - name: "monitor"
+          formula: "μ(Worker*) → Status"
+      output: "Result Set (R)"
+
+    # Phase 5: Integration
+    phase_integration:
+      name: "Θ₅: Results→Deliverable"
+      function: "θ₅(R) → D"
+      operations:
+        - name: "aggregate"
+          formula: "⨁[i=1→n] rᵢ → R'"
+        - name: "synthesize"
+          formula: "Σ(R') → D'"
+        - name: "validate"
+          formula: "V(D', I) → D"
+      output: "Final Deliverable (D)"
+
+    # Phase 6: Feedback Loop
+    phase_feedback:
+      name: "Θ₆: Result→Knowledge"
+      function: "θ₆(D, I, W) → K"
+      operations:
+        - name: "evaluate"
+          formula: "E(D, I.o) → Score"
+        - name: "learn"
+          formula: "L(D, Score) → ΔK"
+        - name: "update"
+          formula: "U(K, ΔK) → K'"
+      output: "Updated Knowledge (K')"
+
+  total_function:
+    formula: "E = θ₆ ∘ θ₅ ∘ θ₄ ∘ θ₃ ∘ θ₂ ∘ θ₁"
+    description: "完全な実行は6つのフェーズの合成関数"
+
+# ═══════════════════════════════════════════════════════════════
+# § 5. Dynamic Workflow Generation - 動的ワークフロー生成
+# ═══════════════════════════════════════════════════════════════
+
+WorkflowGenerator:
+  signature: "G(I, W) → Workflow"
+
+  generation_strategy:
+    template_based:
+      condition: "∃T ∈ Templates: similarity(I, T.pattern) > threshold"
+      action: "instantiate(T, I, W)"
+
+    composition_based:
+      condition: "∃{T₁, ..., Tₙ} ∈ Primitives: compose(T*) ≅ I"
+      action: "synthesize({T₁, ..., Tₙ}, I, W)"
+
+    learning_based:
+      condition: "∃H ∈ History: analogy(I, H) > threshold"
+      action: "adapt(H, I, W)"
+
+    generative:
+      condition: "otherwise"
+      action: "generate_novel(I, W)"
+
+  workflow_template:
+    structure: |
+      Workflow[{{ workflow.id }}]:
+        name: "{{ workflow.name }}"
+        intent_signature: "{{ intent.goal.primary | replace(' ', '_') | lower }}"
+        world_timestamp: "{{ world.time.current }}"
+
+        nodes:
+{% for node in workflow.nodes %}
+          - id: "{{ node.id }}"
+            type: "{{ node.type }}"
+            function: "{{ node.function }}"
+            inputs:
+{% for input in node.inputs %}
+              - source: "{{ input.source }}"
+                transform: "{{ input.transform }}"
+{% endfor %}
+            outputs:
+{% for output in node.outputs %}
+              - target: "{{ output.target }}"
+                schema: "{{ output.schema }}"
+{% endfor %}
+            resources:
+              compute: "{{ node.resources.compute }}"
+              time: "{{ node.resources.time }}"
+            constraints:
+{% for constraint in node.constraints %}
+              - type: "{{ constraint.type }}"
+                condition: "{{ constraint.condition }}"
+{% endfor %}
+{% endfor %}
+
+        edges:
+{% for edge in workflow.edges %}
+          - from: "{{ edge.from }}"
+            to: "{{ edge.to }}"
+            type: "{{ edge.type }}"
+            condition: "{{ edge.condition | default('always') }}"
+{% endfor %}
+
+        execution_strategy:
+          parallelism: "{{ workflow.execution.parallelism }}"
+          fault_tolerance: "{{ workflow.execution.fault_tolerance }}"
+          optimization: "{{ workflow.execution.optimization }}"
+
+# ═══════════════════════════════════════════════════════════════
+# § 6. Meta-Learning System - メタ学習システム
+# ═══════════════════════════════════════════════════════════════
+
+MetaLearning:
+  signature: "M(H, E) → Strategy"
+
+  knowledge_base:
+    schema: |
+      K = {
+        patterns: {
+          intent_pattern → task_pattern,
+          task_pattern → implementation_pattern,
+          error_pattern → resolution_pattern
+        },
+        metrics: {
+          success_rate: Float,
+          efficiency: Float,
+          quality: Float
+        },
+        history: [
+          (Intent, World, Workflow, Result, Feedback)*
+        ]
+      }
+
+  learning_functions:
+    pattern_extraction:
+      formula: "P(H) = arg max[p∈𝒫] frequency(p, H)"
+      description: "履歴から頻出パターンを抽出"
+
+    strategy_optimization:
+      formula: "S* = arg max[s∈𝒮] 𝔼[Q(s, H)]"
+      description: "期待品質を最大化する戦略を選択"
+
+    adaptation:
+      formula: "A(s, w) = s + α∇Q(s, w)"
+      description: "World状態に応じて戦略を適応"
+
+# ═══════════════════════════════════════════════════════════════
+# § 7. Output Abstraction - 出力の抽象化
+# ═══════════════════════════════════════════════════════════════
+
+Output:
+  signature: "O(R, I, F) → Artifact"
+
+  transformation_pipeline:
+    - stage: "extraction"
+      function: "λR. extract_essence(R)"
+
+    - stage: "formatting"
+      function: "λE. format(E, I.m)"
+
+    - stage: "enrichment"
+      function: "λF. enrich(F, metadata)"
+
+    - stage: "validation"
+      function: "λA. validate(A, I.o)"
+
+  artifact_schema:
+    structure: |
+      Artifact:
+        content:
+          primary: "{{ output.content.primary.format if output.content.primary is defined else 'text' }}"
+          supplementary: "{{ output.content.supplementary | length if output.content.supplementary is defined else 0 }} items"
+
+        metadata:
+          intent_reference: "{{ intent.goal.primary if intent.goal.primary is defined else 'unknown' }}"
+          world_timestamp: "{{ world.time.current if world.time.current is defined else 'N/A' }}"
+          execution_status: "completed"
+          quality_metrics: "{{ output.metrics if output.metrics is defined else {} }}"
+
+        provenance:
+          sources: "{{ output.provenance.sources | join(', ') if output.provenance.sources is defined else 'N/A' }}"
+          transformations: "{{ output.provenance.transforms | join(', ') if output.provenance.transforms is defined else 'N/A' }}"
+          timestamp: "{{ output.timestamp if output.timestamp is defined else 'N/A' }}"
+
+# ═══════════════════════════════════════════════════════════════
+# § 8. System Properties - システム特性
+# ═══════════════════════════════════════════════════════════════
+
+SystemProperties:
+
+  compositionality:
+    property: "∀T₁, T₂: valid(T₁) ∧ valid(T₂) ⟹ valid(T₁ ∘ T₂)"
+    description: "有効なタスクの合成は常に有効"
+
+  convergence:
+    property: "lim[n→∞] E^n(I, W) → Result*"
+    description: "反復実行は最適解に収束"
+
+  adaptability:
+    property: "∀W, W': d(W, W') < ε ⟹ d(E(I,W), E(I,W')) < δ(ε)"
+    description: "World状態の小変化に対する連続性"
+
+  scalability:
+    property: "T(n) = O(f(n))"
+    description: "問題サイズに対する計算複雑度"
+
+  robustness:
+    property: "∀noise: ‖E(I+noise, W) - E(I, W)‖ < tolerance"
+    description: "ノイズに対する頑健性"
+
+# ═══════════════════════════════════════════════════════════════
+# § 9. Mathematical Foundation - 数学的基礎
+# ═══════════════════════════════════════════════════════════════
+
+MathematicalFoundation:
+
+  topology:
+    intent_space: "(ℐ, τ_ℐ)"
+    world_space: "(𝒲, τ_𝒲)"
+    task_space: "(𝕋, τ_𝕋)"
+    result_space: "(ℝ, τ_ℝ)"
+
+  mappings:
+    intent_to_task: "Φ: ℐ × 𝒲 → 𝕋"
+    task_to_result: "Ψ: 𝕋 × 𝒲 → ℝ"
+    end_to_end: "Ω: ℐ × 𝒲 → ℝ where Ω = Ψ ∘ Φ"
+
+  optimization:
+    objective: "max Q(Ω(I, W)) subject to C(W)"
+    constraints:
+      - "resource_usage(Ω) ≤ W.r"
+      - "execution_time(Ω) ≤ W.t.horizon"
+      - "quality(Ω(I, W)) ≥ I.o.min_quality"
+
+  measure_theory:
+    probability_space: "(Ω, ℱ, ℙ)"
+    expectation: "𝔼[Q] = ∫_Ω Q(ω) dℙ(ω)"
+    variance: "Var[Q] = 𝔼[(Q - 𝔼[Q])²]"
+
+# ═══════════════════════════════════════════════════════════════
+# § 10. Instantiation Example - 具体化例
+# ═══════════════════════════════════════════════════════════════
+
+InstantiationExample:
+  comment: "以下は具体的なユーザー意図に対する動的生成例"
+
+  user_intent_raw: "{{ user_input }}"
+
+  parsed_intent:
+    goal:
+      primary: "{{ intent.goal.primary }}"
+    preferences:
+      quality_speed: "{{ intent.pref.quality_speed }}"
+    objectives:
+{% for obj in intent.objectives %}
+      - {{ obj }}
+{% endfor %}
+
+  world_snapshot:
+    time: "{{ world.time.current }}"
+    resources_available:
+      compute: "{{ world.resources.compute }}"
+    constraints:
+      - "{{ world.constraints | join('\n      - ') }}"
+
+  generated_workflow:
+    name: "{{ workflow.name if workflow.name is defined else 'N/A' }}"
+    nodes_count: "{{ workflow.nodes | length if workflow.nodes is defined else 0 }}"
+    edges_count: "{{ workflow.edges | length if workflow.edges is defined else 0 }}"
+
+  execution_plan:
+    total_phases: "{{ execution_plan.phases | length if execution_plan.phases is defined else 0 }}"
+    estimated_time: "{{ execution_plan.total_estimated_time if execution_plan.total_estimated_time is defined else 'N/A' }}"
+
+# ═══════════════════════════════════════════════════════════════
+# End of Ω-System Universal Task Execution Logic
+# ═══════════════════════════════════════════════════════════════

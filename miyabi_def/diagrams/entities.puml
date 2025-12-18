@@ -1,0 +1,174 @@
+@startuml miyabi_entities
+
+!define ENTITY class
+
+title Miyabi Entity-Relation Model (14 Entities)
+
+class Issue {
+  ' GitHub IssueエンティティPrimary entity in Miyabi system
+  +number
+  +title
+  +body
+  +state
+  +labels
+  +assignee
+  +createdAt
+  +updatedAt
+}
+
+class Task {
+  ' IssueからCoordinatorAgentにより分解されたタスク
+  +id
+  +title
+  +description
+  +type
+  +priority
+  +severity
+  +impact
+  +assignedAgent
+  +dependencies
+  +estimatedDuration
+  +status
+  +startTime
+  +metadata
+}
+
+class Agent {
+  ' 自律実行Agent（Coding: 7個, Business: 14個）
+}
+
+class PR {
+  ' GitHub Pull Request
+  +title
+  +body
+  +baseBranch
+  +number
+  +url
+  +state
+}
+
+class Label {
+  ' GitHub Label（57個、11カテゴリ）
+}
+
+class QualityReport {
+  ' ReviewAgentによるコード品質レポート
+  +score
+  +passed
+  +issues
+  +recommendations
+  +eslintScore
+  +typeScriptScore
+  +securityScore
+}
+
+class Command {
+  ' Claude Code Slash Command（9個）
+}
+
+class Escalation {
+  ' エスカレーション情報
+}
+
+class Deployment {
+  ' デプロイ情報
+  +environment
+  +version
+  +projectId
+  +environment
+  +version
+  +projectId
+}
+
+class LDDLog {
+  ' Log-Driven Development実行ログ
+  +sessionId
+  +date
+  +deviceIdentifier
+  +intent
+  +plan
+  +implementation
+  +memoryBankUpdates
+  +nextSteps
+}
+
+class DAG {
+  ' タスク依存グラフ
+  +nodes
+  +edges
+  +levels
+  +from
+  +to
+}
+
+class Worktree {
+  ' Git Worktree（並列実行基盤）
+}
+
+class DiscordCommunity {
+  ' Discordコミュニティ統合
+  +serverId
+  +serverName
+  +channels
+  +roles
+  +members
+  +webhooks
+  +botIntegrations
+  +createdAt
+}
+
+class SubIssue {
+  ' 階層的Issue（親子関係サポート）
+  +parentIssueNumber
+  +childIssueNumbers
+  +hierarchyLevel
+  +siblingIssueNumbers
+  +ancestorPath
+  +isLeaf
+  +isRoot
+  +totalDescendants
+  +completionProgress
+}
+
+' Relations
+ -->  : IssueがIssueAgentにより分析される
+ --> 
+ -->  : IssueにLabel配列が付与される
+ -->  : IssueからPRが作成される（複数PR可能性あり）
+ -->  : IssueがSubIssue（子Issue）を持つ
+ -->  : TaskがAgentに割り当てられる
+ -->  : TaskがTask（依存関係）に依存する
+ -->  : TaskがDAGに含まれる
+ -->  : TaskがWorktree内で実行される
+ -->  : AgentがTaskを実行する
+ -->  : Agent（複数）がPR生成に関与する
+ --> 
+ -->  : AgentがEscalationをトリガーする
+ --> 
+ -->  : 全てのAgentがLDDLogに出力する
+ -->  : CommandがAgentを起動する
+ -->  : 特定LabelがAgent起動をトリガーする
+ -->  : Label（複数）がIssue状態を定義する
+ -->  : Label（複数）がTaskを分類する
+ -->  : PRがReviewAgentによりレビューされる
+ -->  : PRがQualityReportを持つ
+ -->  : PRがIssueに紐づく
+ --> 
+ -->  : QualityReportがPRに添付される
+ -->  : DAGがIssueから分解される
+ -->  : DAGがTask配列を含む
+ -->  : WorktreeがTaskを実行する
+ -->  : WorktreeからPRが作成される
+ -->  : IssueがDiscordCommunityに通知される
+ -->  : AgentがDiscordCommunityに投稿する
+ --> 
+ -->  : PRがDiscordCommunityで発表される
+ --> 
+ --> 
+ --> 
+ --> 
+ -->  : SubIssueがIssueの子である
+ -->  : SubIssue同士が兄弟関係にある
+ --> 
+
+@enduml

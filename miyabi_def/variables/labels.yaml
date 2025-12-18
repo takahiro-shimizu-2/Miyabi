@@ -1,0 +1,705 @@
+# Miyabi Label System - 57 Labels across 11 Categories
+# Version: 1.0.0
+# Source: docs/guides/LABEL_SYSTEM_GUIDE.md
+# Philosophy: "Everything starts with an Issue. Labels define the state."
+
+labels:
+  # Category 1: STATE Labels (8個) - ライフサイクル管理
+  STATE:
+    description: "Issueの現在の状態を表す最重要ラベル（必ず1つ付与）"
+    count: 8
+    role: "ライフサイクル管理"
+
+    labels:
+      - name: "state:pending"
+        emoji: "📥"
+        color: "#E4E4E4"
+        color_name: "グレー"
+        description: "Issue作成直後、トリアージ待ち"
+        assigned_by: "自動（Issue作成時）"
+        next_state: "state:analyzing"
+        action: "CoordinatorAgentがトリアージ開始"
+
+      - name: "state:analyzing"
+        emoji: "🔍"
+        color: "#0E8A16"
+        color_name: "グリーン"
+        description: "CoordinatorAgentが依存関係・複雑度を分析中"
+        assigned_by: "CoordinatorAgent"
+        next_state: "state:implementing"
+        action: "DAG分解、Specialist Agent割り当て"
+
+      - name: "state:implementing"
+        emoji: "🏗️"
+        color: "#1D76DB"
+        color_name: "ブルー"
+        description: "Specialist Agentが実装作業中"
+        assigned_by: "CodeGenAgent / PRAgent"
+        next_state: "state:reviewing"
+        action: "コード生成、PR作成"
+
+      - name: "state:reviewing"
+        emoji: "👀"
+        color: "#FBCA04"
+        color_name: "イエロー"
+        description: "ReviewAgentが品質チェック中"
+        assigned_by: "ReviewAgent"
+        next_state: "state:done or state:implementing (再実装)"
+        action: "静的解析、セキュリティスキャン、品質スコアリング"
+
+      - name: "state:done"
+        emoji: "✅"
+        color: "#2EA44F"
+        color_name: "グリーン"
+        description: "完了、PRマージ済み"
+        assigned_by: "自動（PR merge時）"
+        action: "Issueクローズ、メトリクス更新"
+
+      - name: "state:blocked"
+        emoji: "🔴"
+        color: "#D73A4A"
+        color_name: "レッド"
+        description: "ブロック中 - Guardian介入が必要"
+        assigned_by: "Agent（エラー検出時）"
+        next_state: "state:analyzing (Guardian解決後)"
+        action: "Guardian通知、Slack/Discord通知"
+
+      - name: "state:failed"
+        emoji: "🛑"
+        color: "#B60205"
+        color_name: "ダークレッド"
+        description: "実行失敗 - エラー発生"
+        assigned_by: "Agent（致命的エラー時）"
+        action: "エラーログ記録、Guardian通知"
+
+      - name: "state:paused"
+        emoji: "⏸️"
+        color: "#D4C5F9"
+        color_name: "パープル"
+        description: "一時停止 - 依存関係または承認待ち"
+        assigned_by: "Guardian または Agent"
+        action: "定期チェック、依存解決待ち"
+
+    state_transition_flow: |
+      pending → analyzing → implementing → reviewing → done
+                   ↓            ↓            ↓
+                blocked      blocked      blocked
+                   ↓            ↓            ↓
+                failed       failed       failed
+
+  # Category 2: AGENT Labels (6個) - Agent割り当て
+  AGENT:
+    description: "どのAgentが担当するかを示す"
+    count: 6
+    role: "Agent割り当て"
+
+    labels:
+      - name: "agent:coordinator"
+        emoji: "🤖"
+        agent: "CoordinatorAgent"
+        character: "指揮者アーク"
+        role: "タスク統括、DAG分解、並列実行制御"
+        assigned_when: "Issue作成直後（state:pending → state:analyzing）"
+        responsibilities:
+          - "Issue本文からタスク抽出"
+          - "依存関係分析（DAG構築）"
+          - "複雑度推定（小/中/大/特大）"
+          - "Specialist Agent割り当て"
+
+      - name: "agent:codegen"
+        emoji: "🤖"
+        agent: "CodeGenAgent"
+        character: "天才コーダーリリア"
+        role: "AI駆動コード生成（Claude Sonnet 4使用）"
+        assigned_when: "CoordinatorAgentがコード実装タスクと判断"
+        responsibilities:
+          - "TypeScript/JavaScript/Python/Goコード生成"
+          - "Strict mode完全対応"
+          - "テストコード生成"
+
+      - name: "agent:review"
+        emoji: "🤖"
+        agent: "ReviewAgent"
+        character: "厳格審査官クリスタ"
+        role: "コード品質判定"
+        assigned_when: "PR作成後（state:implementing → state:reviewing）"
+        responsibilities:
+          - "静的解析（ESLint, TypeScript compiler）"
+          - "セキュリティスキャン（npm audit, Snyk）"
+          - "品質スコアリング（100点満点、80点以上で合格）"
+
+      - name: "agent:issue"
+        emoji: "🤖"
+        agent: "IssueAgent"
+        character: "戦略家ソフィア"
+        role: "Issue分析・ラベル管理"
+        assigned_when: "Issue作成時（自動トリアージ）"
+        responsibilities:
+          - "type/priority/severity自動推定"
+          - "good-first-issue判定"
+          - "関連Issue検索"
+
+      - name: "agent:pr"
+        emoji: "🤖"
+        agent: "PRAgent"
+        character: "統合の守護者ノア"
+        role: "Pull Request自動作成"
+        assigned_when: "コード実装完了後"
+        responsibilities:
+          - "Conventional Commits準拠のPRタイトル生成"
+          - "PR本文自動生成（変更内容サマリ）"
+          - "Draft PR作成"
+
+      - name: "agent:deployment"
+        emoji: "🤖"
+        agent: "DeploymentAgent"
+        character: "展開司令官アトラス"
+        role: "CI/CDデプロイ自動化"
+        assigned_when: "PRマージ後"
+        responsibilities:
+          - "Firebase/Cloud自動デプロイ"
+          - "ヘルスチェック"
+          - "自動Rollback（失敗時）"
+
+  # Category 3: PRIORITY Labels (4個) - 優先度管理
+  PRIORITY:
+    description: "タスクの重要度・緊急度を4段階で表現"
+    count: 4
+    role: "優先度管理"
+
+    labels:
+      - name: "priority:P0-Critical"
+        emoji: "🔥"
+        color: "#B60205"
+        color_name: "ダークレッド"
+        level: 0
+        description: "最優先 - セキュリティ、本番障害、データ損失"
+        sla: "24時間以内に着手"
+        examples:
+          - "本番環境でのデータベース障害"
+          - "ゼロデイ脆弱性発見"
+          - "ユーザーデータ流出"
+
+      - name: "priority:P1-High"
+        emoji: "⚠️"
+        color: "#D93F0B"
+        color_name: "オレンジ"
+        level: 1
+        description: "高優先度 - 主要機能、重大なバグ"
+        sla: "3日以内に着手"
+        examples:
+          - "ログイン機能の障害"
+          - "決済システムのバグ"
+          - "パフォーマンス劣化（50%以上）"
+
+      - name: "priority:P2-Medium"
+        emoji: "📊"
+        color: "#FBCA04"
+        color_name: "イエロー"
+        level: 2
+        description: "中優先度 - 標準機能、通常バグ"
+        sla: "1週間以内に着手"
+        examples:
+          - "新機能追加"
+          - "UI改善"
+          - "小規模バグ修正"
+
+      - name: "priority:P3-Low"
+        emoji: "📝"
+        color: "#0E8A16"
+        color_name: "グリーン"
+        level: 3
+        description: "低優先度 - Nice-to-have、軽微な改善"
+        sla: "特になし（余力があれば対応）"
+        examples:
+          - "ドキュメント誤字修正"
+          - "コメント追加"
+          - "リファクタリング提案"
+
+  # Category 4: TYPE Labels (7個) - Issue分類
+  TYPE:
+    description: "Issueの性質を分類"
+    count: 7
+    role: "Issue分類"
+
+    labels:
+      - name: "type:feature"
+        emoji: "✨"
+        description: "新機能追加・機能拡張"
+        examples:
+          - "ダークモード追加"
+          - "検索機能実装"
+
+      - name: "type:bug"
+        emoji: "🐛"
+        description: "バグ修正"
+        examples:
+          - "クラッシュ修正"
+          - "計算ミス修正"
+
+      - name: "type:docs"
+        emoji: "📚"
+        description: "ドキュメント改善"
+        examples:
+          - "README更新"
+          - "API仕様書作成"
+
+      - name: "type:refactor"
+        emoji: "🔧"
+        description: "コードリファクタリング（機能変更なし）"
+        examples:
+          - "関数分割"
+          - "変数名変更"
+
+      - name: "type:test"
+        emoji: "🧪"
+        description: "テスト追加・改善"
+        examples:
+          - "ユニットテスト追加"
+          - "E2Eテスト改善"
+
+      - name: "type:architecture"
+        emoji: "🏗️"
+        description: "アーキテクチャ設計・システムレベル変更"
+        examples:
+          - "マイクロサービス化"
+          - "DB移行"
+
+      - name: "type:deployment"
+        emoji: "🚀"
+        description: "デプロイ・インフラ"
+        examples:
+          - "CI/CD改善"
+          - "Docker設定"
+
+  # Category 5: SEVERITY Labels (4個) - 深刻度・エスカレーション
+  SEVERITY:
+    description: "問題の深刻度を表現。Guardian/TechLead/CISOへのエスカレーション判断に使用"
+    count: 4
+    role: "深刻度・エスカレーション"
+
+    labels:
+      - name: "severity:Sev.1-Critical"
+        emoji: "🚨"
+        level: 1
+        description: "緊急 - Guardian即座に介入"
+        escalation: "Guardian + CISO + TechLead"
+        examples:
+          - "セキュリティ侵害"
+          - "本番全停止"
+
+      - name: "severity:Sev.2-High"
+        emoji: "⚠️"
+        level: 2
+        description: "高深刻度 - TechLead/CISO推奨"
+        escalation: "TechLead or CISO"
+        examples:
+          - "主要機能停止"
+          - "パフォーマンス劣化"
+
+      - name: "severity:Sev.3-Medium"
+        emoji: "📊"
+        level: 3
+        description: "中深刻度 - 注意深く監視"
+        escalation: "なし（自動処理）"
+        examples:
+          - "一部機能の不具合"
+
+      - name: "severity:Sev.4-Low"
+        emoji: "📝"
+        level: 4
+        description: "低深刻度 - 通常処理"
+        escalation: "なし"
+        examples:
+          - "軽微なUI不具合"
+
+  # Category 6: PHASE Labels (5個) - プロジェクトフェーズ
+  PHASE:
+    description: "プロジェクト管理のフェーズを表現"
+    count: 5
+    role: "プロジェクトフェーズ"
+
+    labels:
+      - name: "phase:planning"
+        emoji: "🎯"
+        description: "計画フェーズ"
+        activities:
+          - "要件定義"
+          - "設計"
+          - "見積もり"
+
+      - name: "phase:implementation"
+        emoji: "🏗️"
+        description: "実装フェーズ"
+        activities:
+          - "コーディング"
+          - "PR作成"
+
+      - name: "phase:testing"
+        emoji: "🧪"
+        description: "テストフェーズ"
+        activities:
+          - "ユニットテスト"
+          - "E2Eテスト"
+          - "QA"
+
+      - name: "phase:deployment"
+        emoji: "🚀"
+        description: "デプロイフェーズ"
+        activities:
+          - "staging → production デプロイ"
+
+      - name: "phase:monitoring"
+        emoji: "📊"
+        description: "監視フェーズ"
+        activities:
+          - "パフォーマンス監視"
+          - "エラー監視"
+
+  # Category 7: SPECIAL Labels (7個) - 特殊操作
+  SPECIAL:
+    description: "特別な処理が必要なIssueに付与"
+    count: 7
+    role: "特殊操作"
+
+    labels:
+      - name: "security"
+        emoji: "🔐"
+        description: "セキュリティ関連 - CISO即座にエスカレーション"
+        processing: "非公開Issue推奨、セキュリティチーム通知"
+
+      - name: "cost-watch"
+        emoji: "💰"
+        description: "高コスト操作 - 予算監視"
+        processing: "Claude API使用量監視、コスト上限チェック"
+
+      - name: "dependencies"
+        emoji: "🔄"
+        description: "依存関係あり - 先に解決必要"
+        processing: "依存Issueがstate:doneになるまでstate:paused"
+
+      - name: "learning"
+        emoji: "🎓"
+        description: "学習タスク - 時間がかかる可能性"
+        processing: "SLA緩和、進捗レポート頻度低下"
+
+      - name: "experiment"
+        emoji: "🔬"
+        description: "実験的 - 失敗の可能性あり"
+        processing: "失敗許容、Guardian事前承認"
+
+      - name: "wontfix"
+        emoji: "🚫"
+        description: "修正しない - クローズ"
+        processing: "Issueクローズ、理由コメント"
+
+      - name: "duplicate"
+        emoji: "🔁"
+        description: "重複Issue"
+        processing: "元Issueへリンク、クローズ"
+
+  # Category 8: TRIGGER Labels (4個) - 自動化トリガー
+  TRIGGER:
+    description: "これらのLabelを付与すると、即座にGitHub Actionsがトリガーされる"
+    count: 4
+    role: "自動化トリガー"
+
+    labels:
+      - name: "trigger:agent-execute"
+        emoji: "🤖"
+        description: "Autonomous Agentの実行"
+        workflow: ".github/workflows/autonomous-agent.yml"
+        action: "CoordinatorAgentがIssueを取得し、全自動処理開始"
+
+      - name: "trigger:generate-report"
+        emoji: "📊"
+        description: "週次レポート生成"
+        workflow: ".github/workflows/weekly-kpi-report.yml"
+        action: "KPIダッシュボード更新、PDFレポート生成"
+
+      - name: "trigger:deploy-staging"
+        emoji: "🚀"
+        description: "stagingへデプロイ"
+        workflow: ".github/workflows/deploy-pages.yml"
+        action: "Firebase staging環境へデプロイ"
+
+      - name: "trigger:deploy-production"
+        emoji: "🚀"
+        description: "productionへデプロイ（Guardian承認必須）"
+        workflow: ".github/workflows/deploy-pages.yml"
+        action: "Firebase production環境へデプロイ"
+
+  # Category 9: QUALITY Labels (4個) - 品質スコア
+  QUALITY:
+    description: "ReviewAgentが自動付与する品質評価"
+    count: 4
+    role: "品質スコア"
+
+    labels:
+      - name: "quality:excellent"
+        emoji: "⭐"
+        score_range: "90-100"
+        criteria:
+          - "カバレッジ90%+"
+          - "セキュリティ問題なし"
+          - "Lintエラーゼロ"
+
+      - name: "quality:good"
+        emoji: "✅"
+        score_range: "80-89"
+        criteria:
+          - "カバレッジ80%+"
+          - "セキュリティ問題なし"
+          - "Lint警告のみ"
+
+      - name: "quality:needs-improvement"
+        emoji: "⚠️"
+        score_range: "60-79"
+        criteria:
+          - "カバレッジ不足"
+          - "セキュリティ警告あり"
+        processing: "CodeGenAgentが改善提案"
+
+      - name: "quality:poor"
+        emoji: "🔴"
+        score_range: "0-59"
+        criteria:
+          - "カバレッジ不足"
+          - "セキュリティ脆弱性あり"
+        processing: "PR reject、再実装要求"
+
+  # Category 10: COMMUNITY Labels (4個) - コミュニティ
+  COMMUNITY:
+    description: "外部コントリビューター向けラベル"
+    count: 4
+    role: "コミュニティ"
+
+    labels:
+      - name: "good-first-issue"
+        emoji: "👋"
+        description: "初心者向けタスク"
+        criteria:
+          - "実装時間 < 2時間"
+          - "依存関係なし"
+          - "明確な要件"
+
+      - name: "help-wanted"
+        emoji: "🙏"
+        description: "コミュニティの助けが必要"
+        examples:
+          - "レビュー依頼"
+          - "テスト協力"
+
+      - name: "question"
+        emoji: "❓"
+        description: "質問・相談"
+        processing: "Discussion推奨"
+
+      - name: "discussion"
+        emoji: "💬"
+        description: "オープンディスカッション"
+        processing: "GitHub Discussions推奨"
+
+  # Category 11: HIERARCHY Labels (4個) - 階層構造管理
+  HIERARCHY:
+    description: "Issue階層（親子関係）を管理し、大規模タスクを構造的に分解・追跡"
+    count: 4
+    role: "階層構造管理"
+
+    labels:
+      - name: "hierarchy:root"
+        emoji: "🌳"
+        color: "#8B4513"
+        color_name: "ブラウン"
+        description: "ルートIssue - 親を持たない最上位Issue"
+        assigned_by: "IssueAgent（親Issue番号が未設定の場合）"
+        use_cases:
+          - "大規模機能・エピックのトップレベル"
+          - "プロジェクト全体の進捗追跡"
+          - "子Issueの完了率を集約表示"
+
+      - name: "hierarchy:parent"
+        emoji: "📂"
+        color: "#0366D6"
+        color_name: "ブルー"
+        description: "親Issue - 1つ以上の子Issueを持つ"
+        assigned_by: "IssueAgent（子Issue作成時に自動付与）"
+        processing:
+          - "Issue本文に「## Child Issues」セクションを自動追加"
+          - "子Issueのチェックリスト管理"
+          - "完了率の自動計算（例: 3/5 完了 = 60%）"
+
+      - name: "hierarchy:child"
+        emoji: "📄"
+        color: "#C5DEF5"
+        color_name: "ライトブルー"
+        description: "子Issue - 親Issueを持つ"
+        assigned_by: "IssueAgent（createSubIssue()実行時）"
+        processing:
+          - "Issue本文に親Issue参照を自動追加"
+          - "親Issueのチェックリストに自動追加"
+          - "完了時に親Issueの完了率を更新"
+
+      - name: "hierarchy:leaf"
+        emoji: "🍃"
+        color: "#28A745"
+        color_name: "グリーン"
+        description: "リーフIssue - 子を持たない最下層Issue"
+        assigned_by: "IssueAgent（子Issueが0件の場合）"
+        use_cases:
+          - "実装可能な最小単位のタスク"
+          - "Agentが直接実行できるタスク"
+          - "good-first-issueの候補"
+
+    hierarchy_example: |
+      🌳 Issue #100 (hierarchy:root + hierarchy:parent)
+        ├─ 📄 Issue #101 (hierarchy:child + hierarchy:parent)
+        │   ├─ 🍃 Issue #102 (hierarchy:child + hierarchy:leaf)
+        │   └─ 🍃 Issue #103 (hierarchy:child + hierarchy:leaf)
+        └─ 📄 Issue #104 (hierarchy:child + hierarchy:parent)
+            ├─ 🍃 Issue #105 (hierarchy:child + hierarchy:leaf)
+            └─ 🍃 Issue #106 (hierarchy:child + hierarchy:leaf)
+
+    progress_tracking: |
+      Issue #100: 子5件中3件完了 → 60%
+      Issue #101: 子2件中2件完了 → 100%
+      Issue #104: 子2件中1件完了 → 50%
+
+# Use Case Examples
+use_cases:
+  new_feature:
+    title: "ダークモード機能の追加"
+    initial_labels:
+      - "state:pending"  # 自動付与
+      - "type:feature"  # 手動付与
+      - "priority:P1-High"  # 手動付与
+      - "phase:planning"  # 手動付与
+
+    automation_flow:
+      - step: 1
+        action: "Issue作成"
+        result: "state:pending 自動付与"
+      - step: 2
+        action: "CoordinatorAgent起動"
+        result: "agent:coordinator 付与、state:analyzing へ変更"
+      - step: 3
+        action: "分析完了"
+        result: "agent:codegen 付与、state:implementing へ変更"
+      - step: 4
+        action: "PR作成"
+        result: "agent:review 付与、state:reviewing へ変更"
+      - step: 5
+        action: "品質OK"
+        result: "quality:excellent 付与、state:done へ変更"
+      - step: 6
+        action: "Issueクローズ"
+
+  security_bug:
+    title: "XSS脆弱性の修正"
+    initial_labels:
+      - "state:pending"  # 自動付与
+      - "type:bug"  # 手動付与
+      - "priority:P0-Critical"  # 手動付与
+      - "severity:Sev.1-Critical"  # 手動付与
+      - "security"  # 手動付与
+      - "trigger:agent-execute"  # 手動付与（即座に実行開始）
+
+    automation_flow:
+      - step: 1
+        trigger: "trigger:agent-execute 検出"
+        result: "Autonomous Agent即座に起動"
+      - step: 2
+        trigger: "security 検出"
+        result: "CISO通知、非公開Issue化"
+      - step: 3
+        trigger: "priority:P0-Critical 検出"
+        result: "他タスク中断、最優先処理"
+      - step: 4
+        deadline: "24時間以内に修正完了"
+
+  community_pr:
+    title: "README typo fix"
+    initial_labels:
+      - "state:pending"  # 自動付与
+      - "type:docs"  # 手動付与
+      - "priority:P3-Low"  # 手動付与
+      - "good-first-issue"  # 手動付与（初回コントリビューター）
+
+# Label Automation Workflows
+automation:
+  github_actions:
+    autonomous_agent:
+      workflow_file: ".github/workflows/autonomous-agent.yml"
+      trigger: "issues.labeled"
+      condition: "contains(github.event.label.name, 'trigger:agent-execute')"
+      action: "npm run agents:parallel:exec -- --issue=${{ github.event.issue.number }}"
+
+    label_sync:
+      workflow_file: ".github/workflows/label-sync.yml"
+      trigger: "push to main"
+      source: ".github/labels.yml"
+      action: "Sync labels to GitHub repository"
+
+  state_transitions:
+    normal_flow: |
+      📥 state:pending
+        ↓ CoordinatorAgent起動
+      🔍 state:analyzing + 🤖 agent:coordinator
+        ↓ 依存関係分析完了
+      🏗️ state:implementing + 🤖 agent:codegen
+        ↓ PR作成
+      👀 state:reviewing + 🤖 agent:review
+        ↓ 品質スコア85点
+      ✅ state:done + ✅ quality:good
+
+    error_flow: |
+      📥 state:pending
+        ↓
+      🔍 state:analyzing
+        ↓
+      🏗️ state:implementing
+        ↓ テスト失敗（カバレッジ40%）
+      🔴 state:blocked + 🔴 quality:poor
+        ↓ Guardian介入、改善指示
+      🔍 state:analyzing（再分析）
+        ↓
+      🏗️ state:implementing（再実装）
+        ↓
+      👀 state:reviewing
+        ↓ カバレッジ85%
+      ✅ state:done + ✅ quality:good
+
+# Summary Statistics
+metadata:
+  total_labels: 57
+  total_categories: 11
+
+  category_breakdown:
+    STATE: 8
+    AGENT: 6
+    PRIORITY: 4
+    TYPE: 7
+    SEVERITY: 4
+    PHASE: 5
+    SPECIAL: 7
+    TRIGGER: 4
+    QUALITY: 4
+    COMMUNITY: 4
+    HIERARCHY: 4
+
+  label_types:
+    lifecycle: ["STATE", "PHASE"]
+    assignment: ["AGENT", "TYPE"]
+    prioritization: ["PRIORITY", "SEVERITY"]
+    automation: ["TRIGGER"]
+    quality_control: ["QUALITY"]
+    collaboration: ["COMMUNITY", "HIERARCHY"]
+    special_handling: ["SPECIAL"]
+
+  implementation:
+    guide: "docs/guides/LABEL_SYSTEM_GUIDE.md"
+    definition: ".github/labels.yml"
+    sdk_integration: "docs/AGENT_SDK_LABEL_INTEGRATION.md"
+    sync_workflow: ".github/workflows/label-sync.yml"
+
+  philosophy: "Everything starts with an Issue. Labels define the state."

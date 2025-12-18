@@ -1,0 +1,29 @@
+{# Miyabi Base Template - Jinja2 Format #}
+{# Version: 1.0.0 #}
+{# This is the base template that all other templates extend #}
+
+---
+# {% block header %}Miyabi Definition{% endblock %}
+# Generated: {{ global.metadata.generated_at }}
+# Format: {{ global.metadata.schema }}
+# Version: {{ global.metadata.format_version }}
+
+{% block metadata %}
+metadata:
+  project_name: "{{ global.project.name }}"
+  project_full_name: "{{ global.project.full_name }}"
+  version: "{{ global.project.version }}"
+  generated_at: "{{ global.metadata.generated_at }}"
+  format_version: "{{ global.metadata.format_version }}"
+{% endblock %}
+
+{% block content %}
+{# Override this block in child templates #}
+{% endblock %}
+
+{% block footer %}
+# ---
+# End of {{ global.project.name }} Definition
+# Repository: {{ global.repository.primary }}
+# Local Path: {{ global.repository.local_path }}
+{% endblock %}

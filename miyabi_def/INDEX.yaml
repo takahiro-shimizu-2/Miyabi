@@ -1,0 +1,253 @@
+# Miyabi Definition - Master Index
+# Version: 1.0.0
+# Generated: 2025-10-31T19:54:00+09:00
+
+index:
+  project:
+    name: "Miyabi"
+    full_name: "Miyabi - Autonomous Development Framework"
+    version: "0.1.1"
+    format_version: "1.0.0"
+
+  directory_structure:
+    base: "miyabi_def/"
+    subdirectories:
+      - name: "variables/"
+        description: "YAML variable definitions for Jinja2 templates"
+        files:
+          - "global.yaml"
+          - "agents.yaml"
+          - "crates.yaml"
+          - "skills.yaml"
+
+      - name: "templates/"
+        description: "Jinja2 template files (.j2)"
+        files:
+          - "base.yaml.j2"
+          - "agents.yaml.j2"
+          - "crates.yaml.j2"
+          - "skills.yaml.j2"
+
+      - name: "generated/"
+        description: "Generated YAML definition files"
+        files:
+          - "agents.yaml"
+          - "crates.yaml"
+          - "skills.yaml"
+
+      - name: "modules/"
+        description: "Additional modular definitions (planned)"
+        status: "planned"
+
+  definition_files:
+    - name: "agents.yaml"
+      location: "generated/agents.yaml"
+      description: "Complete agent system definition (21 agents)"
+      size_bytes: 8409
+      categories:
+        - "Coding Agents (7)"
+        - "Business Agents (14)"
+
+    - name: "crates.yaml"
+      location: "generated/crates.yaml"
+      description: "Cargo workspace crate definitions (15 crates)"
+      size_bytes: 6338
+      categories:
+        - "Core (3)"
+        - "Agents (2)"
+        - "Integrations (5)"
+        - "Utilities (4)"
+        - "Frontend (3)"
+
+    - name: "skills.yaml"
+      location: "generated/skills.yaml"
+      description: "Skill system definition (18 skills)"
+      size_bytes: 7520
+      categories:
+        - "Development (5)"
+        - "Operations (5)"
+        - "Business (5)"
+        - "Specialized (3)"
+
+  variable_files:
+    - name: "global.yaml"
+      location: "variables/global.yaml"
+      description: "Global project variables and metadata"
+      key_variables:
+        - "project.name"
+        - "project.version"
+        - "repository.primary"
+        - "counts.*"
+
+    - name: "agents.yaml"
+      location: "variables/agents.yaml"
+      description: "Agent definitions with metadata"
+      key_variables:
+        - "agents.coding[*]"
+        - "agents.business.strategy_planning[*]"
+        - "agents.business.marketing[*]"
+        - "agents.business.sales_crm[*]"
+
+    - name: "crates.yaml"
+      location: "variables/crates.yaml"
+      description: "Crate definitions with paths and features"
+      key_variables:
+        - "crates.core[*]"
+        - "crates.agents[*]"
+        - "crates.integrations[*]"
+        - "crates.utilities[*]"
+        - "crates.frontend[*]"
+
+    - name: "skills.yaml"
+      location: "variables/skills.yaml"
+      description: "Skill definitions by category"
+      key_variables:
+        - "skills.development[*]"
+        - "skills.operations[*]"
+        - "skills.business[*]"
+        - "skills.specialized[*]"
+
+  template_files:
+    - name: "base.yaml.j2"
+      location: "templates/base.yaml.j2"
+      type: "base_template"
+      description: "Base template with metadata and footer blocks"
+      extends: null
+      blocks:
+        - "header"
+        - "metadata"
+        - "content"
+        - "footer"
+
+    - name: "agents.yaml.j2"
+      location: "templates/agents.yaml.j2"
+      type: "definition_template"
+      description: "Agents definition template"
+      extends: "base.yaml.j2"
+      uses_variables:
+        - "global.*"
+        - "agents.*"
+
+    - name: "crates.yaml.j2"
+      location: "templates/crates.yaml.j2"
+      type: "definition_template"
+      description: "Crates definition template"
+      extends: "base.yaml.j2"
+      uses_variables:
+        - "global.*"
+        - "crates.*"
+
+    - name: "skills.yaml.j2"
+      location: "templates/skills.yaml.j2"
+      type: "definition_template"
+      description: "Skills definition template"
+      extends: "base.yaml.j2"
+      uses_variables:
+        - "global.*"
+        - "skills.*"
+
+  generator:
+    script: "generate.py"
+    language: "Python 3"
+    dependencies:
+      - "pyyaml"
+      - "jinja2"
+    usage: |
+      # Install dependencies (in virtual environment)
+      python3 -m venv .venv
+      source .venv/bin/activate
+      pip install pyyaml jinja2
+
+      # Generate all definition files
+      python generate.py
+
+      # List available templates
+      python generate.py --list-templates
+
+      # List available variables
+      python generate.py --list-variables
+    output_directory: "generated/"
+
+  statistics:
+    total_variables_files: 4
+    total_template_files: 4
+    total_generated_files: 3
+    total_size_bytes: 22267
+
+    agents:
+      total: 21
+      coding: 7
+      business: 14
+
+    crates:
+      total: 15
+      categories: 5
+
+    skills:
+      total: 18
+      categories: 4
+
+  advantages_of_jinja2_format:
+    - name: "Modularity"
+      description: "Variables and templates are separated, making updates easy"
+
+    - name: "Reusability"
+      description: "Base template can be extended by all definition templates"
+
+    - name: "Maintainability"
+      description: "Change variables once, regenerate all files"
+
+    - name: "Type Safety"
+      description: "YAML structure ensures consistent data types"
+
+    - name: "Version Control"
+      description: "Variables can be tracked separately from generated files"
+
+    - name: "Automation"
+      description: "Generator script enables CI/CD integration"
+
+  future_enhancements:
+    - name: "architecture.yaml"
+      description: "System architecture definition"
+      status: "planned"
+
+    - name: "entity_relation.yaml"
+      description: "Complete entity-relation model (14 entities, 39 relations)"
+      status: "planned"
+
+    - name: "labels.yaml"
+      description: "57-label system definition"
+      status: "planned"
+
+    - name: "workflows.yaml"
+      description: "GitHub Actions workflows definition"
+      status: "planned"
+
+    - name: "configuration.yaml"
+      description: ".miyabi.yml and environment configuration"
+      status: "planned"
+
+  documentation:
+    readme: "README.md (to be created)"
+    usage_guide: "See generator usage above"
+    variable_reference: "variables/*.yaml"
+    template_reference: "templates/*.j2"
+
+  integration:
+    with_miyabi_core: true
+    location_in_project: "/Users/shunsuke/Dev/miyabi-private/miyabi_def/"
+    purpose: "Provide structured, machine-readable project definitions"
+    use_cases:
+      - "Documentation generation"
+      - "Project analysis"
+      - "CI/CD integration"
+      - "Onboarding new developers"
+      - "API generation"
+      - "Schema validation"
+
+  metadata:
+    created_at: "2025-10-31T19:54:00+09:00"
+    last_updated: "2025-10-31T19:54:00+09:00"
+    format: "Miyabi Definition Index (YAML)"
+    encoding: "UTF-8"
+    maintainer: "Miyabi Team"

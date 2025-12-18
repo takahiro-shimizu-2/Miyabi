@@ -1,0 +1,179 @@
+{% extends "base.yaml.j2" %}
+
+{% block content %}
+# Miyabi Label System - Complete Specification
+# Generated from: variables/labels.yaml
+# Template: templates/labels.yaml.j2
+# Philosophy: "Everything starts with an Issue. Labels define the state."
+
+labels:
+  total_categories: {{ labels | length }}
+  total_labels: {{ labels.values() | map(attribute='count') | sum }}
+
+  categories:
+{% for category_name, category in labels.items() %}
+    {{ category_name }}:
+      description: "{{ category.description }}"
+      count: {{ category.count }}
+      role: "{{ category.role }}"
+
+{% if category.state_transition_flow is defined %}
+      state_transition_flow: |
+        {{ category.state_transition_flow | indent(8) }}
+{% endif %}
+
+      labels:
+{% for label in category.labels %}
+        - name: "{{ label.name }}"
+{% if label.emoji is defined %}
+          emoji: "{{ label.emoji }}"
+{% endif %}
+{% if label.color is defined %}
+          color: "{{ label.color }}"
+{% endif %}
+{% if label.color_name is defined %}
+          color_name: "{{ label.color_name }}"
+{% endif %}
+          description: "{{ label.description }}"
+{% if label.assigned_by is defined %}
+          assigned_by: "{{ label.assigned_by }}"
+{% endif %}
+{% if label.next_state is defined %}
+          next_state: "{{ label.next_state }}"
+{% endif %}
+{% if label.action is defined %}
+          action: "{{ label.action }}"
+{% endif %}
+{% if label.agent is defined %}
+          agent: "{{ label.agent }}"
+{% endif %}
+{% if label.character is defined %}
+          character: "{{ label.character }}"
+{% endif %}
+{% if label.authority is defined %}
+          authority: "{{ label.authority }}"
+{% endif %}
+{% if label.responsibility is defined %}
+          responsibility: "{{ label.responsibility }}"
+{% endif %}
+{% if label.auto_assignment is defined %}
+          auto_assignment: "{{ label.auto_assignment }}"
+{% endif %}
+{% if label.sla is defined %}
+          sla: "{{ label.sla }}"
+{% endif %}
+{% if label.examples is defined %}
+          examples:
+{% for example in label.examples %}
+            - "{{ example }}"
+{% endfor %}
+{% endif %}
+{% if label.context is defined %}
+          context: "{{ label.context }}"
+{% endif %}
+{% if label.github_equivalent is defined %}
+          github_equivalent: "{{ label.github_equivalent }}"
+{% endif %}
+{% if label.definition is defined %}
+          definition: "{{ label.definition }}"
+{% endif %}
+{% if label.severity_level is defined %}
+          severity_level: "{{ label.severity_level }}"
+{% endif %}
+{% if label.response_time is defined %}
+          response_time: "{{ label.response_time }}"
+{% endif %}
+{% if label.notification is defined %}
+          notification: "{{ label.notification }}"
+{% endif %}
+{% if label.duration is defined %}
+          duration: "{{ label.duration }}"
+{% endif %}
+{% if label.agent_involved is defined %}
+          agent_involved: "{{ label.agent_involved }}"
+{% endif %}
+{% if label.key_activities is defined %}
+          key_activities:
+{% for activity in label.key_activities %}
+            - "{{ activity }}"
+{% endfor %}
+{% endif %}
+{% if label.purpose is defined %}
+          purpose: "{{ label.purpose }}"
+{% endif %}
+{% if label.when_to_use is defined %}
+          when_to_use: "{{ label.when_to_use }}"
+{% endif %}
+{% if label.monitoring is defined %}
+          monitoring: "{{ label.monitoring }}"
+{% endif %}
+{% if label.quality_score is defined %}
+          quality_score: "{{ label.quality_score }}"
+{% endif %}
+{% if label.code_coverage is defined %}
+          code_coverage: "{{ label.code_coverage }}"
+{% endif %}
+{% if label.test_pass_rate is defined %}
+          test_pass_rate: "{{ label.test_pass_rate }}"
+{% endif %}
+{% if label.clippy_warnings is defined %}
+          clippy_warnings: "{{ label.clippy_warnings }}"
+{% endif %}
+{% if label.security_issues is defined %}
+          security_issues: "{{ label.security_issues }}"
+{% endif %}
+{% if label.audience is defined %}
+          audience: "{{ label.audience }}"
+{% endif %}
+{% if label.benefit is defined %}
+          benefit: "{{ label.benefit }}"
+{% endif %}
+{% if label.typical_scope is defined %}
+          typical_scope: "{{ label.typical_scope }}"
+{% endif %}
+{% if label.level is defined %}
+          level: "{{ label.level }}"
+{% endif %}
+{% if label.parent_reference is defined %}
+          parent_reference: "{{ label.parent_reference }}"
+{% endif %}
+{% if label.child_count is defined %}
+          child_count: "{{ label.child_count }}"
+{% endif %}
+{% if label.issue_structure is defined %}
+          issue_structure: "{{ label.issue_structure }}"
+{% endif %}
+{% endfor %}
+
+{% if category.automation_rules is defined %}
+      automation_rules:
+{% for rule in category.automation_rules %}
+        - trigger: "{{ rule.trigger }}"
+          action: "{{ rule.action }}"
+{% if rule.labels is defined %}
+          labels: {{ rule.labels }}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+
+# Metadata
+metadata:
+  generated_at: "{{ global.project.generated_at if global.project.generated_at is defined else 'N/A' }}"
+  total_categories: {{ labels | length }}
+  total_labels: {{ labels.values() | map(attribute='count') | sum }}
+  source_file: "variables/labels.yaml"
+  template_file: "templates/labels.yaml.j2"
+
+{% if metadata is defined and metadata.label_breakdown is defined %}
+  label_breakdown:
+{% for category_name, count in metadata.label_breakdown.items() %}
+    {{ category_name }}: {{ count }}
+{% endfor %}
+
+  philosophy: |
+    {{ metadata.philosophy | indent(4) }}
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,174 @@
+@startuml Miyabi Definition System - Architecture
+!theme blueprint
+skinparam backgroundColor #F8F9FA
+skinparam linetype ortho
+
+title Miyabi Definition System - Complete Architecture\nVersion 1.0.0 | 2025-11-04
+
+package "Variable Sources" as vars {
+  [global.yaml] as global
+  [entities.yaml] as entities
+  [relations.yaml] as relations
+  [labels.yaml] as labels
+  [workflows.yaml] as workflows
+  [agents.yaml] as agents
+  [crates.yaml] as crates
+  [skills.yaml] as skills
+  [world_definition.yaml] as world
+  [step_back_question_method.yaml] as sbq
+  [shunsuke_world_model_logic.yaml] as swml
+  [universal_execution.yaml] as omega
+  [naming_conventions.yaml] as naming
+  [pr_merge_rules.yaml] as pr
+}
+
+package "Template Engine" as engine {
+  component "Jinja2 Environment" as jinja {
+    [FileSystemLoader] as loader
+    [Autoescape] as escape
+    [Trim/Lstrip] as trim
+  }
+
+  component "MiyabiDefinitionGenerator" as generator {
+    [load_all_variables()] as load
+    [render_template()] as render
+    [generate_all()] as gen_all
+  }
+}
+
+package "Jinja2 Templates" as templates {
+  [base.yaml.j2] as base #LightBlue
+  [entities.yaml.j2] as t_entities
+  [relations.yaml.j2] as t_relations
+  [labels.yaml.j2] as t_labels
+  [workflows.yaml.j2] as t_workflows
+  [agents.yaml.j2] as t_agents
+  [crates.yaml.j2] as t_crates
+  [skills.yaml.j2] as t_skills
+  [world_definition.yaml.j2] as t_world
+  [step_back_question_method.yaml.j2] as t_sbq
+  [universal_task_execution.yaml.j2] as t_omega
+
+  note right of base
+    **Base Template Structure**
+    • header block
+    • metadata block
+    • content block
+    • footer block
+
+    All templates extend base.yaml.j2
+  end note
+}
+
+package "Generated YAML" as generated {
+  [entities.yaml\n39KB | 14 Entities] as g_entities
+  [relations.yaml\n25KB | 39 Relations] as g_relations
+  [labels.yaml\n14KB | 57 Labels] as g_labels
+  [workflows.yaml\n13KB | 5 Workflows] as g_workflows
+  [agents.yaml\n9.4KB | 21 Agents] as g_agents
+  [crates.yaml\n6.3KB | 15 Crates] as g_crates
+  [skills.yaml\n7.6KB | 18 Skills] as g_skills
+  [world_definition.yaml\n21KB | World Space] as g_world
+  [step_back_question_method.yaml\n18KB | SWML] as g_sbq
+  [universal_task_execution.yaml\n21KB | Ω-System] as g_omega
+  [agent_execution_maximization.yaml\n23KB] as g_agent_exec
+}
+
+package "Consumption" as consumers {
+  component "Miyabi Core" as core {
+    [CLI] as cli
+    [Agents] as agent_sys
+    [Workflows] as wf_sys
+  }
+
+  component "Documentation" as docs {
+    [README Generator] as readme_gen
+    [API Docs] as api_docs
+    [Schema Validator] as validator
+  }
+
+  component "CI/CD" as cicd {
+    [GitHub Actions] as gh_actions
+    [Deployment Scripts] as deploy
+  }
+}
+
+' === Data Flow ===
+
+' Variables to Generator
+global --> load
+entities --> load
+relations --> load
+labels --> load
+workflows --> load
+agents --> load
+crates --> load
+skills --> load
+world --> load
+sbq --> load
+swml --> load
+omega --> load
+naming --> load
+pr --> load
+
+' Generator to Templates
+load --> render
+render --> jinja
+jinja --> loader
+loader --> base
+
+' Template inheritance
+base <|-- t_entities
+base <|-- t_relations
+base <|-- t_labels
+base <|-- t_workflows
+base <|-- t_agents
+base <|-- t_crates
+base <|-- t_skills
+base <|-- t_world
+base <|-- t_sbq
+base <|-- t_omega
+
+' Templates to Generated
+t_entities --> g_entities : render
+t_relations --> g_relations : render
+t_labels --> g_labels : render
+t_workflows --> g_workflows : render
+t_agents --> g_agents : render
+t_crates --> g_crates : render
+t_skills --> g_skills : render
+t_world --> g_world : render
+t_sbq --> g_sbq : render
+t_omega --> g_omega : render
+
+' Generated to Consumers
+g_entities --> cli
+g_agents --> agent_sys
+g_workflows --> wf_sys
+g_world --> agent_sys
+g_omega --> agent_sys
+
+g_entities --> readme_gen
+g_agents --> api_docs
+g_entities --> validator
+
+g_workflows --> gh_actions
+g_agents --> deploy
+
+note bottom of generated
+  **Total: 191KB**
+  • 11 YAML files
+  • Machine-readable
+  • Type-safe
+  • Version-controlled
+end note
+
+legend right
+  |= Symbol |= Meaning |
+  | [Component] | Module/File |
+  | --> | Data flow |
+  | <|-- | Inheritance |
+  | #LightBlue | Base template |
+endlegend
+
+@enduml

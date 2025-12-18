@@ -1,0 +1,543 @@
+# Step-back Question Method - YAML Definition
+# Version: 1.1.0 (Corrected)
+# Created: 2025-11-01
+
+step_back_method:
+  metadata:
+    name: "Step-back Question Method"
+    version: "1.1.0"
+    created_at: "2025-11-01T00:00:00+09:00"
+    author: "Shunsuke Hayashi"
+    based_on: "SWML (Shunsuke's World Model Logic)"
+    license: "Apache-2.0"
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # 数学的定義
+  # ═══════════════════════════════════════════════════════════════════════
+  mathematical_definition:
+    function_signature: "F: Goal × 𝒬 → Result"
+    formula: "F(G, Q) = ∫_{A}^{Z} f(step, Q) d(step)"
+
+    symbols:
+      F:
+        name: "Goal Achievement Function"
+        type: "トップレベル関数"
+        notation: "大文字F"
+
+      f:
+        name: "Step Execution Function"
+        type: "個別ステップ関数"
+        notation: "小文字f"
+
+      G:
+        name: "Goal"
+        type: "達成すべき目標"
+
+      Q:
+        name: "Step-back Questions"
+        type: "質問の集合"
+        notation: "𝒬"
+
+      range:
+        notation: "[A, Z]"
+        meaning: "26ステップのプロセス範囲"
+        steps: 26
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # Step-back Questions 定義
+  # ═══════════════════════════════════════════════════════════════════════
+  step_back_questions:
+    definition:
+      type: "本質を問う質問の集合"
+      purpose: "問題を一段階抽象化し、より高次の視点から解決策を導出"
+      depth: "≥ 1 (abstraction levels above current problem)"
+
+    categories:
+      why_questions:
+        purpose: "本質追求"
+        examples:
+          - "Why is this goal important?"
+          - "Why does this problem exist?"
+          - "Why should we solve it this way?"
+
+      what_if_questions:
+        purpose: "可能性探索"
+        examples:
+          - "What if we approach this differently?"
+          - "What are the fundamental principles?"
+          - "What would success look like?"
+
+      how_questions:
+        purpose: "方法論確立"
+        examples:
+          - "How does this relate to broader context?"
+          - "How can we ensure quality?"
+          - "How will we measure success?"
+
+    standard_questions:
+      q1: "What is the core problem we are trying to solve?"
+      q2: "Why is this goal important in the bigger picture?"
+      q3: "What are the fundamental principles guiding this work?"
+      q4: "What would the ideal solution look like?"
+      q5: "How does this connect to our broader objectives?"
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # A to Z の26ステップ定義
+  # ═══════════════════════════════════════════════════════════════════════
+  process_steps:
+    A_analyze:
+      name: "Analyze"
+      name_ja: "分析"
+      formula: "A: Goal → Problem Understanding"
+      step_back_question: "What is the core problem?"
+      input: "Goal"
+      output: "Problem Understanding"
+      operations:
+        - "Identify constraints"
+        - "List available resources"
+        - "Understand context"
+
+    B_breakdown:
+      name: "Break down"
+      name_ja: "分解"
+      formula: "B: Problem → Sub-problems"
+      step_back_question: "What are the fundamental components?"
+      input: "Problem"
+      output: "Sub-problems {P₁, P₂, ..., Pₖ}"
+      operations:
+        - "Decompose into sub-problems"
+        - "Identify dependencies"
+        - "Prioritize components"
+
+    C_clarify:
+      name: "Clarify"
+      name_ja: "明確化"
+      formula: "C: Sub-problems → Clear Objectives"
+      step_back_question: "What does success mean for each component?"
+      input: "Sub-problems"
+      output: "Clear Objectives with success criteria"
+      operations:
+        - "Define success criteria"
+        - "Establish metrics"
+        - "Set timeline"
+
+    D_design:
+      name: "Design"
+      name_ja: "設計"
+      formula: "D: Objectives → Solution Architecture"
+      step_back_question: "What is the optimal structure?"
+      input: "Objectives"
+      output: "Architecture (components, relations, interfaces)"
+      operations:
+        - "Design system architecture"
+        - "Define component interfaces"
+        - "Plan integration strategy"
+
+    E_enumerate:
+      name: "Enumerate"
+      name_ja: "列挙"
+      formula: "E: Architecture → Task List"
+      step_back_question: "What are all the necessary tasks?"
+      input: "Architecture"
+      output: "Complete task list {T₁, T₂, ..., Tₘ}"
+      operations:
+        - "List all required tasks"
+        - "Identify dependencies"
+        - "Estimate effort"
+
+    F_formulate:
+      name: "Formulate"
+      name_ja: "定式化"
+      formula: "F: Tasks → Mathematical Models"
+      step_back_question: "How can we formally describe each task?"
+      input: "Tasks"
+      output: "Mathematical models"
+      operations:
+        - "Define inputs/outputs"
+        - "Specify constraints"
+        - "Identify optimization targets"
+
+    G_generate:
+      name: "Generate"
+      name_ja: "生成"
+      formula: "G: Models → Code/Artifacts"
+      step_back_question: "What needs to be created?"
+      input: "Models"
+      output: "Code, docs, tests, config"
+      operations:
+        - "Generate code"
+        - "Create documentation"
+        - "Write tests"
+
+    H_hypothesize:
+      name: "Hypothesize"
+      name_ja: "仮説立案"
+      formula: "H: Current State → Predictions"
+      step_back_question: "What do we expect to happen?"
+      input: "Current state"
+      output: "Hypotheses"
+      operations:
+        - "Formulate hypotheses"
+        - "Define testable predictions"
+        - "Plan validation"
+
+    I_implement:
+      name: "Implement"
+      name_ja: "実装"
+      formula: "I: Design → Working Code"
+      step_back_question: "How do we bring this to life?"
+      input: "Design"
+      output: "Working implementation"
+      operations:
+        - "Write code"
+        - "Integrate components"
+        - "Handle edge cases"
+
+    J_judge:
+      name: "Judge"
+      name_ja: "判断"
+      formula: "J: Implementation → Quality Assessment"
+      step_back_question: "Does this meet our standards?"
+      input: "Implementation"
+      output: "Quality score ∈ [0, 1]"
+      operations:
+        - "Assess code quality"
+        - "Evaluate performance"
+        - "Check completeness"
+
+    K_know:
+      name: "Know"
+      name_ja: "認識"
+      formula: "K: Results → Knowledge"
+      step_back_question: "What patterns can we extract?"
+      input: "Results"
+      output: "Extracted knowledge"
+      operations:
+        - "Extract patterns"
+        - "Update knowledge base"
+        - "Document insights"
+
+    L_learn:
+      name: "Learn"
+      name_ja: "学習"
+      formula: "L: Experience → Improved Strategy"
+      step_back_question: "How can we do better next time?"
+      input: "Experience"
+      output: "Improved strategy"
+      operations:
+        - "Analyze what worked"
+        - "Identify improvements"
+        - "Update approach"
+
+    M_measure:
+      name: "Measure"
+      name_ja: "測定"
+      formula: "M: System → Metrics"
+      step_back_question: "What are the key indicators?"
+      input: "System"
+      output: "Metrics {metric₁: value₁, ...}"
+      operations:
+        - "Define KPIs"
+        - "Collect measurements"
+        - "Track progress"
+
+    N_normalize:
+      name: "Normalize"
+      name_ja: "正規化"
+      formula: "N: Raw Data → Standardized Format"
+      step_back_question: "How do we make data comparable?"
+      input: "Raw data"
+      output: "Normalized data"
+      operations:
+        - "Apply normalization: (data - μ) / σ"
+        - "Standardize formats"
+        - "Remove outliers"
+
+    O_optimize:
+      name: "Optimize"
+      name_ja: "最適化"
+      formula: "O: Current Solution → Optimal Solution"
+      step_back_question: "What is the best possible solution?"
+      input: "Current solution"
+      output: "Optimal solution"
+      operations:
+        - "Apply optimization algorithms"
+        - "Maximize quality function"
+        - "Minimize resource usage"
+
+    P_parallelize:
+      name: "Parallelize"
+      name_ja: "並列化"
+      formula: "P: Sequential Tasks → Parallel Execution"
+      step_back_question: "What can run concurrently?"
+      input: "Sequential tasks"
+      output: "Parallel execution plan"
+      operations:
+        - "Identify independent tasks"
+        - "Plan parallel execution: T₁ ⊗ T₂ ⊗ ... ⊗ Tₙ"
+        - "Coordinate results"
+
+    Q_question:
+      name: "Question"
+      name_ja: "質問"
+      formula: "Q: Current Understanding → Deeper Insight"
+      step_back_question: "What are we missing?"
+      input: "Current understanding"
+      output: "Deeper insights"
+      operations:
+        - "Ask step-back questions"
+        - "Challenge assumptions"
+        - "Seek fundamental principles"
+
+    R_refactor:
+      name: "Refactor"
+      name_ja: "リファクタリング"
+      formula: "R: Working Code → Clean Code"
+      step_back_question: "How can we make this better?"
+      input: "Working code"
+      output: "Refactored code"
+      operations:
+        - "Improve readability"
+        - "Enhance maintainability"
+        - "Optimize performance"
+
+    S_synthesize:
+      name: "Synthesize"
+      name_ja: "統合"
+      formula: "S: Components → Integrated System"
+      step_back_question: "How do parts become a whole?"
+      input: "Components {C₁, C₂, ..., Cᵣ}"
+      output: "Integrated system"
+      operations:
+        - "Combine components"
+        - "Ensure compatibility"
+        - "Test integration"
+
+    T_test:
+      name: "Test"
+      name_ja: "テスト"
+      formula: "T: System → Validation Results"
+      step_back_question: "Does it actually work?"
+      input: "System"
+      output: "Test results {test₁: pass/fail, ...}"
+      operations:
+        - "Run unit tests"
+        - "Execute integration tests"
+        - "Perform system tests"
+
+    U_unify:
+      name: "Unify"
+      name_ja: "統一"
+      formula: "U: Diverse Approaches → Single Framework"
+      step_back_question: "What unifies these approaches?"
+      input: "Diverse approaches {A₁, A₂, ..., Aₜ}"
+      output: "Unified framework"
+      operations:
+        - "Find common patterns"
+        - "Create abstraction"
+        - "Define unified interface"
+
+    V_validate:
+      name: "Validate"
+      name_ja: "検証"
+      formula: "V: Solution → Correctness Proof"
+      step_back_question: "How do we know it's correct?"
+      input: "Solution"
+      output: "Validation proof"
+      operations:
+        - "Formal verification"
+        - "Empirical testing"
+        - "Peer review"
+
+    W_write:
+      name: "Write"
+      name_ja: "記述"
+      formula: "W: Knowledge → Documentation"
+      step_back_question: "How do we share what we learned?"
+      input: "Knowledge"
+      output: "Documentation"
+      operations:
+        - "Write clear docs"
+        - "Create examples"
+        - "Explain rationale"
+
+    X_execute:
+      name: "eXecute"
+      name_ja: "実行"
+      formula: "X: Plan → Action"
+      step_back_question: "How do we make it happen?"
+      input: "Plan"
+      output: "Execution results"
+      operations:
+        - "Deploy system"
+        - "Monitor execution"
+        - "Adjust as needed"
+
+    Y_yield:
+      name: "Yield"
+      name_ja: "生成"
+      formula: "Y: Process → Final Result"
+      step_back_question: "What is the final deliverable?"
+      input: "Complete process"
+      output: "Final result"
+      operations:
+        - "Package deliverable"
+        - "Add metadata"
+        - "Calculate quality metrics"
+
+    Z_zeroin:
+      name: "Zero-in"
+      name_ja: "収束"
+      formula: "Z: Iterations → Optimal Solution"
+      step_back_question: "Have we reached the best solution?"
+      input: "Iterative results"
+      output: "Optimal solution"
+      operations:
+        - "Check convergence"
+        - "Verify optimality"
+        - "Finalize solution: lim_{n→∞} Solutionₙ = Solution*"
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # ステップ実行関数 f の定義
+  # ═══════════════════════════════════════════════════════════════════════
+  step_execution_function:
+    signature: "f: Step × 𝒬 → StepResult"
+
+    formula: "f(step, Q) = Execute(step) ⊗ Validate(step, Q) ⊗ Learn(step)"
+
+    components:
+      execute:
+        description: "ステップの実行"
+        operations:
+          - "Run step-specific logic"
+          - "Process inputs"
+          - "Generate outputs"
+
+      validate:
+        description: "Step-back質問による検証"
+        operations:
+          - "Apply step-back questions"
+          - "Check alignment with fundamental principles"
+          - "Verify quality"
+
+      learn:
+        description: "ステップからの学習"
+        operations:
+          - "Extract patterns"
+          - "Update knowledge"
+          - "Improve future execution"
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # 品質メトリクス
+  # ═══════════════════════════════════════════════════════════════════════
+  quality_metrics:
+    process_quality:
+      formula: "Process_Quality = ∏_{step=A}^{Z} Step_Quality(step)"
+      range: "[0, 1]"
+
+    step_quality:
+      formula: "Step_Quality(step) = ω₁·Completeness + ω₂·Accuracy + ω₃·Efficiency"
+      weights:
+        completeness: 0.4
+        accuracy: 0.3
+        efficiency: 0.3
+
+    step_back_effect:
+      formula: "Step_back_Effect = Quality(with_questions) / Quality(without_questions)"
+      empirical_value: "1.5 ~ 2.0"
+      description: "Step-back質問により品質が1.5~2倍向上"
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # 実装マッピング
+  # ═══════════════════════════════════════════════════════════════════════
+  implementation:
+    rust_types:
+      goal:
+        type: "struct Goal"
+        fields:
+          - "description: String"
+          - "success_criteria: Vec<Criterion>"
+          - "constraints: Vec<Constraint>"
+
+      question:
+        type: "struct StepBackQuestion"
+        fields:
+          - "question: String"
+          - "depth: usize"
+          - "category: QuestionCategory"
+
+      step:
+        type: "enum Step"
+        variants:
+          - "A_Analyze"
+          - "B_BreakDown"
+          - "C_Clarify"
+          - "... (26 variants total)"
+          - "Z_ZeroIn"
+
+      result:
+        type: "struct Result"
+        fields:
+          - "deliverable: Deliverable"
+          - "metadata: Metadata"
+          - "quality: QualityScore"
+
+    rust_functions:
+      achieve_goal:
+        signature: "fn achieve_goal(goal: Goal, questions: Vec<StepBackQuestion>) -> Result"
+        implementation: |
+          let steps = Step::iter_all();
+          let step_results: Vec<StepResult> = steps
+              .iter()
+              .map(|step| execute_step(*step, &questions))
+              .collect();
+          integrate(step_results)
+
+      execute_step:
+        signature: "fn execute_step(step: Step, questions: &[StepBackQuestion]) -> StepResult"
+        implementation: |
+          match step {
+              Step::A_Analyze => analyze(goal, questions),
+              Step::B_BreakDown => break_down(problem, questions),
+              // ... other 24 steps
+              Step::Z_ZeroIn => zero_in(iterations, questions),
+          }
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # 使用例
+  # ═══════════════════════════════════════════════════════════════════════
+  examples:
+    example1:
+      goal: "Build an AI agent system"
+
+      step_back_questions:
+        - "What makes an agent truly 'intelligent'?"
+        - "What are the fundamental requirements for autonomy?"
+        - "How do successful agent systems achieve reliability?"
+
+      process_snippet:
+        A_analyze:
+          question: "What is the core problem?"
+          answer: "Need autonomous task execution with learning capability"
+
+        Z_zeroin:
+          question: "What is the optimal solution?"
+          answer: "Ω-System with 6-phase execution engine"
+          convergence: "Achieved through iterative improvement"
+
+      result:
+        deliverable: "Miyabi Autonomous Development Framework"
+        quality_score: 0.92
+        metadata:
+          lines_of_code: 50000
+          test_coverage: 0.85
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # パラメータ
+  # ═══════════════════════════════════════════════════════════════════════
+  parameters:
+    step_count: 26
+    min_questions_per_step: 1
+    recommended_questions: 3-5
+    quality_threshold: 0.80
+    convergence_epsilon: 0.01

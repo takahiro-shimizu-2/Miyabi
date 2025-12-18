@@ -1,0 +1,31 @@
+@startuml miyabi_workflow
+
+title Miyabi Workflow Execution
+
+actor User
+participant CoordinatorAgent
+participant CodeGenAgent
+participant ReviewAgent
+participant PRAgent
+
+User -> CoordinatorAgent: Create Issue
+activate CoordinatorAgent
+CoordinatorAgent -> CoordinatorAgent: Analyze & Plan
+CoordinatorAgent -> CodeGenAgent: Generate Code
+activate CodeGenAgent
+CodeGenAgent -> CodeGenAgent: Implement
+CodeGenAgent --> CoordinatorAgent: Code Complete
+deactivate CodeGenAgent
+CoordinatorAgent -> ReviewAgent: Review Code
+activate ReviewAgent
+ReviewAgent -> ReviewAgent: Quality Check
+ReviewAgent --> CoordinatorAgent: Review Complete
+deactivate ReviewAgent
+CoordinatorAgent -> PRAgent: Create PR
+activate PRAgent
+PRAgent -> PRAgent: Generate PR
+PRAgent --> User: PR Created
+deactivate PRAgent
+deactivate CoordinatorAgent
+
+@enduml

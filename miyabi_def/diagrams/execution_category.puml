@@ -1,0 +1,306 @@
+@startuml SWML - Execution Category Theory
+!theme blueprint
+skinparam backgroundColor #F8F9FA
+
+title SWML - Category Theoretic Structure\nExecution Category 𝓔 & Functors\nVersion 1.0.0
+
+' === Category Definition ===
+
+package "§6 Execution Category 𝓔" as category {
+
+  object "Objects" as objects {
+    **Spaces (8)**
+    • ℐ (Intent Space)
+    • 𝒲 (World Space)
+    • 𝒮 (Structure Space)
+    • 𝒯 (Task Space)
+    • 𝒜 (Allocation Space)
+    • ℛ (Result Space)
+    • 𝒟 (Deliverable Space)
+    • 𝒦 (Knowledge Space)
+  }
+
+  object "Morphisms" as morphisms {
+    **Phase Transitions (6)**
+    • θ₁: ℐ × 𝒲 → 𝒮
+    • θ₂: 𝒮 × 𝒲 → 𝒯
+    • θ₃: 𝒯 × 𝒲.r → 𝒜
+    • θ₄: 𝒜 → ℛ
+    • θ₅: ℛ → 𝒟
+    • θ₆: 𝒟 × ℐ × 𝒲 → 𝒦
+  }
+
+  object "Category Laws" as laws {
+    **Identity Morphism**
+    ∀ A: ∃ id_A : A → A
+    --
+    **Composition**
+    ∀ f: A → B, g: B → C:
+      g ∘ f : A → C
+    --
+    **Associativity**
+    h ∘ (g ∘ f) = (h ∘ g) ∘ f
+    --
+    **Identity Law**
+    id_B ∘ f = f = f ∘ id_A
+  }
+}
+
+' === Monoid Structure ===
+
+package "§6.1 Monoid Structure (𝔼, ∘, id)" as monoid {
+
+  object "Composition ∘" as comp {
+    **Signature**
+    ∘: 𝔼 × 𝔼 → 𝔼
+    --
+    **Associativity**
+    (e₁ ∘ e₂) ∘ e₃ = e₁ ∘ (e₂ ∘ e₃)
+  }
+
+  object "Identity id" as id {
+    **Definition**
+    id: A → A
+    --
+    **Identity Law**
+    id ∘ e = e ∘ id = e
+  }
+}
+
+' === Functor ===
+
+package "§6.2 World State Functor F_W" as functor {
+
+  object "Functor Definition" as func_def {
+    **Signature**
+    F_W: 𝓔 → 𝓔
+    --
+    **On Objects**
+    F_W(X) = X × 𝒲
+    --
+    **On Morphisms**
+    F_W(f) = f × id_W
+  }
+
+  object "Functor Laws" as func_laws {
+    **Preserve Identity**
+    F_W(id_X) = id_{F_W(X)}
+    --
+    **Preserve Composition**
+    F_W(g ∘ f) = F_W(g) ∘ F_W(f)
+  }
+}
+
+' === Natural Transformation ===
+
+package "§6.3 Natural Transformations" as nat_trans {
+
+  object "η: Id → F_W" as eta {
+    **Component at X**
+    η_X: X → X × 𝒲
+    --
+    **Naturality Square**
+    For f: X → Y:
+      F_W(f) ∘ η_X = η_Y ∘ f
+  }
+
+  object "ε: F_W → Id" as epsilon {
+    **Component at X**
+    ε_X: X × 𝒲 → X
+    --
+    **Projection**
+    π₁: X × 𝒲 → X
+  }
+}
+
+' === Commutative Diagrams ===
+
+package "§6.4 Commutative Diagrams" as diagrams {
+
+  note as omega_composition
+    **Ω Decomposition Diagram**
+
+    ℐ × 𝒲 --θ₁--> 𝒮
+      |              |
+      |              θ₂
+      |              ↓
+      |              𝒯
+      |              |
+      |              θ₃
+      |              ↓
+      |              𝒜
+      |              |
+      Ω              θ₄
+      |              ↓
+      |              ℛ
+      |              |
+      |              θ₅
+      |              ↓
+      ↓              𝒟
+      ℛ  <--θ₆--  𝒦
+
+    Commutes: Ω = θ₆ ∘ θ₅ ∘ θ₄ ∘ θ₃ ∘ θ₂ ∘ θ₁
+  end note
+
+  note as task_composition
+    **Task Composition Diagram**
+
+    T₁ --∘--> T₂
+     \\        /
+      \\      /
+       \\    / ∘
+        \\  /
+         \\/
+      T₁ ∘ T₂
+
+    Associative: (T₁ ∘ T₂) ∘ T₃ = T₁ ∘ (T₂ ∘ T₃)
+  end note
+
+  note as parallel_composition
+    **Parallel Composition Diagram**
+
+        T₁
+         |
+    ⊗ ---|--- T₂
+         |
+      T₁ ⊗ T₂
+
+    Commutative: T₁ ⊗ T₂ = T₂ ⊗ T₁ (if independent)
+  end note
+}
+
+' === Algebraic Structure ===
+
+package "§6.5 Algebraic Properties" as algebra {
+
+  object "Distributivity" as dist {
+    **Law**
+    T₁ ∘ (T₂ ⊗ T₃) = (T₁ ∘ T₂) ⊗ (T₁ ∘ T₃)
+    --
+    **Interpretation**
+    Sequential after parallel
+    = parallel of sequentials
+  }
+
+  object "Absorption" as abs {
+    **Zero Element**
+    fail: 𝒯
+    --
+    **Law**
+    fail ∘ T = T ∘ fail = fail
+  }
+
+  object "Idempotence" as idem {
+    **For some tasks T**
+    T ∘ T = T
+    --
+    **Example**
+    validate ∘ validate = validate
+  }
+}
+
+' === Implementation Mapping ===
+
+package "§12 Implementation in Rust" as rust {
+
+  object "Category in Code" as rust_cat {
+    **trait Category**
+    trait Morphism<A, B> {
+      fn compose<C>(g: impl Morphism<B, C>)
+        -> impl Morphism<A, C>;
+      fn id() -> impl Morphism<A, A>;
+    }
+  }
+
+  object "Functor in Code" as rust_func {
+    **trait Functor**
+    trait Functor<F> {
+      fn fmap<A, B>(f: impl Fn(A) -> B)
+        -> impl Fn(F<A>) -> F<B>;
+    }
+  }
+
+  object "World State Functor" as rust_world {
+    **struct WorldState<T>**
+    struct WorldState<T> {
+      value: T,
+      world: World,
+    }
+    --
+    **impl Functor**
+    impl<T> Functor for WorldState<T>
+  }
+}
+
+' === Theorems ===
+
+package "§11 Category-Theoretic Theorems" as theorems {
+
+  object "Composability Theorem" as comp_thm {
+    **Statement**
+    ∀ T₁, T₂ ∈ 𝒯:
+      valid(T₁) ∧ valid(T₂)
+      ⟹ valid(T₁ ∘ T₂)
+    --
+    **Proof**
+    Type safety + constraint propagation
+  }
+
+  object "Functor Preservation" as func_pres {
+    **Statement**
+    F_W preserves all categorical structure
+    --
+    **Proof**
+    By functor laws + naturality
+  }
+
+  object "Yoneda Lemma" as yoneda {
+    **Statement**
+    Nat(Hom(A, -), F) ≅ F(A)
+    --
+    **Application**
+    Natural transformations correspond
+    to elements of functor values
+  }
+}
+
+' === Relations ===
+
+objects --> morphisms : contains
+morphisms --> laws : satisfies
+
+comp --> id : uses
+
+func_def --> func_laws : satisfies
+func_def --> eta : via
+func_def --> epsilon : via
+
+rust_cat --> rust_func
+rust_func --> rust_world
+
+comp_thm --> func_pres
+func_pres --> yoneda
+
+note top of category
+  **Execution Category 𝓔**
+  Provides categorical semantics
+  for the entire SWML system
+end note
+
+note bottom of functor
+  **World State Functor F_W**
+  Lifts every computation to
+  include world state tracking
+end note
+
+legend right
+  |= Symbol |= Meaning |
+  | ℐ, 𝒲, 𝒮, 𝒯, ... | Category objects (spaces) |
+  | θ₁, θ₂, ... | Morphisms (phase transitions) |
+  | ∘ | Morphism composition |
+  | id | Identity morphism |
+  | F_W | World state functor |
+  | η, ε | Natural transformations |
+endlegend
+
+@enduml

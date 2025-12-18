@@ -1,0 +1,1157 @@
+# Miyabi Entity Definitions - 14 Core Entities
+# Version: 1.0.0
+# Source: docs/architecture/ENTITY_RELATION_MODEL.md
+
+entities:
+  # E1: Issue - GitHub Issue
+  E1_Issue:
+    id: "E1"
+    name: "Issue"
+    type: "GitHub Issue"
+    description: "GitHub IssueエンティティPrimary entity in Miyabi system"
+
+    attributes:
+      identification:
+        - name: "number"
+          type: "integer"
+          description: "Issue番号（ユニークID）"
+          required: true
+
+      content:
+        - name: "title"
+          type: "string"
+          description: "タイトル"
+          required: true
+        - name: "body"
+          type: "string"
+          description: "本文（要件・仕様）"
+          required: true
+
+      state:
+        - name: "state"
+          type: "enum"
+          values: ["open", "closed"]
+          description: "オープン/クローズ"
+          required: true
+        - name: "labels"
+          type: "string[]"
+          description: "付与されたLabel"
+          required: true
+
+      metadata:
+        - name: "assignee"
+          type: "string"
+          description: "担当者"
+          required: false
+        - name: "createdAt"
+          type: "string"
+          format: "ISO8601"
+          description: "作成日時"
+          required: true
+        - name: "updatedAt"
+          type: "string"
+          format: "ISO8601"
+          description: "更新日時"
+          required: true
+        - name: "url"
+          type: "string"
+          format: "URL"
+          description: "GitHub URL"
+          required: true
+
+    relations:
+      - "R1: analyzed-by → Agent (IssueAgent)"
+      - "R2: decomposed-into → Task[]"
+      - "R3: tagged-with → Label[]"
+      - "R4: creates → PR"
+      - "R36: parent-of → SubIssue"
+
+    implementation:
+      type_definition: "agents/types/index.ts:54-64"
+      agent: ".claude/agents/specs/issue-agent.md"
+      prompts: ".claude/agents/prompts/issue-agent-prompt.md"
+      labels: "docs/guides/LABEL_SYSTEM_GUIDE.md"
+      templates: ".github/ISSUE_TEMPLATE/agent-task.md"
+
+  # E2: Task - Decomposed Task
+  E2_Task:
+    id: "E2"
+    name: "Task"
+    type: "Task"
+    description: "IssueからCoordinatorAgentにより分解されたタスク"
+
+    attributes:
+      identification:
+        - name: "id"
+          type: "string"
+          format: "UUID"
+          description: "TaskID"
+          required: true
+
+      content:
+        - name: "title"
+          type: "string"
+          description: "タスク名"
+          required: true
+        - name: "description"
+          type: "string"
+          description: "詳細説明"
+          required: true
+        - name: "type"
+          type: "enum"
+          values: ["feature", "bug", "refactor", "docs", "test", "deployment"]
+          description: "タスク種別"
+          required: true
+
+      priority:
+        - name: "priority"
+          type: "number"
+          description: "優先度（数値）"
+          required: true
+        - name: "severity"
+          type: "enum"
+          values: ["Sev.1-Critical", "Sev.2-High", "Sev.3-Medium", "Sev.4-Low"]
+          description: "深刻度"
+          required: false
+        - name: "impact"
+          type: "enum"
+          values: ["Critical", "High", "Medium", "Low"]
+          description: "影響度"
+          required: false
+
+      assignment:
+        - name: "assignedAgent"
+          type: "AgentType"
+          description: "割り当てAgent"
+          required: false
+
+      dependencies:
+        - name: "dependencies"
+          type: "string[]"
+          description: "依存TaskIDリスト"
+          required: true
+          default: "[]"
+
+      execution:
+        - name: "estimatedDuration"
+          type: "number"
+          unit: "minutes"
+          description: "推定時間"
+          required: false
+        - name: "status"
+          type: "AgentStatus"
+          description: "現在ステータス"
+          required: false
+        - name: "startTime"
+          type: "number"
+          format: "timestamp"
+          description: "開始時刻"
+          required: false
+        - name: "endTime"
+          type: "number"
+          format: "timestamp"
+          description: "終了時刻"
+          required: false
+
+      metadata:
+        - name: "metadata"
+          type: "Record<string, any>"
+          description: "追加情報"
+          required: false
+
+    relations:
+      - "R5: assigned-to → Agent"
+      - "R6: depends-on → Task"
+      - "R7: part-of → DAG"
+      - "R8: runs-in → Worktree"
+
+    implementation:
+      type_definition: "agents/types/index.ts:37-52"
+      agent: "agents/coordinator/coordinator-agent.ts"
+      spec: ".claude/agents/specs/coordinator-agent.md"
+      prompts: ".claude/agents/prompts/coordinator-agent-prompt.md"
+
+  # E3: Agent - Autonomous Agent
+  E3_Agent:
+    id: "E3"
+    name: "Agent"
+    type: "AgentType"
+    description: "自律実行Agent（Coding: 7個, Business: 14個）"
+
+    types:
+      coding:
+        - name: "CoordinatorAgent"
+          role: "統括・DAG分解"
+          authority: "🔴統括権限"
+          character: "指揮者アーク"
+        - name: "CodeGenAgent"
+          role: "AI駆動コード生成"
+          authority: "🔵実行権限"
+          character: "天才コーダーリリア"
+        - name: "ReviewAgent"
+          role: "品質レビュー"
+          authority: "🔵実行権限"
+          character: "厳格審査官クリスタ"
+        - name: "IssueAgent"
+          role: "Issue分析・ラベリング"
+          authority: "🟢分析権限"
+          character: "戦略家ソフィア"
+        - name: "PRAgent"
+          role: "PR自動作成"
+          authority: "🔵実行権限"
+          character: "統合の守護者ノア"
+        - name: "DeploymentAgent"
+          role: "CI/CDデプロイ"
+          authority: "🔵実行権限"
+          character: "展開司令官アトラス"
+        - name: "RefresherAgent"
+          role: "Issue状態監視・更新"
+          authority: "🟢分析権限"
+          character: "監視者セラフ"
+
+      business:
+        strategy_planning:
+          - "SelfAnalysisAgent"
+          - "MarketResearchAgent"
+          - "PersonaAgent"
+          - "ProductConceptAgent"
+          - "ProductDesignAgent"
+          - "FunnelDesignAgent"
+        marketing:
+          - "ContentCreationAgent"
+          - "SNSStrategyAgent"
+          - "YouTubeAgent"
+          - "MarketingAgent"
+        sales_crm:
+          - "SalesAgent"
+          - "CRMAgent"
+          - "AnalyticsAgent"
+        ai_entrepreneur:
+          - "AIEntrepreneurAgent"
+
+    authority_levels:
+      - name: "🔴統括権限"
+        description: "全体統括、DAG分解、Agent割り当て"
+        agents: ["CoordinatorAgent"]
+      - name: "🔵実行権限"
+        description: "コード生成、レビュー、PR作成、デプロイ"
+        agents: ["CodeGenAgent", "ReviewAgent", "PRAgent", "DeploymentAgent"]
+      - name: "🟢分析権限"
+        description: "Issue分析、ラベル管理、状態監視"
+        agents: ["IssueAgent", "RefresherAgent"]
+
+    escalation_targets:
+      - "TechLead"
+      - "PO"
+      - "CISO"
+      - "CTO"
+      - "DevOps"
+
+    relations:
+      - "R9: executes → Task"
+      - "R10: generates → PR"
+      - "R11: creates → QualityReport"
+      - "R12: triggers → Escalation"
+      - "R13: performs → Deployment"
+      - "R14: logs-to → LDDLog"
+      - "R15: invoked-by → Command"
+
+    implementation:
+      type_definition: "agents/types/index.ts:15-22"
+      implementations: "agents/*/*-agent.ts"
+      specs: ".claude/agents/specs/*-agent.md"
+      prompts: ".claude/agents/prompts/*-agent-prompt.md"
+      characters: ".claude/agents/AGENT_CHARACTERS.md"
+
+  # E4: PR - Pull Request
+  E4_PR:
+    id: "E4"
+    name: "PR"
+    type: "Pull Request"
+    description: "GitHub Pull Request"
+
+    attributes:
+      request:
+        - name: "title"
+          type: "string"
+          format: "Conventional Commits"
+          description: "PRタイトル"
+          required: true
+        - name: "body"
+          type: "string"
+          description: "PR本文（変更サマリ）"
+          required: true
+        - name: "baseBranch"
+          type: "string"
+          description: "ベースブランチ（main/develop）"
+          required: true
+        - name: "headBranch"
+          type: "string"
+          description: "HEADブランチ（feature/agent-*）"
+          required: true
+        - name: "draft"
+          type: "boolean"
+          description: "Draft PR フラグ"
+          required: true
+        - name: "issueNumber"
+          type: "number"
+          description: "関連Issue番号"
+          required: false
+        - name: "labels"
+          type: "string[]"
+          description: "Label"
+          required: false
+        - name: "reviewers"
+          type: "string[]"
+          description: "レビュアー"
+          required: false
+
+      result:
+        - name: "number"
+          type: "number"
+          description: "PR番号"
+          required: true
+        - name: "url"
+          type: "string"
+          format: "URL"
+          description: "GitHub URL"
+          required: true
+        - name: "state"
+          type: "enum"
+          values: ["draft", "open", "merged", "closed"]
+          description: "状態"
+          required: true
+        - name: "createdAt"
+          type: "string"
+          format: "ISO8601"
+          description: "作成日時"
+          required: true
+
+    relations:
+      - "R19: reviewed-by → Agent (ReviewAgent)"
+      - "R20: has → QualityReport"
+      - "R21: attached-to → Issue"
+
+    implementation:
+      type_definition: "agents/types/index.ts:240-257"
+      agent: "agents/pr/pr-agent.ts"
+      spec: ".claude/agents/specs/pr-agent.md"
+
+  # E5: Label - GitHub Label
+  E5_Label:
+    id: "E5"
+    name: "Label"
+    type: "GitHub Label"
+    description: "GitHub Label（57個、11カテゴリ）"
+
+    categories:
+      STATE:
+        count: 8
+        role: "ライフサイクル管理"
+        labels:
+          - "state:pending"
+          - "state:analyzing"
+          - "state:implementing"
+          - "state:reviewing"
+          - "state:done"
+          - "state:blocked"
+          - "state:failed"
+          - "state:paused"
+
+      AGENT:
+        count: 6
+        role: "Agent割り当て"
+        labels:
+          - "agent:coordinator"
+          - "agent:codegen"
+          - "agent:review"
+          - "agent:issue"
+          - "agent:pr"
+          - "agent:deployment"
+
+      PRIORITY:
+        count: 4
+        role: "優先度管理"
+        labels:
+          - "priority:P0-Critical"
+          - "priority:P1-High"
+          - "priority:P2-Medium"
+          - "priority:P3-Low"
+
+      TYPE:
+        count: 7
+        role: "Issue分類"
+        labels:
+          - "type:feature"
+          - "type:bug"
+          - "type:docs"
+          - "type:refactor"
+          - "type:test"
+          - "type:architecture"
+          - "type:deployment"
+
+      SEVERITY:
+        count: 4
+        role: "深刻度・エスカレーション"
+        labels:
+          - "severity:Sev.1-Critical"
+          - "severity:Sev.2-High"
+          - "severity:Sev.3-Medium"
+          - "severity:Sev.4-Low"
+
+      PHASE:
+        count: 5
+        role: "プロジェクトフェーズ"
+        labels:
+          - "phase:planning"
+          - "phase:implementation"
+          - "phase:testing"
+          - "phase:deployment"
+          - "phase:monitoring"
+
+      SPECIAL:
+        count: 7
+        role: "特殊操作"
+        labels:
+          - "security"
+          - "cost-watch"
+          - "dependencies"
+          - "learning"
+          - "experiment"
+          - "wontfix"
+          - "duplicate"
+
+      TRIGGER:
+        count: 4
+        role: "自動化トリガー"
+        labels:
+          - "trigger:agent-execute"
+          - "trigger:generate-report"
+          - "trigger:deploy-staging"
+          - "trigger:deploy-production"
+
+      QUALITY:
+        count: 4
+        role: "品質スコア"
+        labels:
+          - "quality:excellent"
+          - "quality:good"
+          - "quality:needs-improvement"
+          - "quality:poor"
+
+      COMMUNITY:
+        count: 4
+        role: "コミュニティ"
+        labels:
+          - "good-first-issue"
+          - "help-wanted"
+          - "question"
+          - "discussion"
+
+      HIERARCHY:
+        count: 4
+        role: "階層構造管理"
+        labels:
+          - "hierarchy:root"
+          - "hierarchy:parent"
+          - "hierarchy:child"
+          - "hierarchy:leaf"
+
+    total_count: 57
+
+    relations:
+      - "R16: triggers → Agent"
+      - "R17: defines-state → Issue"
+      - "R18: categorizes → Task"
+
+    implementation:
+      guide: "docs/guides/LABEL_SYSTEM_GUIDE.md"
+      definition: ".github/labels.yml"
+      sdk_integration: "docs/AGENT_SDK_LABEL_INTEGRATION.md"
+
+  # E6: QualityReport - Code Quality Report
+  E6_QualityReport:
+    id: "E6"
+    name: "QualityReport"
+    type: "Quality Report"
+    description: "ReviewAgentによるコード品質レポート"
+
+    attributes:
+      score:
+        - name: "score"
+          type: "number"
+          range: "0-100"
+          description: "総合スコア"
+          required: true
+        - name: "passed"
+          type: "boolean"
+          description: "合格フラグ（score >= 80）"
+          required: true
+
+      issues:
+        - name: "issues"
+          type: "QualityIssue[]"
+          description: "検出された問題リスト"
+          required: true
+
+      recommendations:
+        - name: "recommendations"
+          type: "string[]"
+          description: "推奨事項"
+          required: true
+
+      breakdown:
+        - name: "eslintScore"
+          type: "number"
+          weight: "40%"
+          description: "ESLintスコア"
+          required: true
+        - name: "typeScriptScore"
+          type: "number"
+          weight: "30%"
+          description: "TypeScriptスコア"
+          required: true
+        - name: "securityScore"
+          type: "number"
+          weight: "20%"
+          description: "セキュリティスコア"
+          required: true
+        - name: "testCoverageScore"
+          type: "number"
+          weight: "10%"
+          description: "カバレッジスコア"
+          required: true
+
+    quality_issue_structure:
+      attributes:
+        - name: "type"
+          type: "enum"
+          values: ["eslint", "typescript", "security", "coverage"]
+        - name: "severity"
+          type: "enum"
+          values: ["critical", "high", "medium", "low"]
+        - name: "message"
+          type: "string"
+        - name: "file"
+          type: "string"
+        - name: "line"
+          type: "number"
+        - name: "column"
+          type: "number"
+        - name: "scoreImpact"
+          type: "number"
+          description: "減点（-20, -30, -40等）"
+
+    relations:
+      - "R22: evaluated-by → Agent (ReviewAgent)"
+      - "R23: attached-to → PR"
+
+    implementation:
+      type_definition: "agents/types/index.ts:108-130"
+      agent: "agents/review/review-agent.ts"
+      spec: ".claude/agents/specs/review-agent.md"
+
+  # E7: Command - Claude Code Command
+  E7_Command:
+    id: "E7"
+    name: "Command"
+    type: "Command"
+    description: "Claude Code Slash Command（9個）"
+
+    commands:
+      - name: "/test"
+        description: "テスト実行"
+        file: ".claude/commands/test.md"
+      - name: "/agent-run"
+        description: "Agent手動実行"
+        file: ".claude/commands/agent-run.md"
+      - name: "/verify"
+        description: "システム動作確認"
+        file: ".claude/commands/verify.md"
+      - name: "/deploy"
+        description: "デプロイ実行"
+        file: ".claude/commands/deploy.md"
+      - name: "/create-issue"
+        description: "Issue対話的作成"
+        file: ".claude/commands/create-issue.md"
+      - name: "/security-scan"
+        description: "セキュリティスキャン"
+        file: ".claude/commands/security-scan.md"
+      - name: "/generate-docs"
+        description: "ドキュメント生成"
+        file: ".claude/commands/generate-docs.md"
+      - name: "/miyabi-todos"
+        description: "TODO検出・Issue化"
+        file: ".claude/commands/miyabi-todos.md"
+      - name: "/miyabi-auto"
+        description: "全自動モード"
+        file: ".claude/commands/miyabi-auto.md"
+
+    structure:
+      format: "Markdown with YAML frontmatter"
+      frontmatter:
+        - "description"
+      body:
+        - "command name"
+        - "execution details"
+        - "bash code block"
+
+    relations:
+      - "R15: invokes → Agent"
+
+    implementation:
+      location: ".claude/commands/*.md"
+
+  # E8: Escalation - Escalation Info
+  E8_Escalation:
+    id: "E8"
+    name: "Escalation"
+    type: "Escalation"
+    description: "エスカレーション情報"
+
+    attributes:
+      - name: "reason"
+        type: "string"
+        description: "エスカレーション理由"
+        required: true
+      - name: "target"
+        type: "EscalationTarget"
+        values: ["TechLead", "PO", "CISO", "CTO", "DevOps"]
+        description: "エスカレーション先"
+        required: true
+      - name: "severity"
+        type: "Severity"
+        values: ["Sev.1-Critical", "Sev.2-High", "Sev.3-Medium", "Sev.4-Low"]
+        description: "深刻度"
+        required: true
+      - name: "context"
+        type: "Record<string, any>"
+        description: "追加コンテキスト"
+        required: true
+      - name: "timestamp"
+        type: "string"
+        format: "ISO8601"
+        description: "発生日時"
+        required: true
+
+    trigger_conditions:
+      TechLead:
+        - "アーキテクチャ問題"
+        - "複雑度超過"
+      CISO:
+        - "セキュリティ脆弱性（Sev.1-2）"
+      PO:
+        - "要件不明確"
+        - "ビジネス判断必要"
+      CTO:
+        - "システムレベル障害"
+      DevOps:
+        - "インフラ・デプロイ問題"
+
+    relations:
+      - "R12: triggered-by → Agent"
+
+    implementation:
+      type_definition: "agents/types/index.ts:96-102"
+      method: "agents/base-agent.ts (escalate メソッド)"
+
+  # E9: Deployment - Deployment Info
+  E9_Deployment:
+    id: "E9"
+    name: "Deployment"
+    type: "Deployment"
+    description: "デプロイ情報"
+
+    attributes:
+      config:
+        - name: "environment"
+          type: "enum"
+          values: ["staging", "production"]
+          description: "デプロイ環境"
+          required: true
+        - name: "version"
+          type: "string"
+          format: "semantic version"
+          description: "バージョン"
+          required: true
+        - name: "projectId"
+          type: "string"
+          description: "Firebase Project ID"
+          required: true
+        - name: "targets"
+          type: "string[]"
+          values: ["hosting", "functions"]
+          description: "デプロイ対象"
+          required: true
+        - name: "skipTests"
+          type: "boolean"
+          description: "テストスキップフラグ"
+          required: false
+        - name: "autoRollback"
+          type: "boolean"
+          description: "自動ロールバック有効化"
+          required: true
+        - name: "healthCheckUrl"
+          type: "string"
+          format: "URL"
+          description: "ヘルスチェックURL"
+          required: true
+
+      result:
+        - name: "environment"
+          type: "enum"
+          values: ["staging", "production"]
+          required: true
+        - name: "version"
+          type: "string"
+          required: true
+        - name: "projectId"
+          type: "string"
+          required: true
+        - name: "deploymentUrl"
+          type: "string"
+          format: "URL"
+          description: "デプロイされたURL"
+          required: true
+        - name: "deployedAt"
+          type: "string"
+          format: "ISO8601"
+          description: "デプロイ日時"
+          required: true
+        - name: "durationMs"
+          type: "number"
+          unit: "milliseconds"
+          description: "デプロイ時間"
+          required: true
+        - name: "status"
+          type: "enum"
+          values: ["success", "failed", "rolled_back"]
+          description: "ステータス"
+          required: true
+
+    relations:
+      - "R13: performed-by → Agent (DeploymentAgent)"
+
+    implementation:
+      type_definition: "agents/types/index.ts:262-281"
+      agent: "agents/deployment/deployment-agent.ts"
+      spec: ".claude/agents/specs/deployment-agent.md"
+      command: ".claude/commands/deploy.md"
+
+  # E10: LDDLog - Log-Driven Development Log
+  E10_LDDLog:
+    id: "E10"
+    name: "LDDLog"
+    type: "LDD Log"
+    description: "Log-Driven Development実行ログ"
+
+    attributes:
+      session:
+        - name: "sessionId"
+          type: "string"
+          format: "UUID"
+          description: "セッションID"
+          required: true
+        - name: "date"
+          type: "string"
+          format: "YYYY-MM-DD"
+          description: "ログ日付"
+          required: true
+        - name: "deviceIdentifier"
+          type: "string"
+          description: "デバイス識別子"
+          required: true
+
+      codex_prompt_chain:
+        - name: "intent"
+          type: "string"
+          description: "意図"
+          required: true
+        - name: "plan"
+          type: "string[]"
+          description: "計画ステップ"
+          required: true
+        - name: "implementation"
+          type: "string[]"
+          description: "実装ステップ"
+          required: true
+        - name: "verification"
+          type: "string[]"
+          description: "検証ステップ"
+          required: true
+
+      tool_invocations:
+        structure: "Array of ToolInvocation"
+        fields:
+          - name: "command"
+            type: "string"
+            description: "実行コマンド"
+          - name: "workdir"
+            type: "string"
+            description: "作業ディレクトリ"
+          - name: "timestamp"
+            type: "string"
+            format: "ISO8601"
+            description: "実行時刻"
+          - name: "status"
+            type: "enum"
+            values: ["passed", "failed"]
+            description: "ステータス"
+          - name: "notes"
+            type: "string"
+            description: "メモ"
+          - name: "output"
+            type: "string"
+            description: "出力"
+          - name: "error"
+            type: "string"
+            description: "エラー"
+
+      memory_bank:
+        - name: "memoryBankUpdates"
+          type: "string[]"
+          description: "Memory Bank更新"
+          required: true
+
+      next_steps:
+        - name: "nextSteps"
+          type: "string"
+          description: "次のステップ"
+          required: true
+
+    relations:
+      - "R14: logged-by → Agent"
+
+    implementation:
+      type_definition: "agents/types/index.ts:284-312"
+      method: "agents/base-agent.ts (logToLDD メソッド)"
+      output_location: ".ai/logs/YYYY-MM-DD.md"
+      format: "Markdown"
+
+  # E11: DAG - Directed Acyclic Graph
+  E11_DAG:
+    id: "E11"
+    name: "DAG"
+    type: "Directed Acyclic Graph"
+    description: "タスク依存グラフ"
+
+    attributes:
+      structure:
+        - name: "nodes"
+          type: "Task[]"
+          description: "Taskリスト"
+          required: true
+        - name: "edges"
+          type: "Edge[]"
+          description: "依存関係エッジ"
+          required: true
+        - name: "levels"
+          type: "string[][]"
+          description: "トポロジカルソート済みレベル"
+          required: true
+
+      edge_structure:
+        - name: "from"
+          type: "string"
+          description: "依存元TaskID"
+        - name: "to"
+          type: "string"
+          description: "依存先TaskID"
+
+    task_decomposition:
+      attributes:
+        - name: "originalIssue"
+          type: "Issue"
+          description: "元のIssue"
+        - name: "tasks"
+          type: "Task[]"
+          description: "分解されたTask"
+        - name: "dag"
+          type: "DAG"
+          description: "構築されたDAG"
+        - name: "estimatedTotalDuration"
+          type: "number"
+          unit: "minutes"
+          description: "推定合計時間"
+        - name: "hasCycles"
+          type: "boolean"
+          description: "循環依存チェック"
+        - name: "recommendations"
+          type: "string[]"
+          description: "推奨事項"
+
+    composition_algebra:
+      sequential: "T₁ ∘ T₂ = T₃"
+      parallel: "T₁ ⊗ T₂ = T₃"
+      conditional: "T₁ ⊕ T₂ = T₃"
+      iterative: "T* = ⊕[n=0→∞] Tⁿ"
+
+    relations:
+      - "R24: decomposed-from → Issue"
+      - "R25: contains → Task[]"
+
+    implementation:
+      type_definition: "agents/types/index.ts:66-70, 135-143"
+      agent: "agents/coordinator/coordinator-agent.ts"
+      methods: ["decomposeIssue", "buildDAG"]
+
+  # E12: Worktree - Git Worktree
+  E12_Worktree:
+    id: "E12"
+    name: "Worktree"
+    type: "Git Worktree"
+    description: "Git Worktree（並列実行基盤）"
+
+    attributes:
+      - name: "path"
+        type: "string"
+        format: "filesystem path"
+        description: "Worktreeパス"
+        example: ".worktrees/issue-270"
+        required: true
+      - name: "branch"
+        type: "string"
+        description: "ブランチ名"
+        example: "feature/agent-issue-270"
+        required: true
+      - name: "taskId"
+        type: "string"
+        description: "実行TaskID"
+        required: true
+      - name: "issueNumber"
+        type: "number"
+        description: "関連Issue番号"
+        required: false
+      - name: "agentType"
+        type: "AgentType"
+        description: "実行Agent"
+        required: true
+      - name: "status"
+        type: "enum"
+        values: ["active", "completed", "failed"]
+        description: "ステータス"
+        required: true
+
+    path_convention:
+      pattern: ".worktrees/issue-{ISSUE_NUMBER}/task-{TASK_ID}/"
+      examples:
+        - ".worktrees/issue-270/"
+        - ".worktrees/issue-270/task-abc123/"
+
+    relations:
+      - "R26: executes → Task"
+      - "R27: creates → PR"
+
+    implementation:
+      documentation: "CLAUDE.md (Git Worktree並列実行アーキテクチャ)"
+      script: "scripts/parallel-executor.ts"
+
+  # E13: DiscordCommunity - Discord Community
+  E13_DiscordCommunity:
+    id: "E13"
+    name: "DiscordCommunity"
+    type: "Discord Community"
+    description: "Discordコミュニティ統合"
+
+    attributes:
+      identification:
+        - name: "serverId"
+          type: "string"
+          description: "Discord Server ID"
+          required: true
+        - name: "serverName"
+          type: "string"
+          description: "サーバー名"
+          example: "Miyabi Community"
+          required: true
+
+      channels:
+        - name: "channels"
+          type: "DiscordChannel[]"
+          description: "チャンネル（15+）"
+          required: true
+
+      roles:
+        - name: "roles"
+          type: "DiscordRole[]"
+          description: "Progressive Role System"
+          required: true
+
+      members:
+        - name: "members"
+          type: "number"
+          description: "現在のメンバー数"
+          required: true
+
+      integrations:
+        - name: "webhooks"
+          type: "WebhookConfig[]"
+          description: "GitHub/Agent通知用Webhook"
+          required: true
+        - name: "botIntegrations"
+          type: "BotConfig[]"
+          description: "MEE6, GitHub Bot, Custom Miyabi Bot"
+          required: true
+
+      metadata:
+        - name: "createdAt"
+          type: "string"
+          format: "ISO8601"
+          description: "サーバー作成日時"
+          required: true
+
+    channel_structure:
+      attributes:
+        - "id: Channel ID"
+        - "name: チャンネル名"
+        - "type: text/voice/forum"
+        - "category: カテゴリ名"
+        - "purpose: 用途説明"
+
+    role_structure:
+      attributes:
+        - "id: Role ID"
+        - "name: ロール名"
+        - "level: 1-5"
+        - "requirements: 取得条件"
+
+    webhook_structure:
+      attributes:
+        - "channelId: 送信先Channel ID"
+        - "webhookUrl: Webhook URL"
+        - "triggerEvents: トリガーイベント"
+
+    relations:
+      - "R28: notified-from ← Issue"
+      - "R29: posted-from ← Agent"
+      - "R30: announced-from ← QualityReport"
+      - "R31: announced-from ← PR"
+      - "R32: notified-from ← Deployment"
+      - "R33: notification-triggered-by ← Label"
+      - "R34: notified-from ← Escalation"
+      - "R35: integrated-with ← Command"
+
+    implementation:
+      documentation: "docs/DISCORD_COMMUNITY_PLAN.md"
+      issue: "#52 - Create Discord server and launch community"
+      type_definition: "agents/types/index.ts (追加予定)"
+
+  # E14: SubIssue - Hierarchical Issue
+  E14_SubIssue:
+    id: "E14"
+    name: "SubIssue"
+    type: "Hierarchical Issue"
+    description: "階層的Issue（親子関係サポート）"
+
+    extends: "E1_Issue"
+
+    attributes:
+      hierarchy:
+        - name: "parentIssueNumber"
+          type: "number"
+          description: "親Issue番号（ルートの場合undefined）"
+          required: false
+        - name: "childIssueNumbers"
+          type: "number[]"
+          description: "直接の子Issue番号"
+          required: true
+          default: "[]"
+        - name: "hierarchyLevel"
+          type: "number"
+          description: "階層レベル（0=root, 1=first level, ...）"
+          required: true
+
+      relationships:
+        - name: "siblingIssueNumbers"
+          type: "number[]"
+          description: "同レベルの兄弟Issue"
+          required: true
+          default: "[]"
+        - name: "ancestorPath"
+          type: "number[]"
+          description: "ルートから現在までのパス"
+          example: "[root, parent, current]"
+          required: true
+
+      metadata:
+        - name: "isLeaf"
+          type: "boolean"
+          description: "子がない（リーフノード）"
+          required: true
+        - name: "isRoot"
+          type: "boolean"
+          description: "親がない（ルートノード）"
+          required: true
+        - name: "totalDescendants"
+          type: "number"
+          description: "総子孫数（再帰カウント）"
+          required: true
+
+      progress:
+        - name: "completionProgress"
+          type: "CompletionProgress"
+          description: "完了進捗（子Issueから集約）"
+          required: true
+
+    completion_progress_structure:
+      attributes:
+        - name: "total"
+          type: "number"
+          description: "総子Issue数"
+        - name: "completed"
+          type: "number"
+          description: "完了済み子Issue数"
+        - name: "percentage"
+          type: "number"
+          range: "0-100"
+          description: "完了率"
+
+    hierarchy_labels:
+      - name: "🌳 hierarchy:root"
+        description: "ルートIssue（親なし）"
+      - name: "📂 hierarchy:parent"
+        description: "子Issueを持つ"
+      - name: "📄 hierarchy:child"
+        description: "親Issueを持つ"
+      - name: "🍃 hierarchy:leaf"
+        description: "子Issueなし（リーフノード）"
+
+    use_cases:
+      - "エピック分解: 大規模機能を複数の子Issueに分解"
+      - "進捗管理: 親Issueで全体の完了率を自動追跡"
+      - "依存関係管理: 階層的なタスク依存を明示化"
+      - "組織化: プロジェクトを論理的な階層で整理"
+
+    relations:
+      - "R36: parent-of ← Issue (1:N)"
+      - "R37: child-of → Issue (N:1)"
+      - "R38: sibling-of ↔ SubIssue (N:N)"
+      - "R39: tracked-by → Label (N:N)"
+
+    implementation:
+      type_definition: "packages/coding-agents/types/index.ts:67-114"
+      agent: "packages/coding-agents/issue/issue-agent.ts"
+      methods: ["createSubIssue", "fetchIssueHierarchy"]
+      labels: "docs/guides/LABEL_SYSTEM_GUIDE.md (HIERARCHY Labels)"
+
+# Summary Statistics
+metadata:
+  total_entities: 14
+  coding_agents: 7
+  business_agents: 14
+  total_agents: 21
+  total_labels: 57
+  label_categories: 11
+  total_relations: 39
+
+  entity_categories:
+    core_workflow: ["E1_Issue", "E2_Task", "E3_Agent", "E4_PR"]
+    quality_control: ["E6_QualityReport", "E5_Label"]
+    execution: ["E7_Command", "E8_Escalation", "E9_Deployment"]
+    infrastructure: ["E11_DAG", "E12_Worktree", "E10_LDDLog"]
+    community: ["E13_DiscordCommunity", "E14_SubIssue"]
+
+  completion_status:
+    implemented: 14
+    in_progress: 0
+    planned: 0

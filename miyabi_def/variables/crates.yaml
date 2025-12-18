@@ -1,0 +1,178 @@
+# Miyabi Crates Variable Definitions
+# Version: 1.0.0
+
+crates:
+  core:
+    - name: "miyabi-cli"
+      type: "binary"
+      path: "crates/miyabi-cli"
+      description: "CLI binary entry point"
+      features:
+        - "Command-line interface"
+        - "Subcommand routing"
+        - "Configuration management"
+
+    - name: "miyabi-core"
+      type: "library"
+      path: "crates/miyabi-core"
+      description: "Core utilities and shared logic"
+      features:
+        - "Logging infrastructure"
+        - "Task metadata"
+        - "Common utilities"
+
+    - name: "miyabi-types"
+      type: "library"
+      path: "crates/miyabi-types"
+      description: "Type definitions and interfaces"
+      features:
+        - "Common traits"
+        - "Error types"
+        - "Domain models"
+
+  agents:
+    - name: "miyabi-agents"
+      type: "library"
+      path: "crates/miyabi-agents"
+      description: "Agent configuration and orchestration"
+      agents_count: 7
+      agent_types:
+        - "CoordinatorAgent"
+        - "CodeGenAgent"
+        - "ReviewAgent"
+        - "IssueAgent"
+        - "PRAgent"
+        - "DeploymentAgent"
+        - "RefresherAgent"
+
+    - name: "miyabi-agent-business"
+      type: "library"
+      path: "crates/miyabi-agent-business"
+      description: "Business strategy agents"
+      agents_count: 14
+      categories:
+        - "strategy_planning (6)"
+        - "marketing (5)"
+        - "sales_crm (3)"
+
+  integrations:
+    - name: "miyabi-github"
+      type: "library"
+      path: "crates/miyabi-github"
+      description: "GitHub API integration"
+      features:
+        - "Issue operations"
+        - "PR automation"
+        - "Label management"
+        - "Repository operations"
+
+    - name: "miyabi-llm"
+      type: "library"
+      path: "crates/miyabi-llm"
+      description: "LLM abstraction layer"
+      providers:
+        - "OpenAI"
+        - "Anthropic"
+      features:
+        - "Hybrid routing"
+        - "Model fallback"
+        - "Token optimization"
+
+    - name: "miyabi-knowledge"
+      type: "library"
+      path: "crates/miyabi-knowledge"
+      description: "Knowledge management with Qdrant"
+      features:
+        - "Vector search"
+        - "Semantic retrieval"
+        - "Context management"
+
+    - name: "miyabi-voice-guide"
+      type: "library"
+      path: "crates/miyabi-voice-guide"
+      description: "VOICEVOX integration for audio guides"
+      features:
+        - "Text-to-speech conversion"
+        - "Queue-based synthesis"
+        - "Hook integration"
+
+    - name: "miyabi-mcp-server"
+      type: "library"
+      path: "crates/miyabi-mcp-server"
+      description: "MCP Server (JSON-RPC 2.0)"
+      features:
+        - "stdio transport"
+        - "Tool registration"
+        - "Resource management"
+
+  utilities:
+    - name: "miyabi-worktree"
+      type: "library"
+      path: "crates/miyabi-worktree"
+      description: "Git worktree lifecycle management"
+      features:
+        - "Worktree creation"
+        - "Cleanup management"
+        - "State tracking"
+        - "Pool management"
+
+    - name: "miyabi-pty-manager"
+      type: "library"
+      path: "crates/miyabi-pty-manager"
+      description: "PTY process management"
+      features:
+        - "PTY spawning"
+        - "Real-time output streaming"
+        - "Process monitoring"
+        - "Resource tracking"
+
+    - name: "miyabi-tui"
+      type: "library"
+      path: "crates/miyabi-tui"
+      description: "Terminal UI components"
+      framework: "ratatui"
+      features:
+        - "Worktree monitoring"
+        - "Real-time logs"
+        - "Resource dashboard"
+
+    - name: "miyabi-web-api"
+      type: "library"
+      path: "crates/miyabi-web-api"
+      description: "Web API server"
+      framework: "Axum"
+      features:
+        - "REST endpoints"
+        - "WebSocket support"
+        - "Authentication"
+
+  frontend:
+    - name: "miyabi-desktop"
+      type: "application"
+      path: "miyabi-desktop"
+      tech_stack:
+        backend: "Tauri 2.x (Rust)"
+        frontend: "React + TypeScript"
+        build_tool: "Vite"
+      features:
+        - "Agent execution panel"
+        - "GitHub Issue dashboard"
+        - "Real-time notifications"
+        - "Settings management"
+
+    - name: "miyabi-dashboard"
+      type: "application"
+      path: "miyabi-dashboard"
+      tech_stack:
+        frontend: "React"
+        build_tool: "Vite"
+      features:
+        - "Project overview"
+        - "Agent status monitoring"
+        - "Analytics & metrics"
+
+    - name: "miyabi-web"
+      type: "static_site"
+      path: "miyabi-web"
+      description: "Landing page"
+      tech: "HTML/CSS/JavaScript"

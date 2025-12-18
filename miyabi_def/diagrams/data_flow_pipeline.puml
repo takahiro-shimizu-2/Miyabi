@@ -1,0 +1,277 @@
+@startuml miyabi_def - Data Flow & Processing Pipeline
+!theme blueprint
+skinparam backgroundColor #F8F9FA
+skinparam linetype polyline
+
+title miyabi_def System - Complete Data Flow & Processing Pipeline\nJinja2 Template Rendering + SWML Execution\nVersion 1.0.0
+
+' === Phase 1: Variable Loading ===
+
+rectangle "**Phase 1: Variable Loading**" as phase1 #LightYellow {
+
+  storage "variables/" as var_dir {
+    file "global.yaml" as v_global
+    file "entities.yaml" as v_entities
+    file "relations.yaml" as v_relations
+    file "labels.yaml" as v_labels
+    file "workflows.yaml" as v_workflows
+    file "agents.yaml" as v_agents
+    file "crates.yaml" as v_crates
+    file "skills.yaml" as v_skills
+    file "world_definition.yaml" as v_world
+    file "swml.yaml" as v_swml
+    file "omega.yaml" as v_omega
+  }
+
+  component "load_all_variables()" as loader {
+    [YAML Parser] as yaml_parse
+    [Merge Variables] as merge
+    [Validate Schema] as validate
+  }
+
+  v_global --> yaml_parse
+  v_entities --> yaml_parse
+  v_relations --> yaml_parse
+  v_labels --> yaml_parse
+  v_workflows --> yaml_parse
+  v_agents --> yaml_parse
+  v_crates --> yaml_parse
+  v_skills --> yaml_parse
+  v_world --> yaml_parse
+  v_swml --> yaml_parse
+  v_omega --> yaml_parse
+
+  yaml_parse --> merge
+  merge --> validate
+}
+
+' === Phase 2: Template Processing ===
+
+rectangle "**Phase 2: Template Processing**" as phase2 #LightGreen {
+
+  storage "templates/" as tmpl_dir {
+    file "base.yaml.j2" as t_base #LightBlue
+    file "entities.yaml.j2" as t_entities
+    file "relations.yaml.j2" as t_relations
+    file "labels.yaml.j2" as t_labels
+    file "workflows.yaml.j2" as t_workflows
+    file "agents.yaml.j2" as t_agents
+    file "crates.yaml.j2" as t_crates
+    file "skills.yaml.j2" as t_skills
+    file "world_definition.yaml.j2" as t_world
+    file "universal_task_execution.yaml.j2" as t_omega
+  }
+
+  component "Jinja2 Environment" as jinja_env {
+    [FileSystemLoader] as fs_loader
+    [Template Cache] as cache
+    [Autoescape] as escape
+    [Trim/Lstrip] as trim
+  }
+
+  component "render_template()" as renderer {
+    [Load Template] as load_tmpl
+    [Substitute Variables] as subst
+    [Apply Filters] as filters
+    [Render Output] as render_out
+  }
+
+  t_base --> fs_loader : extends
+  t_entities --> fs_loader
+  t_relations --> fs_loader
+  t_labels --> fs_loader
+  t_workflows --> fs_loader
+  t_agents --> fs_loader
+  t_crates --> fs_loader
+  t_skills --> fs_loader
+  t_world --> fs_loader
+  t_omega --> fs_loader
+
+  fs_loader --> cache
+  cache --> load_tmpl
+  validate --> subst : variables
+  load_tmpl --> subst
+  subst --> filters
+  filters --> render_out
+}
+
+' === Phase 3: YAML Generation ===
+
+rectangle "**Phase 3: YAML Generation**" as phase3 #LightCyan {
+
+  storage "generated/" as gen_dir {
+    file "entities.yaml\n39KB" as g_entities
+    file "relations.yaml\n25KB" as g_relations
+    file "labels.yaml\n14KB" as g_labels
+    file "workflows.yaml\n13KB" as g_workflows
+    file "agents.yaml\n9.4KB" as g_agents
+    file "crates.yaml\n6.3KB" as g_crates
+    file "skills.yaml\n7.6KB" as g_skills
+    file "world_definition.yaml\n21KB" as g_world
+    file "step_back_question_method.yaml\n18KB" as g_sbq
+    file "universal_task_execution.yaml\n21KB" as g_omega
+    file "agent_execution_maximization.yaml\n23KB" as g_exec
+  }
+
+  component "File Writer" as writer {
+    [Format YAML] as format
+    [Write to Disk] as write_disk
+    [Calculate Checksum] as checksum
+  }
+
+  render_out --> format
+  format --> write_disk
+  write_disk --> g_entities
+  write_disk --> g_relations
+  write_disk --> g_labels
+  write_disk --> g_workflows
+  write_disk --> g_agents
+  write_disk --> g_crates
+  write_disk --> g_skills
+  write_disk --> g_world
+  write_disk --> g_sbq
+  write_disk --> g_omega
+  write_disk --> g_exec
+  write_disk --> checksum
+}
+
+' === Phase 4: Consumption & Execution ===
+
+rectangle "**Phase 4: Consumption & Execution**" as phase4 #LightPink {
+
+  component "Miyabi Core Runtime" as runtime {
+    [Entity/Relation Model] as er_model
+    [Agent System] as agent_sys
+    [Workflow Engine] as wf_engine
+    [World State Manager] as world_mgr
+    [Ω Function Engine] as omega_engine
+  }
+
+  g_entities --> er_model : load
+  g_relations --> er_model : load
+  g_labels --> wf_engine : load
+  g_workflows --> wf_engine : load
+  g_agents --> agent_sys : load
+  g_crates --> agent_sys : load
+  g_skills --> agent_sys : load
+  g_world --> world_mgr : load
+  g_omega --> omega_engine : load
+
+  component "SWML Execution Pipeline" as swml {
+    queue "θ₁: Understanding" as theta1_q #LightGreen
+    queue "θ₂: Generation" as theta2_q #LightGreen
+    queue "θ₃: Allocation" as theta3_q #LightGreen
+    queue "θ₄: Execution" as theta4_q #LightBlue
+    queue "θ₅: Integration" as theta5_q #LightBlue
+    queue "θ₆: Learning" as theta6_q #LightYellow
+  }
+
+  omega_engine --> theta1_q
+  theta1_q --> theta2_q : 𝒮
+  theta2_q --> theta3_q : 𝒯
+  theta3_q --> theta4_q : 𝒜
+  theta4_q --> theta5_q : ℛ
+  theta5_q --> theta6_q : 𝒟
+  theta6_q --> world_mgr : 𝒦\nupdate
+
+  world_mgr --> theta1_q : W
+  world_mgr --> theta2_q : W
+  world_mgr --> theta3_q : W.r
+
+  component "Intent Processing" as intent_proc {
+    [Parse User Input] as parse_input
+    [Classify Intent] as classify
+    [Validate Intent] as validate_intent
+  }
+
+  parse_input --> classify
+  classify --> validate_intent
+  validate_intent --> theta1_q : I (Intent)
+
+  component "Result Delivery" as result {
+    [Aggregate Results] as agg
+    [Format Output] as format_out
+    [Quality Metrics] as metrics
+  }
+
+  theta5_q --> agg
+  agg --> format_out
+  format_out --> metrics
+}
+
+' === Phase 5: Documentation & CI/CD ===
+
+rectangle "**Phase 5: Documentation & CI/CD**" as phase5 #Lavender {
+
+  component "Documentation Generation" as docs {
+    [README Generator] as readme
+    [API Docs] as api_docs
+    [Schema Validator] as validator
+    [Diagram Generator] as diagrams
+  }
+
+  g_entities --> readme
+  g_agents --> api_docs
+  g_world --> validator
+  g_omega --> diagrams
+
+  component "CI/CD Pipeline" as cicd {
+    [GitHub Actions] as gh_actions
+    [Test Runner] as test_runner
+    [Deployment] as deploy
+  }
+
+  g_workflows --> gh_actions
+  g_agents --> test_runner
+  checksum --> gh_actions : verify
+}
+
+' === Feedback Loops ===
+
+note top of phase1
+  **15 variable files**
+  Total: ~4,290 lines
+  Format: YAML
+end note
+
+note top of phase2
+  **11 Jinja2 templates**
+  Base template + 10 specialized
+  Inheritance: all extend base.yaml.j2
+end note
+
+note top of phase3
+  **11 generated files**
+  Total: 191KB
+  Machine-readable & Type-safe
+end note
+
+note top of phase4
+  **Runtime Execution**
+  SWML Six-Phase Pipeline
+  Ω: I × W → R
+end note
+
+note top of phase5
+  **Outputs & Validation**
+  Docs, Tests, Deployment
+end note
+
+' === Performance Metrics ===
+
+legend right
+  |= Metric |= Value |
+  | Total Variables | 15 files |
+  | Total Templates | 11 files |
+  | Total Generated | 11 files (191KB) |
+  | Entities | 14 |
+  | Relations | 39 |
+  | Labels | 57 |
+  | Workflows | 5 (38 stages) |
+  | Agents | 21 |
+  | Crates | 15 |
+  | Skills | 18 |
+  | Generation Time | ~500ms |
+endlegend
+
+@enduml

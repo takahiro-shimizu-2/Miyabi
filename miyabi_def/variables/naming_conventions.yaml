@@ -1,0 +1,725 @@
+# Miyabi Naming Conventions - 命名規則ガイド
+# Version: 1.0.0
+# Description: 初心者にも分かりやすいGit/GitHub/プロジェクト命名規則
+# Philosophy: "一目で分かる、迷わない、統一された命名"
+
+naming_conventions:
+  version: "1.0.0"
+  last_updated: "2025-11-01"
+  target_audience: "初心者〜上級者"
+
+  # ═══════════════════════════════════════════════════════
+  # Part 1: ブランチ命名規則 (Branch Naming)
+  # ═══════════════════════════════════════════════════════
+  branches:
+    overview:
+      principle: "何のための変更か一目で分かる命名"
+      format: "{type}/{brief-description}-{issue-number}"
+      example: "feat/add-dark-mode-123"
+
+    main_branches:
+      main:
+        name: "main"
+        description: "本番環境用メインブランチ（絶対に直接コミットしない！）"
+        protection: "保護ブランチ - PR経由でのみマージ可能"
+        auto_deploy: true
+        examples:
+          - "main"
+
+      develop:
+        name: "develop"
+        description: "開発用統合ブランチ（Miyabiでは使用しない）"
+        usage: "Miyabiでは使わず、mainブランチのみ使用"
+
+    feature_branches:
+      format: "feat/{description}-{issue-number}"
+      prefix: "feat/"
+      description: "新機能開発用ブランチ"
+      lifespan: "短期（1-7日）"
+      merge_to: "main"
+
+      examples:
+        - name: "feat/add-dark-mode-123"
+          explanation: "Issue #123のダークモード機能追加"
+          breakdown:
+            - "feat = 新機能 (feature)"
+            - "add-dark-mode = 何を追加するか"
+            - "123 = GitHub Issue番号"
+
+        - name: "feat/user-authentication-456"
+          explanation: "Issue #456のユーザー認証機能"
+
+        - name: "feat/agent-execution-panel-641"
+          explanation: "Issue #641のエージェント実行パネル"
+
+        - name: "feat/miyabi-desktop-app"
+          explanation: "Miyabi Desktopアプリ全体（大規模機能）"
+
+    bugfix_branches:
+      format: "fix/{description}-{issue-number}"
+      prefix: "fix/"
+      description: "バグ修正用ブランチ"
+      lifespan: "短期（1-3日）"
+      merge_to: "main"
+
+      examples:
+        - name: "fix/login-error-789"
+          explanation: "Issue #789のログインエラー修正"
+          breakdown:
+            - "fix = バグ修正 (bug fix)"
+            - "login-error = 何のエラーか"
+            - "789 = GitHub Issue番号"
+
+        - name: "fix/memory-leak-logger-355"
+          explanation: "Issue #355のロガーのメモリリーク修正"
+
+        - name: "fix/typescript-compilation-error-210"
+          explanation: "TypeScriptコンパイルエラー修正"
+
+    refactor_branches:
+      format: "refactor/{description}-{issue-number}"
+      prefix: "refactor/"
+      description: "リファクタリング用ブランチ（機能変更なし、コード改善）"
+      lifespan: "短期〜中期（1-5日）"
+      merge_to: "main"
+
+      examples:
+        - name: "refactor/extract-api-client-234"
+          explanation: "Issue #234のAPIクライアント抽出"
+
+        - name: "refactor/simplify-error-handling-567"
+          explanation: "エラーハンドリングの簡略化"
+
+    documentation_branches:
+      format: "docs/{description}-{issue-number}"
+      prefix: "docs/"
+      description: "ドキュメント追加・更新用ブランチ"
+      lifespan: "短期（1-2日）"
+      merge_to: "main"
+
+      examples:
+        - name: "docs/add-setup-guide-111"
+          explanation: "セットアップガイド追加"
+
+        - name: "docs/update-api-reference-222"
+          explanation: "APIリファレンス更新"
+
+        - name: "docs/add-work-protocol-v2"
+          explanation: "作業プロトコルv2追加"
+
+    test_branches:
+      format: "test/{description}-{issue-number}"
+      prefix: "test/"
+      description: "テスト追加・改善用ブランチ"
+      lifespan: "短期（1-3日）"
+      merge_to: "main"
+
+      examples:
+        - name: "test/agent-execution-verification-644"
+          explanation: "Issue #644のエージェント実行検証テスト"
+
+        - name: "test/add-integration-tests-333"
+          explanation: "統合テスト追加"
+
+    chore_branches:
+      format: "chore/{description}-{issue-number}"
+      prefix: "chore/"
+      description: "雑務・メンテナンス用ブランチ（CI設定、依存関係更新等）"
+      lifespan: "短期（1-2日）"
+      merge_to: "main"
+
+      examples:
+        - name: "chore/update-dependencies-444"
+          explanation: "依存関係アップデート"
+
+        - name: "chore/setup-github-actions-555"
+          explanation: "GitHub Actions設定"
+
+    security_branches:
+      format: "security/{description}-{issue-number}"
+      prefix: "security/"
+      description: "セキュリティ修正用ブランチ（緊急度高）"
+      lifespan: "最短（数時間〜1日）"
+      merge_to: "main"
+      priority: "P.1-Critical"
+
+      examples:
+        - name: "security/fix-sql-injection-999"
+          explanation: "SQLインジェクション脆弱性修正"
+
+        - name: "security/update-vulnerable-package-888"
+          explanation: "脆弱なパッケージ更新"
+
+    hotfix_branches:
+      format: "hotfix/{description}-{issue-number}"
+      prefix: "hotfix/"
+      description: "本番緊急修正用ブランチ（本番障害対応）"
+      lifespan: "最短（数時間）"
+      merge_to: "main"
+      priority: "P.1-Critical"
+      immediate_deploy: true
+
+      examples:
+        - name: "hotfix/production-downtime-777"
+          explanation: "本番ダウンタイム緊急修正"
+
+  # ═══════════════════════════════════════════════════════
+  # Part 2: コミットメッセージ規則 (Commit Messages)
+  # ═══════════════════════════════════════════════════════
+  commit_messages:
+    overview:
+      standard: "Conventional Commits"
+      format: "{type}({scope}): {description}"
+      example: "feat(auth): add login functionality"
+      japanese_ok: false
+      description_language: "英語推奨（理由：国際的な標準）"
+
+    types:
+      feat:
+        name: "feat"
+        description: "新機能追加"
+        icon: "✨"
+        examples:
+          - "feat(ui): add dark mode toggle"
+          - "feat(agent): implement CodeGenAgent"
+          - "feat(desktop): add command palette"
+
+      fix:
+        name: "fix"
+        description: "バグ修正"
+        icon: "🐛"
+        examples:
+          - "fix(auth): resolve login timeout issue"
+          - "fix(miyabi-core): eliminate memory leak in logger"
+          - "fix(typescript): resolve compilation errors"
+
+      refactor:
+        name: "refactor"
+        description: "リファクタリング（機能変更なし）"
+        icon: "♻️"
+        examples:
+          - "refactor(api): extract client into separate module"
+          - "refactor(utils): simplify error handling"
+
+      docs:
+        name: "docs"
+        description: "ドキュメント変更"
+        icon: "📚"
+        examples:
+          - "docs(readme): update installation steps"
+          - "docs: add work protocol documentation"
+
+      test:
+        name: "test"
+        description: "テスト追加・修正"
+        icon: "✅"
+        examples:
+          - "test(agent): add execution verification tests"
+          - "test(integration): add end-to-end tests"
+
+      chore:
+        name: "chore"
+        description: "雑務・メンテナンス"
+        icon: "🔧"
+        examples:
+          - "chore(deps): update dependencies"
+          - "chore(ci): configure GitHub Actions"
+
+      security:
+        name: "security"
+        description: "セキュリティ修正"
+        icon: "🔒"
+        examples:
+          - "security: patch SQL injection vulnerability"
+          - "security(deps): update vulnerable packages"
+
+      perf:
+        name: "perf"
+        description: "パフォーマンス改善"
+        icon: "⚡"
+        examples:
+          - "perf(query): optimize database queries"
+          - "perf(build): reduce bundle size by 30%"
+
+      style:
+        name: "style"
+        description: "コードスタイル変更（機能変更なし）"
+        icon: "💄"
+        examples:
+          - "style(lint): fix ESLint warnings"
+          - "style: format code with Prettier"
+
+      build:
+        name: "build"
+        description: "ビルドシステム変更"
+        icon: "📦"
+        examples:
+          - "build(webpack): update configuration"
+          - "build(cargo): optimize release build"
+
+      ci:
+        name: "ci"
+        description: "CI/CD設定変更"
+        icon: "👷"
+        examples:
+          - "ci(github): add deployment workflow"
+          - "ci: configure automatic tests"
+
+      revert:
+        name: "revert"
+        description: "コミット取り消し"
+        icon: "⏪"
+        examples:
+          - "revert: undo breaking changes from abc123"
+
+    scope_examples:
+      miyabi_project:
+        - "(agent): Agent関連"
+        - "(cli): CLI関連"
+        - "(core): Core関連"
+        - "(desktop): Desktop app関連"
+        - "(web-api): Web API関連"
+        - "(ui): UI関連"
+        - "(auth): 認証関連"
+        - "(database): データベース関連"
+        - "(config): 設定関連"
+
+    best_practices:
+      - rule: "現在形を使う"
+        good: "add feature"
+        bad: "added feature / adds feature"
+
+      - rule: "最初の文字は小文字"
+        good: "fix: resolve login issue"
+        bad: "Fix: Resolve Login Issue"
+
+      - rule: "末尾にピリオド不要"
+        good: "feat: add dark mode"
+        bad: "feat: add dark mode."
+
+      - rule: "50文字以内（タイトル）"
+        good: "feat(ui): add responsive navigation bar"
+        bad: "feat(ui): add a fully responsive navigation bar with dropdown menus and mobile hamburger icon"
+
+      - rule: "なぜ変更したかを説明"
+        good: |
+          fix(auth): resolve session timeout
+
+          Users were being logged out after 5 minutes due to
+          incorrect session expiration logic.
+        bad: "fix: fixed stuff"
+
+    commit_body_format:
+      structure: |
+        {type}({scope}): {short description}
+
+        {detailed description - WHY this change was needed}
+
+        {optional: breaking changes}
+        {optional: issue references}
+
+        🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+        Co-Authored-By: {agent_name} <noreply@anthropic.com>
+
+      example: |
+        feat(miyabi-desktop): add Setup Wizard screen
+
+        Implement comprehensive setup wizard to guide new users through
+        initial configuration including GitHub token setup and repository
+        selection. This improves first-run experience and reduces setup errors.
+
+        Closes #648
+
+        🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+        Co-Authored-By: CodeGenAgent <noreply@anthropic.com>
+
+  # ═══════════════════════════════════════════════════════
+  # Part 3: Pull Request命名規則 (PR Titles)
+  # ═══════════════════════════════════════════════════════
+  pull_requests:
+    overview:
+      format: "Same as commit message format"
+      standard: "Conventional Commits"
+      example: "feat(agent): implement 21-agent system"
+
+    title_format:
+      structure: "{type}({scope}): {description} (Issue #{issue-number})"
+      examples:
+        - title: "feat(miyabi-desktop): implement Setup Completion screen (Issue #648)"
+          explanation: "Setup完了画面実装PR（Issue #648）"
+
+        - title: "fix(miyabi-core): eliminate memory leak in logger.rs (Issue #355)"
+          explanation: "ロガーのメモリリーク修正PR（Issue #355）"
+
+        - title: "docs: add mandatory work protocol for all agents"
+          explanation: "作業プロトコルドキュメント追加PR"
+
+        - title: "test(miyabi-desktop): verify 21 agent types execution flow (Issue #644)"
+          explanation: "21エージェント実行検証テストPR（Issue #644）"
+
+    pr_body_template:
+      structure: |
+        ## Summary
+        {変更の概要を3-5箇条書きで説明}
+
+        ## Changes
+        - {具体的な変更点1}
+        - {具体的な変更点2}
+        - {具体的な変更点3}
+
+        ## Test Plan
+        - [ ] {テスト項目1}
+        - [ ] {テスト項目2}
+        - [ ] {テスト項目3}
+
+        ## Screenshots (if applicable)
+        {スクリーンショット}
+
+        ## Related Issues
+        Closes #{issue_number}
+
+        🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+      example: |
+        ## Summary
+        - Add Setup Completion screen to Miyabi Desktop
+        - Implement success state UI with checkmarks
+        - Add quick start button to main dashboard
+
+        ## Changes
+        - Created `SetupCompleteScreen.tsx` component
+        - Updated `SetupWizard.tsx` to show completion screen
+        - Added celebration animations
+
+        ## Test Plan
+        - [x] Complete setup wizard and verify completion screen appears
+        - [x] Verify "Go to Dashboard" button navigates correctly
+        - [x] Test responsive layout on different screen sizes
+
+        ## Related Issues
+        Closes #648
+
+        🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+  # ═══════════════════════════════════════════════════════
+  # Part 4: Issue命名規則 (Issue Titles)
+  # ═══════════════════════════════════════════════════════
+  issues:
+    overview:
+      format: "[{Type}] {明確な問題・要求内容}"
+      language: "日本語OK / English OK"
+      example_jp: "[機能] ダークモード対応"
+      example_en: "[Feature] Add dark mode support"
+
+    title_format:
+      structure: "[{Type}] {description}"
+      types:
+        feature: "[機能] / [Feature]"
+        bug: "[バグ] / [Bug]"
+        refactor: "[リファクタ] / [Refactor]"
+        docs: "[ドキュメント] / [Docs]"
+        question: "[質問] / [Question]"
+        enhancement: "[改善] / [Enhancement]"
+
+      examples_japanese:
+        - "[機能] Agent実行パネルUI実装"
+        - "[バグ] ログイン時にタイムアウトエラー"
+        - "[リファクタ] APIクライアントの抽出"
+        - "[ドキュメント] セットアップガイド追加"
+        - "[質問] Git Worktreeの使い方"
+
+      examples_english:
+        - "[Feature] Implement Agent Execution Panel UI"
+        - "[Bug] Login timeout error"
+        - "[Refactor] Extract API client module"
+        - "[Docs] Add setup guide"
+        - "[Question] How to use Git Worktree?"
+
+    issue_body_template:
+      japanese: |
+        ## 概要
+        {何をしたいか、何が問題かを簡潔に説明}
+
+        ## 詳細
+        {詳しい説明}
+
+        ## 受け入れ基準（機能の場合）
+        - [ ] {基準1}
+        - [ ] {基準2}
+
+        ## 再現手順（バグの場合）
+        1. {手順1}
+        2. {手順2}
+        3. {エラー発生}
+
+        ## 期待される動作
+        {本来どうあるべきか}
+
+        ## 実際の動作
+        {実際にどうなっているか}
+
+        ## 環境情報
+        - OS: {macOS / Windows / Linux}
+        - ブラウザ: {Chrome / Firefox / Safari}
+        - バージョン: {v0.1.2}
+
+      english: |
+        ## Summary
+        {Brief description of what needs to be done or what the problem is}
+
+        ## Details
+        {Detailed explanation}
+
+        ## Acceptance Criteria (for features)
+        - [ ] {Criterion 1}
+        - [ ] {Criterion 2}
+
+        ## Steps to Reproduce (for bugs)
+        1. {Step 1}
+        2. {Step 2}
+        3. {Error occurs}
+
+        ## Expected Behavior
+        {What should happen}
+
+        ## Actual Behavior
+        {What actually happens}
+
+        ## Environment
+        - OS: {macOS / Windows / Linux}
+        - Browser: {Chrome / Firefox / Safari}
+        - Version: {v0.1.2}
+
+  # ═══════════════════════════════════════════════════════
+  # Part 5: ファイル・ディレクトリ命名規則
+  # ═══════════════════════════════════════════════════════
+  files_and_directories:
+    general_rules:
+      - rule: "小文字とハイフンを使う"
+        good: "user-profile.ts"
+        bad: "UserProfile.ts / user_profile.ts"
+
+      - rule: "意味のある名前をつける"
+        good: "authentication-service.ts"
+        bad: "util.ts / helper.ts"
+
+      - rule: "複数形は配列・リストに使う"
+        good: "users.ts (User[]を返す)"
+        singular_ok: "user.ts (単一Userを扱う)"
+
+    typescript_react:
+      components:
+        format: "PascalCase.tsx"
+        examples:
+          - "UserProfile.tsx"
+          - "AgentExecutionPanel.tsx"
+          - "SetupWizard.tsx"
+
+      hooks:
+        format: "use{Name}.ts"
+        examples:
+          - "useAuth.ts"
+          - "useAgentExecution.ts"
+          - "useLocalStorage.ts"
+
+      utils:
+        format: "kebab-case.ts"
+        examples:
+          - "api-client.ts"
+          - "date-formatter.ts"
+          - "error-handler.ts"
+
+      types:
+        format: "kebab-case.d.ts or types.ts"
+        examples:
+          - "agent-types.ts"
+          - "api-types.ts"
+          - "global.d.ts"
+
+    rust:
+      modules:
+        format: "snake_case.rs"
+        examples:
+          - "agent_executor.rs"
+          - "task_metadata.rs"
+          - "worktree_manager.rs"
+
+      structs_enums:
+        format: "PascalCase"
+        examples:
+          - "AgentType"
+          - "TaskStatus"
+          - "QualityReport"
+
+      functions:
+        format: "snake_case"
+        examples:
+          - "execute_agent()"
+          - "parse_issue()"
+          - "generate_report()"
+
+    directories:
+      format: "kebab-case"
+      examples:
+        - "miyabi-cli/"
+        - "miyabi-core/"
+        - "agent-business/"
+        - "web-api/"
+
+  # ═══════════════════════════════════════════════════════
+  # Part 6: タグ・リリース命名規則
+  # ═══════════════════════════════════════════════════════
+  tags_and_releases:
+    version_tags:
+      format: "v{major}.{minor}.{patch}"
+      standard: "Semantic Versioning (SemVer)"
+      examples:
+        - tag: "v0.1.0"
+          description: "初回リリース"
+
+        - tag: "v0.1.1"
+          description: "バグ修正リリース（patch）"
+
+        - tag: "v0.2.0"
+          description: "新機能追加リリース（minor）"
+
+        - tag: "v1.0.0"
+          description: "メジャーリリース（破壊的変更）"
+
+    release_branches:
+      format: "release/v{version}"
+      examples:
+        - "release/v0.1.0"
+        - "release/v1.0.0"
+
+    release_notes_format:
+      structure: |
+        # v{version} - {リリース名}
+
+        **リリース日**: {YYYY-MM-DD}
+
+        ## 🎉 新機能 (Features)
+        - {機能1}
+        - {機能2}
+
+        ## 🐛 バグ修正 (Bug Fixes)
+        - {修正1}
+        - {修正2}
+
+        ## 🔧 改善 (Improvements)
+        - {改善1}
+        - {改善2}
+
+        ## ⚠️ 破壊的変更 (Breaking Changes)
+        - {変更1}
+
+        ## 📚 ドキュメント (Documentation)
+        - {追加ドキュメント}
+
+        ## 🙏 Contributors
+        - @contributor1
+        - @contributor2
+
+  # ═══════════════════════════════════════════════════════
+  # Part 7: クイックリファレンス（早見表）
+  # ═══════════════════════════════════════════════════════
+  quick_reference:
+    common_scenarios:
+      - scenario: "新機能を追加したい"
+        steps:
+          - "1. Issue作成: [機能] ダークモード追加"
+          - "2. ブランチ作成: feat/add-dark-mode-123"
+          - "3. コミット: feat(ui): add dark mode toggle"
+          - "4. PR作成: feat(ui): add dark mode toggle (Issue #123)"
+
+      - scenario: "バグを修正したい"
+        steps:
+          - "1. Issue作成: [バグ] ログインエラー"
+          - "2. ブランチ作成: fix/login-error-456"
+          - "3. コミット: fix(auth): resolve login timeout"
+          - "4. PR作成: fix(auth): resolve login timeout (Issue #456)"
+
+      - scenario: "ドキュメントを追加したい"
+        steps:
+          - "1. Issue作成: [ドキュメント] READMEを更新"
+          - "2. ブランチ作成: docs/update-readme-789"
+          - "3. コミット: docs(readme): update installation steps"
+          - "4. PR作成: docs(readme): update installation steps (Issue #789)"
+
+    type_mapping:
+      japanese_to_english:
+        - jp: "機能"
+          en: "feat"
+          branch: "feat/"
+
+        - jp: "バグ"
+          en: "fix"
+          branch: "fix/"
+
+        - jp: "リファクタ"
+          en: "refactor"
+          branch: "refactor/"
+
+        - jp: "ドキュメント"
+          en: "docs"
+          branch: "docs/"
+
+        - jp: "テスト"
+          en: "test"
+          branch: "test/"
+
+        - jp: "雑務"
+          en: "chore"
+          branch: "chore/"
+
+        - jp: "セキュリティ"
+          en: "security"
+          branch: "security/"
+
+        - jp: "緊急修正"
+          en: "hotfix"
+          branch: "hotfix/"
+
+  # ═══════════════════════════════════════════════════════
+  # Part 8: 初心者向けチェックリスト
+  # ═══════════════════════════════════════════════════════
+  beginner_checklist:
+    before_starting_work:
+      - "□ mainブランチが最新か確認（git pull origin main）"
+      - "□ Issue番号を確認"
+      - "□ 正しいブランチ名でブランチ作成"
+
+    while_coding:
+      - "□ 小さな変更ごとにコミット"
+      - "□ コミットメッセージはConventional Commits形式"
+      - "□ mainブランチへ直接コミットしていないか確認"
+
+    before_creating_pr:
+      - "□ 全てのテストがパスするか確認（pnpm test）"
+      - "□ ESLintエラーがないか確認（pnpm lint）"
+      - "□ TypeScriptエラーがないか確認（pnpm typecheck）"
+      - "□ コミット履歴が綺麗か確認"
+
+    after_pr_merged:
+      - "□ ローカルのmainブランチを更新（git pull origin main）"
+      - "□ 作業ブランチを削除（git branch -d feat/xxx）"
+
+# Summary
+summary:
+  total_categories: 8
+  primary_standard: "Conventional Commits"
+  version_standard: "Semantic Versioning"
+  target_users: "初心者〜上級者"
+
+  philosophy: |
+    "一目で分かる、迷わない、統一された命名。
+    命名規則を守ることで、チーム全体の生産性が向上します。"
+
+  key_principles:
+    - "Conventional Commitsを守る"
+    - "ブランチ名にIssue番号を含める"
+    - "分かりやすい日本語・英語で説明する"
+    - "小さく頻繁にコミットする"
+    - "mainブランチへ直接コミットしない"

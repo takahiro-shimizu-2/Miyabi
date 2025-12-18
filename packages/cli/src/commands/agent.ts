@@ -162,6 +162,19 @@ async function getCurrentRepo(): Promise<{ owner: string; name: string } | null>
   return null;
 }
 
+
+/**
+ * Parse Issue number from string, stripping # prefix if present
+ * Handles both "123" and "#123" formats from auto.js
+ * @param issueStr - Issue number as string or number
+ * @returns Parsed issue number
+ */
+function parseIssueNumber(issueStr: string | number): number {
+  if (typeof issueStr === 'string') {
+    return parseInt(issueStr.replace(/^#/, ''), 10);
+  }
+  return parseInt(String(issueStr), 10);
+}
 /**
  * Agent実行
  */
@@ -242,7 +255,7 @@ export async function runAgent(
         });
 
         const input: IssueInput = {
-          issueNumber: parseInt(options.issue),
+          issueNumber: parseIssueNumber(options.issue),
           repository: repo, // repo name only (e.g., "Miyabi")
           owner,            // owner name (e.g., "ShunsukeHayashi")
         };
@@ -263,7 +276,7 @@ export async function runAgent(
         const issueResponse = await octokit.issues.get({
           owner,
           repo,
-          issue_number: parseInt(options.issue),
+          issue_number: parseIssueNumber(options.issue),
         });
 
         const issue = issueResponse.data;
@@ -290,7 +303,7 @@ export async function runAgent(
 
         // Save CodeGenAgent output for PRAgent
         if (result.success && result.data) {
-          saveCodeGenOutput(owner, repo, parseInt(options.issue), result.data);
+          saveCodeGenOutput(owner, repo, parseIssueNumber(options.issue), result.data);
         }
 
         break;
@@ -340,7 +353,7 @@ export async function runAgent(
 
           // Save ReviewAgent output for PRAgent (if --issue provided)
           if (options.issue && result.success && result.data) {
-            saveReviewOutput(owner, repo, parseInt(options.issue), result.data);
+            saveReviewOutput(owner, repo, parseIssueNumber(options.issue), result.data);
           }
         } else {
           // TODO: Implement file review
@@ -354,7 +367,7 @@ export async function runAgent(
           throw new Error('--issue option is required for PRAgent. Example: miyabi agent run pr --issue=123');
         }
 
-        const issueNumber = parseInt(options.issue);
+        const issueNumber = parseIssueNumber(options.issue);
 
         // Check if CodeGenAgent and ReviewAgent outputs exist
         const storage = checkIssueStorage(owner, repo, issueNumber);
@@ -411,7 +424,7 @@ export async function runAgent(
         const agent = new CoordinatorAgent();
 
         const input: CoordinatorInput = {
-          issueNumber: parseInt(options.issue),
+          issueNumber: parseIssueNumber(options.issue),
           repository: repo,
           owner,
         };

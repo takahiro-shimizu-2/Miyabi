@@ -651,3 +651,19 @@ export {
   type MessageHandler,
   type MessageBusConfig,
 } from './communication';
+
+// ============================================================================
+// SWML (Shunsuke World Model Logic) Types - Ω-System (#217)
+// ============================================================================
+
+// World Space Types (W) - 5 dimensions: temporal, spatial, contextual, resources, environmental
+export * from './world';
+
+// Intent Space Types (I) - 4 dimensions: goals, preferences, objectives, modality
+export * from './intent';
+
+// Result Space Types (R) - 3 dimensions: artifacts, metadata, quality
+export * from './result';
+
+// Omega Function Types (Ω: I × W → R)
+export * from './omega';

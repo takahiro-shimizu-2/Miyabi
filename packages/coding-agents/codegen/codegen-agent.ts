@@ -23,9 +23,27 @@ import {
 import * as fs from 'fs';
 import * as path from 'path';
 
+// Ω-System imports (optional - for enhanced execution)
+import {
+  OmegaAgentAdapter,
+  type AgentExecutionRequest,
+} from '../omega-system/adapters';
+
 export class CodeGenAgent extends BaseAgent {
+  private omegaAdapter?: OmegaAgentAdapter;
+
   constructor(config: AgentConfig) {
     super('CodeGenAgent', config);
+
+    // Initialize Ω-System adapter if enabled
+    if (config.useOmegaSystem) {
+      this.omegaAdapter = new OmegaAgentAdapter({
+        enableLearning: true,
+        validateBetweenStages: true,
+        maxExecutionTimeMs: config.timeoutMs || 600000,
+      });
+      this.log('Ω Ω-System adapter initialized for code generation');
+    }
   }
 
   /**
@@ -953,5 +971,93 @@ jobs:
     return message.includes('architecture') ||
            message.includes('pattern') ||
            message.includes('design');
+  }
+
+  // ============================================================================
+  // Ω-System Integration
+  // ============================================================================
+
+  /**
+   * Execute code generation using Ω-System pipeline
+   *
+   * Provides enhanced code generation with:
+   * - Intent-based understanding
+   * - World context awareness
+   * - Quality assurance integration
+   * - Learning from execution
+   *
+   * @param task - The code generation task
+   * @returns AgentResult with Ω-System execution data
+   */
+  async executeWithOmega(task: Task): Promise<AgentResult> {
+    if (!this.omegaAdapter) {
+      throw new Error('Ω-System not enabled. Set useOmegaSystem: true in config.');
+    }
+
+    this.log('Ω Starting Ω-System code generation pipeline');
+
+    const request: AgentExecutionRequest = {
+      tasks: [task],
+      agentType: 'CodeGenAgent',
+      context: {
+        projectRoot: process.cwd(),
+        config: {
+          language: 'typescript',
+          framework: 'nodejs',
+        },
+        constraints: {
+          maxConcurrency: 1,
+        },
+      },
+      options: {
+        enableLearning: true,
+      },
+    };
+
+    const response = await this.omegaAdapter.execute(request);
+
+    if (response.success) {
+      this.log('Ω Ω-System code generation completed successfully');
+      this.log(`Ω Quality score: ${response.report.quality?.score || 'N/A'}`);
+      this.log(`Ω Artifacts generated: ${response.report.artifacts.length}`);
+
+      return {
+        status: 'success',
+        data: {
+          report: response.report,
+          artifacts: response.report.artifacts,
+          omegaResult: response.omegaResult,
+        },
+        metrics: {
+          taskId: task.id,
+          agentType: 'CodeGenAgent',
+          durationMs: response.durationMs,
+          qualityScore: response.report.quality?.score,
+          timestamp: new Date().toISOString(),
+        },
+      };
+    } else {
+      this.log(`Ω Ω-System code generation failed: ${response.report.summary}`);
+
+      return {
+        status: 'failed',
+        error: response.report.summary,
+        data: response.report,
+      };
+    }
+  }
+
+  /**
+   * Check if Ω-System is enabled
+   */
+  isOmegaEnabled(): boolean {
+    return !!this.omegaAdapter;
+  }
+
+  /**
+   * Get Ω-System adapter (for advanced usage)
+   */
+  getOmegaAdapter(): OmegaAgentAdapter | undefined {
+    return this.omegaAdapter;
   }
 }

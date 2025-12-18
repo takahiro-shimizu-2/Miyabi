@@ -31,9 +31,27 @@ import { SecurityScannerRegistry } from './security-scanner';
 import * as fs from 'fs';
 import * as path from 'path';
 
+// Ω-System imports (optional - for enhanced execution)
+import {
+  OmegaAgentAdapter,
+  type AgentExecutionRequest,
+} from '../omega-system/adapters';
+
 export class ReviewAgent extends BaseAgent {
+  private omegaAdapter?: OmegaAgentAdapter;
+
   constructor(config: AgentConfig) {
     super('ReviewAgent', config);
+
+    // Initialize Ω-System adapter if enabled
+    if (config.useOmegaSystem) {
+      this.omegaAdapter = new OmegaAgentAdapter({
+        enableLearning: true,
+        validateBetweenStages: true,
+        maxExecutionTimeMs: config.timeoutMs || 600000,
+      });
+      this.log('Ω Ω-System adapter initialized for code review');
+    }
   }
 
   /**
@@ -524,5 +542,68 @@ export class ReviewAgent extends BaseAgent {
       message: '',
       reason: 'none',
     };
+  }
+
+  // ============================================================================
+  // Ω-System Integration
+  // ============================================================================
+
+  /**
+   * Execute code review using Ω-System pipeline
+   */
+  async executeWithOmega(task: Task): Promise<AgentResult> {
+    if (!this.omegaAdapter) {
+      throw new Error('Ω-System not enabled. Set useOmegaSystem: true in config.');
+    }
+
+    this.log('Ω Starting Ω-System code review pipeline');
+
+    const request: AgentExecutionRequest = {
+      tasks: [task],
+      agentType: 'ReviewAgent',
+      context: {
+        projectRoot: process.cwd(),
+        config: {
+          language: 'typescript',
+        },
+      },
+    };
+
+    const response = await this.omegaAdapter.execute(request);
+
+    if (response.success) {
+      this.log('Ω Ω-System code review completed');
+      return {
+        status: 'success',
+        data: response.report,
+        metrics: {
+          taskId: task.id,
+          agentType: 'ReviewAgent',
+          durationMs: response.durationMs,
+          qualityScore: response.report.quality?.score,
+          timestamp: new Date().toISOString(),
+        },
+      };
+    } else {
+      return {
+        status: 'failed',
+        error: response.report.summary,
+        data: response.report,
+      };
+    }
+  }
+
+  /**
+   * Check if Ω-System is enabled
+   */
+  isOmegaEnabled(): boolean {
+    return !!this.omegaAdapter;
+  }
+
+  /**
+   * Get Ω-System adapter
+   */
+  getOmegaAdapter(): OmegaAgentAdapter | undefined {
+    return this.omegaAdapter;
   }
 }

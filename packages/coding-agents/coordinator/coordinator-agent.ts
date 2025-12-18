@@ -35,9 +35,16 @@ import { WorktreeManager } from '../worktree/worktree-manager';
 import { GitHubClient } from '../utils/github-client';
 import * as path from 'path';
 
+// Ω-System imports (optional - for enhanced execution)
+import {
+  OmegaAgentAdapter,
+  type AgentExecutionRequest,
+} from '../omega-system/adapters';
+
 export class CoordinatorAgent extends BaseAgent {
   private worktreeManager?: WorktreeManager;
   private githubClient?: GitHubClient;
+  private omegaAdapter?: OmegaAgentAdapter;
 
   constructor(config: AgentConfig) {
     super('CoordinatorAgent', config);
@@ -67,6 +74,16 @@ export class CoordinatorAgent extends BaseAgent {
         enableLogging: true,
       });
       this.log('🌳 WorktreeManager initialized for parallel execution');
+    }
+
+    // Initialize Ω-System adapter if enabled
+    if (config.useOmegaSystem) {
+      this.omegaAdapter = new OmegaAgentAdapter({
+        enableLearning: true,
+        validateBetweenStages: true,
+        maxExecutionTimeMs: config.timeoutMs || 600000,
+      });
+      this.log('Ω Ω-System adapter initialized');
     }
   }
 
@@ -339,6 +356,89 @@ export class CoordinatorAgent extends BaseAgent {
       estimatedDuration,
       startTime: Date.now(),
     };
+  }
+
+  // ============================================================================
+  // Ω-System Execution
+  // ============================================================================
+
+  /**
+   * Execute with Ω-System pipeline
+   *
+   * Uses the SWML-based Ω-System for enhanced execution with:
+   * - Mathematical foundation (Ω: I × W → R)
+   * - 6-stage transformation pipeline
+   * - Automated learning from execution
+   *
+   * @param issue - The GitHub Issue to process
+   * @returns AgentResult with Ω-System execution data
+   */
+  async executeWithOmega(issue: Issue): Promise<AgentResult> {
+    if (!this.omegaAdapter) {
+      throw new Error('Ω-System not enabled. Set useOmegaSystem: true in config.');
+    }
+
+    this.log('Ω Starting Ω-System execution pipeline');
+
+    const request: AgentExecutionRequest = {
+      issue,
+      agentType: 'CoordinatorAgent',
+      context: {
+        projectRoot: process.cwd(),
+        config: {
+          language: 'typescript',
+        },
+        constraints: {
+          maxConcurrency: 3,
+        },
+      },
+    };
+
+    const response = await this.omegaAdapter.execute(request);
+
+    if (response.success) {
+      this.log(`Ω Ω-System execution completed successfully`);
+      this.log(`Ω Tasks generated: ${response.tasks?.length || 0}`);
+      this.log(`Ω Report status: ${response.report.status}`);
+
+      return {
+        status: 'success',
+        data: {
+          tasks: response.tasks,
+          dag: response.dag,
+          report: response.report,
+          omegaResult: response.omegaResult,
+        },
+        metrics: {
+          taskId: `omega-${issue.number}`,
+          agentType: 'CoordinatorAgent',
+          durationMs: response.durationMs,
+          timestamp: new Date().toISOString(),
+        },
+      };
+    } else {
+      this.log(`Ω Ω-System execution failed: ${response.report.summary}`);
+
+      return {
+        status: 'failed',
+        error: response.report.summary,
+        data: response.report,
+      };
+    }
+  }
+
+  /**
+   * Check if Ω-System is enabled
+   */
+  isOmegaEnabled(): boolean {
+    return !!this.omegaAdapter;
+  }
+
+  /**
+   * Get Ω-System adapter (for advanced usage)
+   */
+  getOmegaAdapter(): OmegaAgentAdapter | undefined {
+    return this.omegaAdapter;
   }
 
   /**

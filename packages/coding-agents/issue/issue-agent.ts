@@ -29,10 +29,17 @@ import { IssueAnalyzer } from '../utils/issue-analyzer';
 import { GitRepository } from '../utils/git-repository';
 import { getGitHubClient, withGitHubCache } from '@miyabi/shared-utils/api-client';
 
+// Ω-System imports (optional - for enhanced execution)
+import {
+  OmegaAgentAdapter,
+  type AgentExecutionRequest,
+} from '../omega-system/adapters';
+
 export class IssueAgent extends BaseAgent {
   private octokit: Octokit;
   private owner: string = '';
   private repo: string = '';
+  private omegaAdapter?: OmegaAgentAdapter;
 
   constructor(config: AgentConfig) {
     super('IssueAgent', config);
@@ -46,6 +53,16 @@ export class IssueAgent extends BaseAgent {
 
     // Parse repo from git remote
     this.initializeRepository();
+
+    // Initialize Ω-System adapter if enabled
+    if (config.useOmegaSystem) {
+      this.omegaAdapter = new OmegaAgentAdapter({
+        enableLearning: true,
+        validateBetweenStages: true,
+        maxExecutionTimeMs: config.timeoutMs || 600000,
+      });
+      this.log('Ω Ω-System adapter initialized for issue analysis');
+    }
   }
 
   /**
@@ -497,6 +514,70 @@ ${analysis.dependencies.map(d => `- #${d.replace('issue-', '')}`).join('\n')}` :
 
 🤖 Generated with Claude Code
 Co-Authored-By: Claude <noreply@anthropic.com>`;
+  }
+
+  // ============================================================================
+  // Ω-System Integration
+  // ============================================================================
+
+  /**
+   * Analyze issue using Ω-System pipeline
+   */
+  async analyzeWithOmega(issue: Issue): Promise<AgentResult> {
+    if (!this.omegaAdapter) {
+      throw new Error('Ω-System not enabled. Set useOmegaSystem: true in config.');
+    }
+
+    this.log('Ω Starting Ω-System issue analysis pipeline');
+
+    const request: AgentExecutionRequest = {
+      issue,
+      agentType: 'IssueAgent',
+      context: {
+        repository: {
+          owner: this.owner,
+          name: this.repo,
+          branch: 'main',
+          defaultBranch: 'main',
+        },
+      },
+    };
+
+    const response = await this.omegaAdapter.execute(request);
+
+    if (response.success) {
+      this.log('Ω Ω-System issue analysis completed');
+      return {
+        status: 'success',
+        data: response.report,
+        metrics: {
+          taskId: `issue-${issue.number}`,
+          agentType: 'IssueAgent',
+          durationMs: response.durationMs,
+          timestamp: new Date().toISOString(),
+        },
+      };
+    } else {
+      return {
+        status: 'failed',
+        error: response.report.summary,
+        data: response.report,
+      };
+    }
+  }
+
+  /**
+   * Check if Ω-System is enabled
+   */
+  isOmegaEnabled(): boolean {
+    return !!this.omegaAdapter;
+  }
+
+  /**
+   * Get Ω-System adapter
+   */
+  getOmegaAdapter(): OmegaAgentAdapter | undefined {
+    return this.omegaAdapter;
   }
 
 }

@@ -376,6 +376,9 @@ export interface AgentConfig {
   firebaseStagingProject?: string;
   productionUrl?: string;
   stagingUrl?: string;
+  // Ω-System config
+  useOmegaSystem?: boolean;
+  timeoutMs?: number;
 }
 
 export interface ExecutionOptions {

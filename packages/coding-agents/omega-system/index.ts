@@ -97,3 +97,27 @@ export {
   type KnowledgeUpdate,
   type ModelCalibration,
 } from './transformations/learning';
+
+// Adapters (Bridge to existing Agent system)
+export {
+  // Issue to Intent
+  IssueToIntentAdapter,
+  issueToIntent,
+  // Context to World
+  ContextToWorldAdapter,
+  contextToWorld,
+  createWorldFromEnvironment,
+  // Deliverable to Report
+  DeliverableToReportAdapter,
+  deliverableToReport,
+  summarizeReport,
+  // Main adapter
+  OmegaAgentAdapter,
+  createOmegaAdapter,
+  executeWithOmega,
+  // Types
+  type ExecutionContext,
+  type ExecutionReport,
+  type AgentExecutionRequest,
+  type AgentExecutionResponse,
+} from './adapters';

@@ -23,3 +23,32 @@ export * from './pr/pr-agent';
 
 // Types
 export * from './types/index';
+
+// Ω-System: Autonomous Execution Engine
+export {
+  // Main engine
+  OmegaEngine,
+  omega,
+  omegaWithoutLearning,
+  omegaStrict,
+  type OmegaEngineConfig,
+  type OmegaResult,
+  type ExecutionTrace,
+  type PipelineStage,
+  type PipelineState,
+  // Adapters
+  IssueToIntentAdapter,
+  issueToIntent,
+  ContextToWorldAdapter,
+  contextToWorld,
+  createWorldFromEnvironment,
+  DeliverableToReportAdapter,
+  deliverableToReport,
+  summarizeReport,
+  OmegaAgentAdapter,
+  createOmegaAdapter,
+  executeWithOmega,
+  type ExecutionContext,
+  type AgentExecutionRequest,
+  type AgentExecutionResponse,
+} from './omega-system/index';

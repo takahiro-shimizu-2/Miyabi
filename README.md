@@ -2,7 +2,12 @@
 
 # 🌸 Miyabi
 
+[![npm version](https://img.shields.io/npm/v/miyabi.svg)](https://www.npmjs.com/package/miyabi)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
+
 ### Issue を書く。コードが完成する。
+*Write an Issue. Code is completed.*
 
 ```bash
 npx miyabi
@@ -10,17 +15,18 @@ npx miyabi
 
 ---
 
-## 魔法の瞬間
+## 魔法の瞬間 / The Magic
 
-1. **Issue を書く** - やりたいことを書く
-2. **`npx miyabi` を実行** - AI が自動でコードを生成
-3. **PR が届く** - レビューしてマージするだけ
+```
+📝 Issue を書く        →    🤖 AI が実装        →    ✅ PR が届く
+   Write an Issue            AI implements            PR arrives
+```
 
-**10-15分で完了。**
+**10-15分で完了。** *Done in 10-15 minutes.*
 
 ---
 
-## 今すぐ試す
+## 今すぐ試す / Try Now
 
 ```bash
 npx miyabi
@@ -28,23 +34,23 @@ npx miyabi
 
 ---
 
-## もっと詳しく
+## もっと詳しく / Learn More
 
-- 📖 [ドキュメント](https://github.com/ShunsukeHayashi/Miyabi/wiki)
+- 📖 [ドキュメント / Docs](https://github.com/ShunsukeHayashi/Miyabi/wiki)
 - 💬 [Discord コミュニティ](https://discord.gg/Urx8547abS)
-- 🐛 [Issue 報告](https://github.com/ShunsukeHayashi/Miyabi/issues)
+- 🐛 [Issue 報告 / Report Issues](https://github.com/ShunsukeHayashi/Miyabi/issues)
 
 ---
 
-## 必要なもの
+## 必要なもの / Requirements
 
 - Node.js 18+
-- GitHub アカウント
-- `gh auth login` で認証済み
+- GitHub アカウント / GitHub account
+- `gh auth login` で認証済み / authenticated via `gh auth login`
 
 ---
 
-## ライセンス
+## ライセンス / License
 
 [Apache 2.0](LICENSE) - Copyright (c) 2025 Shunsuke Hayashi
 

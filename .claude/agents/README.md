@@ -25,6 +25,11 @@
   - 色分けルール定義
   - 並列実行ルール
 
+- **[PERFORMANCE_METRICS.md](PERFORMANCE_METRICS.md)** - パフォーマンス指標ドキュメント
+  - 全21Agentのメトリクス定義
+  - ベンチマーク基準値
+  - SLA（Service Level Agreement）定義
+
 ### 色分けルール
 
 | 色 | 意味 | キャラ数 | 並列実行 | 例 |
@@ -545,6 +550,7 @@ escalation: TechLead
 ## 参照
 
 - [CLAUDE.md](../../CLAUDE.md) - プロジェクト全体の設定
+- [PERFORMANCE_METRICS.md](PERFORMANCE_METRICS.md) - パフォーマンス指標・SLA定義
 - [AGENT_OPERATIONS_MANUAL.md](../../docs/AGENT_OPERATIONS_MANUAL.md) - Agent運用マニュアル
 - [LABEL_SYSTEM_GUIDE.md](../../docs/LABEL_SYSTEM_GUIDE.md) - 53ラベル体系
 - [SAAS_BUSINESS_MODEL.md](../../docs/SAAS_BUSINESS_MODEL.md) - SaaS事業化戦略

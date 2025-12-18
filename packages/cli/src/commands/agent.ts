@@ -176,6 +176,24 @@ function parseIssueNumber(issueStr: string | number): number {
   return parseInt(String(issueStr), 10);
 }
 /**
+ * Parse issue number from string (handles both "#9" and "9" formats)
+ * Fixes: Issue #155 - Water Spider Auto mode: parseInt("#9") returns NaN
+ * @param issueInput - Issue number as string (e.g., "9" or "#9")
+ * @returns Parsed issue number
+ * @throws Error if input is not a valid issue number
+ */
+export function parseIssueNumber(issueInput: string): number {
+  const cleanedInput = issueInput.toString().replace(/^#/, '');
+  const parsed = parseInt(cleanedInput, 10);
+
+  if (isNaN(parsed)) {
+    throw new Error(`Invalid issue number: "${issueInput}". Expected format: "9" or "#9"`);
+  }
+
+  return parsed;
+}
+
+/**
  * Agent実行
  */
 export async function runAgent(

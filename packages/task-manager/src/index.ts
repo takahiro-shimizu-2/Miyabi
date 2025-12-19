@@ -24,10 +24,14 @@ export {
   buildSimplePrompt,
 } from './decomposition/index.js';
 
-// TODO: Export sync classes when implemented
-// export { GitHubLabelSync } from './sync/github-label-sync.js';
-// export { ProjectsV2Sync } from './sync/projects-v2-sync.js';
-// export { BidirectionalSync } from './sync/bidirectional-sync.js';
+// Sync
+export {
+  GitHubLabelSync,
+  ProjectsV2Sync,
+  BidirectionalSync,
+  type ConflictStrategy,
+  type BidirectionalSyncOptions,
+} from './sync/index.js';
 
 // TODO: Export execution classes when implemented
 // export { TaskExecutor } from './execution/task-executor.js';

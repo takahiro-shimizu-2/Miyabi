@@ -1,88 +1,88 @@
-# 🎯 Miyabi Skills
+# Miyabi Skills
 
-Miyabiプロジェクトで使用可能なスキル集です。各スキルは特定のタスクを効率的に実行するためのベストプラクティスとガイドラインを提供します。
+Reusable skills for Claude Code. Two formats supported:
 
-## 📚 スキル一覧
+1. **Directory format** (recommended): `skill-name/SKILL.md`
+2. **Legacy format**: `skill-name.md`
 
-### 🔧 開発スキル
+## Core Skills (Directory Format)
 
-| スキル | 説明 | トリガー |
-|--------|------|----------|
-| [typescript-development](./typescript-development.md) | TypeScript開発のベストプラクティス | `typescript`, `ts`, `型` |
-| [mcp-server-development](./mcp-server-development.md) | MCP Server開発ガイド | `mcp`, `server`, `tool` |
-| [tdd-workflow](./tdd-workflow.md) | テスト駆動開発ワークフロー | `tdd`, `test`, `vitest` |
-| [debugging](./debugging.md) | デバッグ・トラブルシューティング | `debug`, `error`, `fix` |
+| Skill | Purpose | Triggers |
+|-------|---------|----------|
+| [code-reviewer](./code-reviewer/) | Code review with quality scoring | "review", "check PR" |
+| [commit-helper](./commit-helper/) | Conventional Commits messages | "commit", "コミット" |
+| [refactor-helper](./refactor-helper/) | Safe code refactoring | "refactor", "リファクタ" |
+| [test-generator](./test-generator/) | Unit test generation | "write tests", "テスト" |
+| [doc-generator](./doc-generator/) | Documentation generation | "document", "ドキュメント" |
+| [skill-creator](./skill-creator/) | Create new skills | "create skill", "スキル作成" |
+| [claude-code-connector](./claude-code-connector/) | Claude Code CLI integration | "Claude Code連携" |
 
-### 📝 ワークフロースキル
+## Topic Guides (Legacy Format)
 
-| スキル | 説明 | トリガー |
-|--------|------|----------|
-| [issue-driven-development](./issue-driven-development.md) | Issue駆動開発 | `issue`, `idd` |
-| [git-workflow](./git-workflow.md) | Gitワークフロー・コンベンション | `git`, `branch`, `commit` |
-| [code-review](./code-review.md) | コードレビューガイド | `review`, `pr` |
-| [documentation](./documentation.md) | ドキュメント生成 | `docs`, `readme` |
+### Development
 
-### 🔒 品質・セキュリティスキル
+| Guide | Purpose |
+|-------|---------|
+| [typescript-development](./typescript-development.md) | TypeScript best practices |
+| [mcp-server-development](./mcp-server-development.md) | MCP server development |
+| [tdd-workflow](./tdd-workflow.md) | Test-driven development |
+| [debugging](./debugging.md) | Debugging techniques |
 
-| スキル | 説明 | トリガー |
-|--------|------|----------|
-| [security-audit](./security-audit.md) | セキュリティ監査 | `security`, `audit` |
-| [performance](./performance.md) | パフォーマンス最適化 | `performance`, `optimize` |
-| [ci-cd](./ci-cd.md) | CI/CDパイプライン | `ci`, `cd`, `deploy` |
+### Workflow
 
-### 💼 ビジネススキル
+| Guide | Purpose |
+|-------|---------|
+| [issue-driven-development](./issue-driven-development.md) | Issue-based workflow |
+| [git-workflow](./git-workflow.md) | Git conventions |
+| [code-review](./code-review.md) | Code review guide |
+| [documentation](./documentation.md) | Documentation practices |
 
-| スキル | 説明 | トリガー |
-|--------|------|----------|
-| [product-planning](./product-planning.md) | プロダクト企画 | `product`, `mvp` |
-| [market-research](./market-research.md) | 市場調査 | `market`, `research` |
-| [content-creation](./content-creation.md) | コンテンツ作成 | `content`, `blog`, `sns` |
+### Quality
 
-## 🚀 使い方
+| Guide | Purpose |
+|-------|---------|
+| [security-audit](./security-audit.md) | Security auditing |
+| [performance](./performance.md) | Performance optimization |
+| [ci-cd](./ci-cd.md) | CI/CD pipelines |
 
-### Claude Code内で使用
+### Business
+
+| Guide | Purpose |
+|-------|---------|
+| [product-planning](./product-planning.md) | Product planning |
+| [market-research](./market-research.md) | Market research |
+
+## Usage
+
+### In Claude Code
 
 ```bash
-# スキルを参照して実行
-claude "TypeScript開発のベストプラクティスに従ってAPIを実装して"
-
-# 特定のスキルを明示的に使用
-claude "TDDワークフローで新機能を実装して"
+# Skills auto-activate based on triggers
+claude "review this code"        # Activates code-reviewer
+claude "write tests for this"    # Activates test-generator
+claude "commit changes"          # Activates commit-helper
 ```
 
-### Miyabi Agent連携
+### With Miyabi CLI
 
 ```bash
-# つくるん (CodeGenAgent) + スキル
-npx miyabi --agent codegen --skill typescript-development
-
-# めだまん (ReviewAgent) + スキル
-npx miyabi --agent review --skill code-review
+npx miyabi --skill code-reviewer
+npx miyabi --skill test-generator
 ```
 
-## 📁 ディレクトリ構造
+## Creating New Skills
+
+Use the skill-creator skill:
 
 ```
-.claude/skills/
-├── README.md                      # このファイル
-├── typescript-development.md      # TypeScript開発
-├── mcp-server-development.md      # MCP Server開発
-├── tdd-workflow.md                # TDD
-├── debugging.md                   # デバッグ
-├── issue-driven-development.md    # Issue駆動開発
-├── git-workflow.md                # Gitワークフロー
-├── code-review.md                 # コードレビュー
-├── documentation.md               # ドキュメント
-├── security-audit.md              # セキュリティ
-├── performance.md                 # パフォーマンス
-├── ci-cd.md                       # CI/CD
-├── product-planning.md            # プロダクト企画
-├── market-research.md             # 市場調査
-└── content-creation.md            # コンテンツ作成
+claude "create a skill for [your workflow]"
 ```
 
-## 🔗 関連リンク
+Or manually:
 
-- [Agentドキュメント](../agents/README.md)
-- [コマンド一覧](../commands/)
-- [フック一覧](../hooks/)
+```bash
+mkdir -p .claude/skills/my-skill
+# Create .claude/skills/my-skill/SKILL.md with proper frontmatter
+```
+
+See [skill-creator](./skill-creator/) for the full template.

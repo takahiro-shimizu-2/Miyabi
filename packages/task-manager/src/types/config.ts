@@ -73,6 +73,8 @@ export interface ExecutionConfig {
   worktreeBasePath: string;
   timeoutMinutes: number;
   retryConfig: RetryConfig;
+  stopOnFailure: boolean;
+  useWorktrees: boolean;
 }
 
 /**
@@ -183,6 +185,8 @@ export function createDefaultConfig(
         backoffMs: 1000,
         maxBackoffMs: 30000,
       },
+      stopOnFailure: false,
+      useWorktrees: true,
     },
     state: {
       persistenceEnabled: true,

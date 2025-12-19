@@ -33,9 +33,20 @@ export {
   type BidirectionalSyncOptions,
 } from './sync/index.js';
 
-// TODO: Export execution classes when implemented
-// export { TaskExecutor } from './execution/task-executor.js';
-// export { WorktreeCoordinator } from './execution/worktree-coordinator.js';
+// Execution
+export {
+  TaskExecutor,
+  WorktreeCoordinator,
+  type ExecutionResult,
+  type ExecutionHandler,
+  type AgentExecutor,
+  type WorktreeInfo,
+  type WorktreeExecutionResult,
+  type WorktreeCoordinatorHandler,
+} from './execution/index.js';
 
-// TODO: Export TaskManager when implemented
-// export { TaskManager } from './task-manager.js';
+// Task Manager
+export {
+  TaskManager,
+  type TaskManagerHandler,
+} from './task-manager.js';

@@ -5,6 +5,41 @@ All notable changes to Miyabi will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.18.0] - 2025-12-19
+
+### Added
+- **Pipeline Command**: Command composition and chaining (#144)
+  - `miyabi pipeline "<commands>"` - Execute command pipelines
+  - Pipeline operators: `|` (sequential), `&&` (AND), `||` (OR), `&` (parallel)
+  - Preset pipelines: `full-cycle`, `quick-deploy`, `quality-gate`, `auto-fix`
+  - Context passing between commands
+  - Retry policy with exponential backoff
+  - Checkpoint and resume functionality
+  - Dry-run mode for previewing pipelines
+  - `--json` output for AI agents
+
+### Documentation
+- Added Command Pipeline Guide (`.claude/commands/PIPELINE_GUIDE.md`)
+- 500+ lines of pipeline executor implementation
+
+## [0.17.0] - 2025-12-18
+
+### Added
+- **Cross-Platform Support**: Windows compatibility (#164)
+  - `cross-platform.ts` utility for shell-agnostic command execution
+  - Windows-compatible `execCommand()` with automatic `shell: true`
+  - `isCommandAvailable()` for cross-platform command detection
+  - `post-build.js` script for cross-platform chmod
+
+### Fixed
+- Fixed `execSync` calls to work on Windows (doctor, auto, local, github-token)
+- Fixed path handling in `postinstall.js` for Windows paths
+- Added `.gitattributes` for consistent line endings (LF for scripts, CRLF for Windows batch)
+
+### Changed
+- Build script now works on both Windows and Unix systems
+- All shell commands use cross-platform utility functions
+
 ## [0.16.0] - 2025-12-16
 
 ### Added

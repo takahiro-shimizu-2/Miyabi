@@ -1,13 +1,13 @@
 ---
-name: claude-code-connector
-description: Guide for creating MCP connectors that integrate with Claude Code (codex CLI). Use when building MCP servers to execute Claude Code commands, manage coding sessions, or create autonomous coding workflows.
+name: autonomous-coding-agent
+description: Build autonomous coding agents with CLI integration. Use when creating automated coding workflows, managing multi-session development, or building CI/CD code generation pipelines.
 allowed-tools: Bash, Read, Write, Grep, Glob
 ---
 
-# Claude Code Connector
+# Autonomous Coding Agent
 
 **Version**: 1.0.0
-**Purpose**: Build MCP servers that integrate with Claude Code CLI
+**Purpose**: Build autonomous coding agents and workflows
 
 ---
 
@@ -15,8 +15,8 @@ allowed-tools: Bash, Read, Write, Grep, Glob
 
 | Trigger | Examples |
 |---------|----------|
-| MCP Integration | "connect to Claude Code", "Claude Code連携" |
-| Codex CLI | "use codex CLI", "コマンドライン操作" |
+| Autonomous | "autonomous coding", "自律コーディング" |
+| Agent | "coding agent", "コーディングエージェント" |
 | Automation | "automate coding tasks", "コーディング自動化" |
 
 ---

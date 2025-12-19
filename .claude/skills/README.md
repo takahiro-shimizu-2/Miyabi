@@ -15,7 +15,7 @@ Reusable skills for Claude Code. Two formats supported:
 | [test-generator](./test-generator/) | Unit test generation | "write tests", "テスト" |
 | [doc-generator](./doc-generator/) | Documentation generation | "document", "ドキュメント" |
 | [skill-creator](./skill-creator/) | Create new skills | "create skill", "スキル作成" |
-| [claude-code-connector](./claude-code-connector/) | Claude Code CLI integration | "Claude Code連携" |
+| [autonomous-coding-agent](./autonomous-coding-agent/) | Autonomous coding workflows | "自律コーディング" |
 
 ## Topic Guides (Legacy Format)
 

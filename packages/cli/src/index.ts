@@ -115,11 +115,23 @@ program
           true,
           'Specify a command directly: miyabi status --json'
         );
+        process.exit(1);
       }
 
-      console.log(chalk.yellow('⚠️  対話モードは対話型ターミナルでのみ利用可能です'));
-      console.log(chalk.white('\nコマンドを直接指定してください: miyabi --help\n'));
-      process.exit(1);
+      // Steve Jobs風: 初回体験を美しく
+      console.log('');
+      console.log(chalk.white.bold('  ✨ Miyabi'));
+      console.log(chalk.gray('  Beauty in Autonomous Development'));
+      console.log('');
+      console.log(chalk.white('  One command. That\'s it.'));
+      console.log('');
+      console.log(chalk.cyan('  miyabi run') + chalk.gray('    - Do everything automatically'));
+      console.log(chalk.cyan('  miyabi status') + chalk.gray(' - See what\'s happening'));
+      console.log(chalk.cyan('  miyabi doctor') + chalk.gray(' - Check if everything works'));
+      console.log('');
+      console.log(chalk.gray('  First time? Try: miyabi doctor'));
+      console.log('');
+      process.exit(0);
     }
 
     console.log(chalk.cyan.bold('\n✨ Miyabi\n'));
@@ -500,5 +512,34 @@ async function handleErrorAndReport(action: string, error: Error): Promise<void>
     console.log(chalk.gray('（自動報告をスキップしました）\n'));
   }
 }
+
+// Steve Jobs風: エラーメッセージを美しく
+program.configureOutput({
+  writeErr: (str) => {
+    // Commander.jsのデフォルトエラーを書き換え
+    if (str.includes('missing required argument')) {
+      const match = str.match(/missing required argument '(.+?)'/);
+      const arg = match ? match[1] : 'argument';
+      console.log('');
+      console.log(chalk.white(`  Oops! I need a ${chalk.cyan(arg)} to continue.`));
+      console.log('');
+      console.log(chalk.gray(`  Example: miyabi init ${chalk.white('my-awesome-project')}`));
+      console.log('');
+    } else if (str.includes('unknown command')) {
+      const match = str.match(/unknown command '(.+?)'/);
+      const cmd = match ? match[1] : 'command';
+      console.log('');
+      console.log(chalk.white(`  Hmm, I don't know "${chalk.yellow(cmd)}".`));
+      console.log('');
+      console.log(chalk.gray('  Try one of these:'));
+      console.log(chalk.cyan('    miyabi run') + chalk.gray('    - Do everything'));
+      console.log(chalk.cyan('    miyabi status') + chalk.gray(' - See what\'s happening'));
+      console.log(chalk.cyan('    miyabi doctor') + chalk.gray(' - Check your setup'));
+      console.log('');
+    } else {
+      process.stderr.write(str);
+    }
+  },
+});
 
 program.parse(process.argv);

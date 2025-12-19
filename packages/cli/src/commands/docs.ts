@@ -8,7 +8,7 @@ import inquirer from 'inquirer';
 import ora from 'ora';
 import * as path from 'path';
 import * as fs from 'fs';
-import { execSync } from 'child_process';
+import { execCommand } from '../utils/cross-platform.js';
 
 export interface DocsOptions {
   input?: string;
@@ -104,9 +104,9 @@ export async function docs(options: DocsOptions): Promise<void> {
       console.log(chalk.gray(`\n👀 ${inputDir} を監視しています...\n`));
 
       // Run in foreground for watch mode
-      execSync(command, { stdio: 'inherit' });
+      execCommand(command, { stdio: 'inherit' });
     } else {
-      execSync(command, { stdio: 'pipe' });
+      execCommand(command, { stdio: 'pipe' });
       spinner.succeed('ドキュメント生成完了！');
       console.log(chalk.green(`\n✅ ドキュメントが生成されました: ${outputFile}\n`));
     }
@@ -122,7 +122,7 @@ export async function docs(options: DocsOptions): Promise<void> {
         const trainingOutputDir = path.join(outputDir, 'training');
         const trainingCommand = `npx tsx ${trainingScriptPath} "${inputDir}" "${trainingOutputDir}"`;
 
-        execSync(trainingCommand, { stdio: 'pipe' });
+        execCommand(trainingCommand, { stdio: 'pipe' });
         trainingSpinner.succeed('トレーニング資料生成完了！');
         console.log(chalk.green(`✅ トレーニング資料: ${trainingOutputDir}\n`));
       }

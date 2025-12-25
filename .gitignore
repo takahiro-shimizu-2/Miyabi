@@ -135,6 +135,7 @@ external/data/*.db
 
 # Temporary directories (removed in consolidation)
 hooks/
+!packages/*/src/hooks/
 playwright-report/
 
 # Local files

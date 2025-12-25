@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState, useEffect, use } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -18,7 +18,7 @@ import IssueNode from '@/components/workflow/IssueNode';
 import ConditionNode from '@/components/workflow/ConditionNode';
 import { useWorkflow } from '@/hooks/useWorkflow';
 import { workflowApi } from '@/lib/api-client';
-import type { AgentType, Workflow } from '@/lib/types';
+import type { AgentType } from '@/lib/types';
 
 const nodeTypes = {
   agent: AgentNode,
@@ -37,11 +37,11 @@ const agentTypes: AgentType[] = [
 ];
 
 interface PageProps {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }
 
 export default function WorkflowEditPage({ params }: PageProps) {
-  const { id } = use(params);
+  const { id } = params;
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

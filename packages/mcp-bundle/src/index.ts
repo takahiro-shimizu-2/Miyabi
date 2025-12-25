@@ -3483,7 +3483,7 @@ async function handleGenTool(name: string, args: Record<string, unknown>): Promi
 const server = new Server(
   {
     name: 'miyabi-mcp-bundle',
-    version: '3.6.0',
+    version: '3.7.1',
   },
   {
     capabilities: {

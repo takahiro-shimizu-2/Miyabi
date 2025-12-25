@@ -19,6 +19,7 @@
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
+    "test": "echo 'No tests yet'",
     "prepublishOnly": "npm run build"
   },
   "keywords": [

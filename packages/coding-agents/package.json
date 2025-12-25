@@ -10,30 +10,6 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./coordinator": {
-      "import": "./dist/coordinator/coordinator-agent.js",
-      "types": "./dist/coordinator/coordinator-agent.d.ts"
-    },
-    "./codegen": {
-      "import": "./dist/codegen/codegen-agent.js",
-      "types": "./dist/codegen/codegen-agent.d.ts"
-    },
-    "./review": {
-      "import": "./dist/review/review-agent.js",
-      "types": "./dist/review/review-agent.d.ts"
-    },
-    "./deployment": {
-      "import": "./dist/deployment/deployment-agent.js",
-      "types": "./dist/deployment/deployment-agent.d.ts"
-    },
-    "./issue": {
-      "import": "./dist/issue/issue-agent.js",
-      "types": "./dist/issue/issue-agent.d.ts"
-    },
-    "./pr": {
-      "import": "./dist/pr/pr-agent.js",
-      "types": "./dist/pr/pr-agent.d.ts"
-    },
     "./base-agent": {
       "import": "./dist/base-agent.js",
       "types": "./dist/base-agent.d.ts"
@@ -42,9 +18,113 @@
       "import": "./dist/types/index.js",
       "types": "./dist/types/index.d.ts"
     },
+    "./types/index": {
+      "import": "./dist/types/index.js",
+      "types": "./dist/types/index.d.ts"
+    },
+    "./types/*": {
+      "import": "./dist/types/*.js",
+      "types": "./dist/types/*.d.ts"
+    },
     "./utils": {
       "import": "./dist/utils/index.js",
       "types": "./dist/utils/index.d.ts"
+    },
+    "./utils/*": {
+      "import": "./dist/utils/*.js",
+      "types": "./dist/utils/*.d.ts"
+    },
+    "./coordinator": {
+      "import": "./dist/coordinator/coordinator-agent.js",
+      "types": "./dist/coordinator/coordinator-agent.d.ts"
+    },
+    "./coordinator/*": {
+      "import": "./dist/coordinator/*.js",
+      "types": "./dist/coordinator/*.d.ts"
+    },
+    "./codegen": {
+      "import": "./dist/codegen/codegen-agent.js",
+      "types": "./dist/codegen/codegen-agent.d.ts"
+    },
+    "./codegen/*": {
+      "import": "./dist/codegen/*.js",
+      "types": "./dist/codegen/*.d.ts"
+    },
+    "./review": {
+      "import": "./dist/review/review-agent.js",
+      "types": "./dist/review/review-agent.d.ts"
+    },
+    "./review/*": {
+      "import": "./dist/review/*.js",
+      "types": "./dist/review/*.d.ts"
+    },
+    "./deployment": {
+      "import": "./dist/deployment/deployment-agent.js",
+      "types": "./dist/deployment/deployment-agent.d.ts"
+    },
+    "./deployment/*": {
+      "import": "./dist/deployment/*.js",
+      "types": "./dist/deployment/*.d.ts"
+    },
+    "./issue": {
+      "import": "./dist/issue/issue-agent.js",
+      "types": "./dist/issue/issue-agent.d.ts"
+    },
+    "./issue/*": {
+      "import": "./dist/issue/*.js",
+      "types": "./dist/issue/*.d.ts"
+    },
+    "./pr": {
+      "import": "./dist/pr/pr-agent.js",
+      "types": "./dist/pr/pr-agent.d.ts"
+    },
+    "./pr/*": {
+      "import": "./dist/pr/*.js",
+      "types": "./dist/pr/*.d.ts"
+    },
+    "./coordination/*": {
+      "import": "./dist/coordination/*.js",
+      "types": "./dist/coordination/*.d.ts"
+    },
+    "./feedback-loop/*": {
+      "import": "./dist/feedback-loop/*.js",
+      "types": "./dist/feedback-loop/*.d.ts"
+    },
+    "./ui/index": {
+      "import": "./dist/ui/index.js",
+      "types": "./dist/ui/index.d.ts"
+    },
+    "./ui/*": {
+      "import": "./dist/ui/*.js",
+      "types": "./dist/ui/*.d.ts"
+    },
+    "./water-spider/*": {
+      "import": "./dist/water-spider/*.js",
+      "types": "./dist/water-spider/*.d.ts"
+    },
+    "./worktree/*": {
+      "import": "./dist/worktree/*.js",
+      "types": "./dist/worktree/*.d.ts"
+    },
+    "./monitoring/*": {
+      "import": "./dist/monitoring/*.js",
+      "types": "./dist/monitoring/*.d.ts"
+    },
+    "./github/*": {
+      "import": "./dist/github/*.js",
+      "types": "./dist/github/*.d.ts"
+    },
+    "./execution/*": {
+      "import": "./dist/execution/*.js",
+      "types": "./dist/execution/*.d.ts"
+    },
+    "./omega-system": {
+      "import": "./dist/omega-system/index.js",
+      "types": "./dist/omega-system/index.d.ts"
+    },
+    "./omega-system/*": {
+      "import": "./dist/omega-system/*.js",
+      "types": "./dist/omega-system/*.d.ts"
     }
   },
   "scripts": {

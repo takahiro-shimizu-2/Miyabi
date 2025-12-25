@@ -13,11 +13,13 @@
 │   ├── specs/coding/      # 7 Coding Agent specs
 │   ├── specs/business/    # 14 Business Agent specs
 │   └── prompts/           # Execution prompts
-├── commands/              # Slash commands
+├── commands/              # Slash commands (project-specific)
+├── docs/                  # Additional documentation
 ├── hooks/                 # Event hooks
-├── skills/                # Reusable skills
-├── mcp-servers/           # MCP implementations
-└── monitoring/            # Dashboard config
+├── mcp-servers/           # MCP server implementations
+├── monitoring/            # Dashboard configuration
+├── prompts/               # Shared prompts and protocols
+└── skills/                # Reusable skills (8 executable + 13 guides)
 ```
 
 ## Agents (21)
@@ -29,11 +31,16 @@
 
 | Command | Purpose |
 |---------|---------|
-| `/test` | Run tests |
-| `/agent-run` | Execute agent |
+| `/agent-run` | Execute agent on issue |
+| `/create-issue` | Create GitHub issue interactively |
 | `/deploy` | Deploy to production |
+| `/generate-docs` | Generate documentation |
+| `/miyabi-auto` | Start autonomous mode |
+| `/miyabi-todos` | Detect and create issues from TODOs |
+| `/review` | Comprehensive code review |
+| `/security-scan` | Security vulnerability scan |
+| `/test` | Run tests |
 | `/verify` | System health check |
-| `/security-scan` | Security audit |
 
 ## Hooks
 

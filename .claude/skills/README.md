@@ -1,23 +1,26 @@
 # Miyabi Skills
 
-Reusable skills for Claude Code. Two formats supported:
+Reusable skills for Claude Code in the Miyabi project.
 
-1. **Directory format** (recommended): `skill-name/SKILL.md`
-2. **Legacy format**: `skill-name.md`
+## Formats
 
-## Core Skills (Directory Format)
+1. **Directory format** (recommended): `skill-name/SKILL.md` - Executable skills with frontmatter
+2. **Guide format**: `skill-name.md` - Knowledge guides and best practices
+
+## Executable Skills
 
 | Skill | Purpose | Triggers |
 |-------|---------|----------|
+| [ccg](./ccg/) | AI Course Content Generator | "ccg", "create course", "/ccg" |
 | [code-reviewer](./code-reviewer/) | Code review with quality scoring | "review", "check PR" |
-| [commit-helper](./commit-helper/) | Conventional Commits messages | "commit", "コミット" |
+| [commit-helper](./commit-helper/) | Conventional Commits generator | "commit", "コミット" |
 | [refactor-helper](./refactor-helper/) | Safe code refactoring | "refactor", "リファクタ" |
 | [test-generator](./test-generator/) | Unit test generation | "write tests", "テスト" |
 | [doc-generator](./doc-generator/) | Documentation generation | "document", "ドキュメント" |
-| [skill-creator](./skill-creator/) | Create new skills | "create skill", "スキル作成" |
-| [autonomous-coding-agent](./autonomous-coding-agent/) | Autonomous coding workflows | "自律コーディング" |
+| [skill-creator](./skill-creator/) | Create new Claude skills | "create skill", "スキル作成" |
+| [autonomous-coding-agent](./autonomous-coding-agent/) | Autonomous development workflows | "自律コーディング" |
 
-## Topic Guides (Legacy Format)
+## Knowledge Guides
 
 ### Development
 

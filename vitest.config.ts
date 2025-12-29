@@ -24,5 +24,35 @@ export default defineConfig({
         '**/*.config.ts',
       ],
     },
+    // Use workspace projects for monorepo support
+    // Each package uses its own vitest.config.ts
+    projects: [
+      // Root tests (node environment)
+      {
+        test: {
+          name: 'root',
+          globals: true,
+          environment: 'node',
+          testTimeout: 30000,
+          include: [
+            'tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts}',
+            'agents/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts}',
+            '.claude/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts}',
+          ],
+          exclude: [
+            '**/node_modules/**',
+            '**/dist/**',
+            '**/tests/e2e/**',
+            '**/*.spec.ts',
+            'packages/**',
+          ],
+        },
+      },
+      // Package-specific configs
+      'packages/cli',
+      'packages/mcp-bundle',
+      'packages/task-manager',
+      'packages/miyabi-web',
+    ],
   },
 });

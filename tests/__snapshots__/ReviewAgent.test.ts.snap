@@ -27,6 +27,33 @@ exports[`ReviewAgent - Snapshot Tests > Agent Result Structure > should generate
 }
 `;
 
+exports[`ReviewAgent - Snapshot Tests > OpenAI Dev Day - Nacho's Auto-Loop Pattern > should iterate until quality score meets threshold 1`] = `
+{
+  "data": {
+    "approved": Any<Boolean>,
+    "comments": Any<Array>,
+    "escalationRequired": Any<Boolean>,
+    "escalationTarget": undefined,
+    "qualityReport": {
+      "breakdown": Any<Object>,
+      "issues": Any<Array>,
+      "passed": Any<Boolean>,
+      "recommendations": Any<Array>,
+      "score": Any<Number>,
+    },
+  },
+  "metrics": {
+    "agentType": Any<String>,
+    "durationMs": Any<Number>,
+    "errorsFound": Any<Number>,
+    "qualityScore": Any<Number>,
+    "taskId": Any<String>,
+    "timestamp": Any<String>,
+  },
+  "status": Any<String>,
+}
+`;
+
 exports[`ReviewAgent - Snapshot Tests > Review Comments Structure > should generate consistent review comments 1`] = `
 [
   {
@@ -68,5 +95,32 @@ exports[`ReviewAgent - Snapshot Tests > Review Comments Structure > should have 
   "scoreImpact": Any<Number>,
   "severity": "medium",
   "type": "eslint",
+}
+`;
+
+exports[`ReviewAgent - Snapshot Tests > Snapshot Consistency Across Runs > should produce identical quality reports for identical code 1`] = `
+{
+  "data": {
+    "approved": Any<Boolean>,
+    "comments": Any<Array>,
+    "escalationRequired": Any<Boolean>,
+    "escalationTarget": undefined,
+    "qualityReport": {
+      "breakdown": Any<Object>,
+      "issues": Any<Array>,
+      "passed": Any<Boolean>,
+      "recommendations": Any<Array>,
+      "score": Any<Number>,
+    },
+  },
+  "metrics": {
+    "agentType": Any<String>,
+    "durationMs": Any<Number>,
+    "errorsFound": Any<Number>,
+    "qualityScore": Any<Number>,
+    "taskId": Any<String>,
+    "timestamp": Any<String>,
+  },
+  "status": Any<String>,
 }
 `;

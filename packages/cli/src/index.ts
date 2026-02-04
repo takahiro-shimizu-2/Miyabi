@@ -74,7 +74,7 @@ program
   .description('✨ Miyabi - 一つのコマンドで全てが完結する自律型開発フレームワーク')
   .version(packageJson.version)
   .option('--json', 'Output in JSON format (for AI agents)')
-  .option('-y, --yes', 'Auto-confirm all prompts (non-interactive mode)')
+  .option('-y, --yes', 'Auto-confirm all requests (non-interactive mode)')
   .option('-v, --verbose', 'Verbose output with detailed logs')
   .option('--debug', 'Debug mode with extra detailed logs');
 

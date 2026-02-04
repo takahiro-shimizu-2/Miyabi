@@ -27,6 +27,7 @@ import {
   HumanInTheLoop,
   type ApprovalLevel,
 } from '../utils/human-in-the-loop';
+import { isJsonMode } from '../utils/agent-output';
 
 export interface RunOptions {
   issue?: number;
@@ -84,6 +85,8 @@ async function simulateAgentExecution(
   });
   addLog(state, `${displayName} started`);
 
+  const stepDelayMs = options.json ? 0 : 500;
+
   // Simulate work
   for (let progress = 0; progress <= 100; progress += 20) {
     updateAgentStatus(state, agentName, {
@@ -97,7 +100,7 @@ async function simulateAgentExecution(
       console.log(renderDashboard(state));
     }
 
-    await sleep(500);
+    await sleep(stepDelayMs);
   }
 
   // Request approval for critical agents
@@ -280,7 +283,9 @@ export function registerRunCommand(program: Command): void {
     .option('-v, --verbose', 'Verbose output')
     .option('--json', 'JSON output for AI agents')
     .action(async (options: RunOptions) => {
-      const isInteractive = process.stdin.isTTY && process.stdout.isTTY && !options.json;
+      const jsonMode = options.json ?? isJsonMode();
+      options.json = jsonMode;
+      const isInteractive = process.stdin.isTTY && process.stdout.isTTY && !jsonMode;
 
       let taskType: TaskType;
       let issue = options.issue;

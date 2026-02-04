@@ -155,8 +155,8 @@ export class IntegratedSystem {
     };
 
     // Start Water Spider in background
-    this.waterSpiderAgent.execute(waterSpiderTask).catch((error) => {
-      console.error('❌ Water Spider error:', error);
+    this.waterSpiderAgent.execute(waterSpiderTask).catch((error: unknown) => {
+      console.error('❌ Water Spider error:', String(error));
     });
 
     console.log('');

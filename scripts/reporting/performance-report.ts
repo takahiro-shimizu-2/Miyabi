@@ -18,6 +18,13 @@ async function main() {
 
   // Generate report
   const report = monitor.generateReport();
+  type AgentBottlenecks = {
+    agent: string;
+    bottlenecks: typeof report.agentMetrics[number]['bottlenecks'];
+  };
+  type BottleneckWithAgent = typeof report.agentMetrics[number]['bottlenecks'][number] & {
+    agent: string;
+  };
 
   // Display summary
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
@@ -46,13 +53,12 @@ async function main() {
   console.log('  TOP BOTTLENECKS');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
-  const allBottlenecks = report.agentMetrics.flatMap((m) => ({
+  const allBottlenecks: AgentBottlenecks[] = report.agentMetrics.map((m) => ({
     agent: m.agentType,
-    ...m,
     bottlenecks: m.bottlenecks,
   }));
 
-  const sortedBottlenecks = allBottlenecks
+  const sortedBottlenecks: BottleneckWithAgent[] = allBottlenecks
     .flatMap((a) => a.bottlenecks.map((b) => ({ agent: a.agent, ...b })))
     .sort((a, b) => b.durationMs - a.durationMs)
     .slice(0, 10);

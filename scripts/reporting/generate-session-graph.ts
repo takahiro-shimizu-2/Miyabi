@@ -408,19 +408,19 @@ async function main() {
   console.log(`  Nodes: ${activity.graph.nodes.length}`);
   console.log(`  Edges: ${activity.graph.edges.length}`);
   console.log('\n📈 Node Breakdown:');
-  const nodeCountByType = activity.graph.nodes.reduce((acc, node) => {
+  const nodeCountByType = activity.graph.nodes.reduce<Record<string, number>>((acc, node) => {
     acc[node.type] = (acc[node.type] || 0) + 1;
     return acc;
-  }, {} as Record<string, number>);
+  }, {});
   Object.entries(nodeCountByType).forEach(([type, count]) => {
     console.log(`  ${type}: ${count}`);
   });
 
   console.log('\n🔗 Edge Breakdown:');
-  const edgeCountByType = activity.graph.edges.reduce((acc, edge) => {
+  const edgeCountByType = activity.graph.edges.reduce<Record<string, number>>((acc, edge) => {
     acc[edge.relationType] = (acc[edge.relationType] || 0) + 1;
     return acc;
-  }, {} as Record<string, number>);
+  }, {});
   Object.entries(edgeCountByType).forEach(([type, count]) => {
     console.log(`  ${type}: ${count}`);
   });

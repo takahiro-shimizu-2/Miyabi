@@ -26,6 +26,7 @@ import { registerDashboardCommand } from './commands/dashboard';
 import { registerRunCommand } from './commands/run';
 import { createOmegaCommand } from './commands/omega';
 import { registerPipelineCommand } from './commands/pipeline';
+import { registerHealthCommand } from './commands/health';
 import { loadConfig, applyConfigToEnvironment } from './config/loader';
 import {
   reportIssueToMiyabi,
@@ -472,6 +473,9 @@ program.addCommand(createOmegaCommand());
 
 // Register pipeline command (command composition)
 registerPipelineCommand(program);
+
+// Register health command (quick health check endpoint)
+registerHealthCommand(program);
 
 /**
  * Handle error and report to Miyabi repository

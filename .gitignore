@@ -39,6 +39,10 @@ lerna-debug.log*
 .ai/issues/*.json
 .ai/*.mjs
 
+# Agent Skill Bus runtime data
+skills/
+prompt-request-queue/
+
 # Keep directory structure but ignore contents
 !.ai/logs/.gitkeep
 !.ai/parallel-reports/.gitkeep

@@ -1,6 +1,13 @@
 import { defineConfig } from 'vitest/config';
+import path from 'path';
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@miyabi/coding-agents': path.resolve(__dirname, 'packages/coding-agents'),
+      '@miyabi/shared-utils': path.resolve(__dirname, 'packages/shared-utils/src'),
+    },
+  },
   test: {
     globals: true,
     environment: 'node',
@@ -29,6 +36,12 @@ export default defineConfig({
     projects: [
       // Root tests (node environment)
       {
+        resolve: {
+          alias: {
+            '@miyabi/coding-agents': path.resolve(__dirname, 'packages/coding-agents'),
+            '@miyabi/shared-utils': path.resolve(__dirname, 'packages/shared-utils/src'),
+          },
+        },
         test: {
           name: 'root',
           globals: true,

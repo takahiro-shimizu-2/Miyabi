@@ -31,8 +31,6 @@
     "baseUrl": "."
   },
   "include": [
-    "scripts/**/*",
-    "utils/**/*",
     "tests/**/*",
     "vitest.config.ts"
   ],
@@ -48,7 +46,6 @@
   ],
   "references": [
     { "path": "./packages/coding-agents" },
-    { "path": "./packages/business-agents" },
     { "path": "./packages/core" },
     { "path": "./packages/cli" },
     { "path": "./packages/shared-utils" }

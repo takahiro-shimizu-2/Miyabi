@@ -1,0 +1,53 @@
+name: Auto Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: |
+          cd packages/cli
+          npm test
+
+      - name: Publish to npm
+        run: cd packages/cli && npm publish --access public || echo 'Already published'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+
+      - name: Announce on X
+        if: success()
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          RELEASE_URL="https://github.com/${GITHUB_REPOSITORY}/releases/tag/${TAG}"
+          MESSAGE="Miyabi ${TAG} をリリースしました！ ${RELEASE_URL} #miyabi #cli #release"
+          curl -s -X POST https://api.twitter.com/2/tweets \
+            -H "Authorization: Bearer $X_BEARER_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"text\": \"${MESSAGE}\"}" || echo 'X post failed (non-critical)'
+        env:
+          X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}

@@ -46,6 +46,19 @@ async function cycleCheck(options: { json?: boolean }): Promise<void> {
       }
     }
   } catch { console.log(chalk.white(`  Flagged: ${flagged}`)); }
+
+  // GNI: GitNexus Impact Analysis
+  console.log(chalk.white("  GitNexus:"));
+  try {
+    const gniResult = execSync("cd ~/dev/HAYASHI_SHUNSUKE && npx gitnexus-stable status", { encoding: "utf-8", timeout: 15000 }).trim();
+    if (gniResult.includes("stale")) {
+      console.log(chalk.yellow("    \u26a0 Index stale \u2014 reindex needed"));
+    } else if (gniResult.includes("up-to-date") || gniResult.includes("current")) {
+      console.log(chalk.green("    \u2713 Index up-to-date"));
+    } else {
+      console.log(chalk.white("    " + gniResult.split("\n").pop()));
+    }
+  } catch { console.log(chalk.gray("    GitNexus not available")); }
   console.log("");
 }
 
@@ -101,8 +114,26 @@ async function cycleEnqueue(args: string[], options: { priority?: string; agent?
   const task = args.join(" ");
   const priority = options.priority || "medium";
   const agent = options.agent || "ops";
-  const result = runBus(`enqueue --source miyabi-cli --priority ${priority} --agent ${agent} --task "${task}"`);
+  runBus(`enqueue --source miyabi-cli --priority ${priority} --agent ${agent} --task "${task}"`);
   console.log(chalk.green(`\n✓ Enqueued: [${priority}] ${agent} — ${task}\n`));
+}
+
+
+async function cycleGni(options: { reindex?: boolean }): Promise<void> {
+  console.log(chalk.cyan.bold("\n\ud83d\udd0d Miyabi Cycle \u2014 GitNexus Impact Analysis\n"));
+  try {
+    const status = execSync("cd ~/dev/HAYASHI_SHUNSUKE && npx gitnexus-stable status", { encoding: "utf-8", timeout: 15000 }).trim();
+    console.log(chalk.white("  Status: " + status));
+
+    if (options.reindex || status.includes("stale")) {
+      console.log(chalk.yellow("\n  Reindexing..."));
+      const result = execSync("cd ~/dev/HAYASHI_SHUNSUKE && npx gitnexus-stable analyze", { encoding: "utf-8", timeout: 60000 }).trim();
+      console.log(chalk.green("  " + result));
+    }
+  } catch (e: any) {
+    console.log(chalk.red("  GitNexus not available: " + (e.message || "unknown error")));
+  }
+  console.log("");
 }
 
 export function registerCycleCommand(program: Command): void {
@@ -133,6 +164,12 @@ export function registerCycleCommand(program: Command): void {
     .description("Show skill health summary")
     .option("--json", "Output in JSON format")
     .action(async (options) => { await cycleHealth(options); });
+
+  cycle
+    .command("gni")
+    .description("GitNexus Impact Analysis status & reindex")
+    .option("--reindex", "Force reindex even if up-to-date")
+    .action(async (options) => { await cycleGni(options); });
 
   cycle
     .command("enqueue <task...>")

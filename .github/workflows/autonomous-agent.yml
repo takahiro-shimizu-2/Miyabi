@@ -213,6 +213,7 @@ jobs:
           path: |
             .ai/logs/
             .ai/parallel-reports/
+          if-no-files-found: warn
           retention-days: 30
 
       - name: Comment on Issue (Success)

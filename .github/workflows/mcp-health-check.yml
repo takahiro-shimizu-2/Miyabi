@@ -132,7 +132,7 @@ jobs:
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
-              repo: context.repo.name,
+              repo: context.repo.repo,
               body: comment
             });
 
@@ -163,6 +163,7 @@ jobs:
         with:
           name: mcp-integration-test-results
           path: test-results/
+          if-no-files-found: warn
           retention-days: 30
 
   performance-tests:
@@ -192,6 +193,7 @@ jobs:
         with:
           name: mcp-performance-test-results
           path: test-results/
+          if-no-files-found: warn
           retention-days: 30
 
       - name: Generate performance report
@@ -235,7 +237,7 @@ jobs:
 
             github.rest.issues.create({
               owner: context.repo.owner,
-              repo: context.repo.name,
+              repo: context.repo.repo,
               title,
               body,
               labels: ['🐛 type:bug', '⚠️ priority:P1-High', '🤖 agent:review', '📥 state:pending']

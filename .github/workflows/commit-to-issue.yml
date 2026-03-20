@@ -106,6 +106,6 @@ jobs:
               console.log('Note: Could not trigger AI labeling (workflow may not support dispatch)');
             });
 
-      - name: Skip (no #auto tag)
+      - name: Skip
         if: steps.check.outputs.create_issue != 'true'
-        run: echo "No #auto tag found in commit message, skipping."
+        run: echo "No auto tag found, skipping."

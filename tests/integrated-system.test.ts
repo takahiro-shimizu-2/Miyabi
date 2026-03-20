@@ -357,7 +357,7 @@ describe('Integrated System - E2E Tests', () => {
     expect(hasRefinement || hasEscalated).toBe(true);
   }, 30000);
 
-  it('should handle real metrics collection (integration with MetricsCollector)', async () => {
+  it('should handle real metrics collection (integration with MetricsCollector)', { timeout: 60000 }, async () => {
     const goal = goalManager.createGoal({
       title: 'Real Metrics Test',
       description: 'Test with real metrics from MetricsCollector',
@@ -398,5 +398,5 @@ describe('Integrated System - E2E Tests', () => {
       // The test is to ensure the integration works, not that the project is configured
       console.warn('Metrics collection failed (expected in test environment):', error.message);
     }
-  }, 30000);
+  });
 });

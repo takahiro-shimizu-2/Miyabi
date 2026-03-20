@@ -30,6 +30,7 @@ import { registerHealthCommand } from './commands/health';
 import { registerCycleCommand } from './commands/cycle';
 import { registerReleaseCommand } from './commands/release';
 import { registerVoiceCommand } from './commands/voice';
+import { registerSkillsCommand } from "./commands/skills";
 import { loadConfig, applyConfigToEnvironment } from './config/loader';
 import {
   reportIssueToMiyabi,
@@ -482,6 +483,7 @@ registerHealthCommand(program);
 registerCycleCommand(program);
 registerReleaseCommand(program);
 registerVoiceCommand(program);
+registerSkillsCommand(program);
 
 /**
  * Handle error and report to Miyabi repository

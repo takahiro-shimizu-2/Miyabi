@@ -3,7 +3,12 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "composite": true
+    "composite": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@miyabi/coding-agents": ["./types/miyabi-coding-agents.d.ts"],
+      "@miyabi/coding-agents/*": ["./types/miyabi-coding-agents.d.ts"]
+    }
   },
   "include": [
     "src/**/*"

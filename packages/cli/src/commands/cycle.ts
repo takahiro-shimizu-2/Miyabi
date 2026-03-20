@@ -7,14 +7,14 @@ import chalk from "chalk";
 import { Command } from "commander";
 import { execSync } from "child_process";
 
-const REPO_DIR = process.env.MIYABI_REPO_DIR || "~/dev/HAYASHI_SHUNSUKE";
-const BUS_CMD = `cd ${REPO_DIR} && npx agent-skill-bus`;
+const REPO_DIR = process.env.MIYABI_REPO_DIR || process.cwd();
 
 function runBus(subcommand: string): string {
   try {
-    return execSync(`${BUS_CMD} ${subcommand}`, {
+    return execSync(`npx agent-skill-bus ${subcommand}`, {
       encoding: "utf-8",
       timeout: 30000,
+      cwd: REPO_DIR,
     }).trim();
   } catch (e: any) {
     return e.stdout?.trim() || "";
@@ -101,7 +101,7 @@ async function cycleEnqueue(args: string[], options: { priority?: string; agent?
   const task = args.join(" ");
   const priority = options.priority || "medium";
   const agent = options.agent || "ops";
-  const result = runBus(`enqueue --source miyabi-cli --priority ${priority} --agent ${agent} --task `);
+  const result = runBus(`enqueue --source miyabi-cli --priority ${priority} --agent ${agent} --task "${task}"`);
   console.log(chalk.green(`\n✓ Enqueued: [${priority}] ${agent} — ${task}\n`));
 }
 

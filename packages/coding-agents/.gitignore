@@ -1,0 +1,14 @@
+# Build artifacts (tsc output leaked outside dist/ due to rootDir: ".")
+*.js
+*.js.map
+*.d.ts
+*.d.ts.map
+
+# Keep config and source files
+!jest.config.js
+!vitest.config.js
+!eslint.config.js
+
+# Standard
+dist/
+node_modules/

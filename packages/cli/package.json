@@ -1,6 +1,6 @@
 {
   "name": "miyabi",
-  "version": "0.19.0",
+  "version": "0.20.0",
   "description": "Miyabi - Beauty in Autonomous Development. Complete autonomous AI development platform with GitHub OS integration. Optimized for AI coding agents (Claude Code).",
   "type": "module",
   "bin": {
@@ -60,6 +60,7 @@
     "open": "^10.0.3",
     "dotenv": "^16.6.1",
     "yaml": "^2.3.4",
+    "agent-skill-bus": "^1.2.0",
     "miyabi-agent-sdk": "^0.1.0-alpha.2"
   },
   "devDependencies": {

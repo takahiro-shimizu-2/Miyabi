@@ -50,7 +50,7 @@ async function cycleCheck(options: { json?: boolean }): Promise<void> {
   // GNI: GitNexus Impact Analysis
   console.log(chalk.white("  GitNexus:"));
   try {
-    const gniResult = execSync("cd ~/dev/HAYASHI_SHUNSUKE && npx gitnexus-stable status", { encoding: "utf-8", timeout: 15000 }).trim();
+    const gniResult = execSync("cd ~/dev/HAYASHI_SHUNSUKE && ~/.local/bin/gitnexus-stable status", { encoding: "utf-8", timeout: 15000 }).trim();
     if (gniResult.includes("stale")) {
       console.log(chalk.yellow("    \u26a0 Index stale \u2014 reindex needed"));
     } else if (gniResult.includes("up-to-date") || gniResult.includes("current")) {
@@ -122,12 +122,12 @@ async function cycleEnqueue(args: string[], options: { priority?: string; agent?
 async function cycleGni(options: { reindex?: boolean }): Promise<void> {
   console.log(chalk.cyan.bold("\n\ud83d\udd0d Miyabi Cycle \u2014 GitNexus Impact Analysis\n"));
   try {
-    const status = execSync("cd ~/dev/HAYASHI_SHUNSUKE && npx gitnexus-stable status", { encoding: "utf-8", timeout: 15000 }).trim();
+    const status = execSync("cd ~/dev/HAYASHI_SHUNSUKE && ~/.local/bin/gitnexus-stable status", { encoding: "utf-8", timeout: 15000 }).trim();
     console.log(chalk.white("  Status: " + status));
 
     if (options.reindex || status.includes("stale")) {
       console.log(chalk.yellow("\n  Reindexing..."));
-      const result = execSync("cd ~/dev/HAYASHI_SHUNSUKE && npx gitnexus-stable analyze", { encoding: "utf-8", timeout: 60000 }).trim();
+      const result = execSync("cd ~/dev/HAYASHI_SHUNSUKE && ~/.local/bin/gitnexus-stable analyze", { encoding: "utf-8", timeout: 60000 }).trim();
       console.log(chalk.green("  " + result));
     }
   } catch (e: any) {

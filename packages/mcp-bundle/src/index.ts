@@ -36,6 +36,9 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
+  ListResourcesRequestSchema,
+  ListResourceTemplatesRequestSchema,
+  ReadResourceRequestSchema,
   Tool
 } from '@modelcontextprotocol/sdk/types.js';
 import { simpleGit, SimpleGit } from 'simple-git';
@@ -3483,17 +3486,114 @@ async function handleGenTool(name: string, args: Record<string, unknown>): Promi
 const server = new Server(
   {
     name: 'miyabi-mcp-bundle',
-    version: '3.7.1',
+    version: '3.8.0',
   },
   {
     capabilities: {
       tools: {},
+      resources: {},
     },
   }
 );
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return { tools };
+});
+
+// ========== Resources ==========
+
+server.setRequestHandler(ListResourcesRequestSchema, async () => {
+  const resources = [];
+
+  // Expose repository status as a resource
+  resources.push({
+    uri: `file://${MIYABI_REPO_PATH}`,
+    name: 'Repository Root',
+    description: `Miyabi repository at ${MIYABI_REPO_PATH}`,
+    mimeType: 'application/json',
+  });
+
+  // Expose tool catalog as a resource
+  resources.push({
+    uri: 'miyabi://tools/catalog',
+    name: 'Tool Catalog',
+    description: `${tools.length} MCP tools across 21 categories`,
+    mimeType: 'application/json',
+  });
+
+  return { resources };
+});
+
+server.setRequestHandler(ListResourceTemplatesRequestSchema, async () => {
+  return {
+    resourceTemplates: [
+      {
+        uriTemplate: 'miyabi://tools/{category}',
+        name: 'Tools by Category',
+        description: 'List tools filtered by category prefix (e.g., git, tmux, docker)',
+        mimeType: 'application/json',
+      },
+      {
+        uriTemplate: 'file://{path}',
+        name: 'Repository File',
+        description: 'Read a file from the repository by path',
+        mimeType: 'text/plain',
+      },
+    ],
+  };
+});
+
+server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+  const { uri } = request.params;
+
+  // Tool catalog
+  if (uri === 'miyabi://tools/catalog') {
+    const categories: Record<string, number> = {};
+    for (const tool of tools) {
+      const prefix = tool.name.split('_')[0];
+      categories[prefix] = (categories[prefix] || 0) + 1;
+    }
+    return {
+      contents: [{
+        uri,
+        mimeType: 'application/json',
+        text: JSON.stringify({ totalTools: tools.length, categories }, null, 2),
+      }],
+    };
+  }
+
+  // Tools by category
+  const categoryMatch = uri.match(/^miyabi:\/\/tools\/(.+)$/);
+  if (categoryMatch) {
+    const category = categoryMatch[1];
+    const filtered = tools.filter(t => t.name.startsWith(`${category}_`));
+    return {
+      contents: [{
+        uri,
+        mimeType: 'application/json',
+        text: JSON.stringify({ category, tools: filtered.map(t => ({ name: t.name, description: t.description })) }, null, 2),
+      }],
+    };
+  }
+
+  // Repository file
+  if (uri.startsWith('file://')) {
+    const filePath = uri.replace('file://', '');
+    const safePath = resolve(MIYABI_REPO_PATH, filePath);
+    if (!safePath.startsWith(resolve(MIYABI_REPO_PATH))) {
+      throw new Error('Path traversal detected');
+    }
+    const content = await readFile(safePath, 'utf-8');
+    return {
+      contents: [{
+        uri,
+        mimeType: 'text/plain',
+        text: content,
+      }],
+    };
+  }
+
+  throw new Error(`Unknown resource URI: ${uri}`);
 });
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {

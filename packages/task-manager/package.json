@@ -42,7 +42,7 @@
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
-    "@miyabi/coding-agents": "workspace:*"
+    "@miyabi/coding-agents": "*"
   },
   "engines": {
     "node": ">=18.0.0"

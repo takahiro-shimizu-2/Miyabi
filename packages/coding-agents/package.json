@@ -147,7 +147,7 @@
   "author": "Miyabi Team",
   "license": "MIT",
   "dependencies": {
-    "@miyabi/shared-utils": "workspace:*",
+    "@miyabi/shared-utils": "*",
     "miyabi-agent-sdk": "^0.1.0-alpha.2",
     "@anthropic-ai/sdk": "^0.71.2",
     "@octokit/rest": "^21.1.1",

@@ -27,6 +27,9 @@ import { registerRunCommand } from './commands/run';
 import { createOmegaCommand } from './commands/omega';
 import { registerPipelineCommand } from './commands/pipeline';
 import { registerHealthCommand } from './commands/health';
+import { registerCycleCommand } from './commands/cycle';
+import { registerReleaseCommand } from './commands/release';
+import { registerVoiceCommand } from './commands/voice';
 import { loadConfig, applyConfigToEnvironment } from './config/loader';
 import {
   reportIssueToMiyabi,
@@ -476,6 +479,9 @@ registerPipelineCommand(program);
 
 // Register health command (quick health check endpoint)
 registerHealthCommand(program);
+registerCycleCommand(program);
+registerReleaseCommand(program);
+registerVoiceCommand(program);
 
 /**
  * Handle error and report to Miyabi repository

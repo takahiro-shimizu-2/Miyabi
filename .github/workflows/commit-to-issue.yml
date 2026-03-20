@@ -103,3 +103,7 @@ Please review and add any additional context or requirements.
               // AI labeling workflow might not support manual dispatch
               console.log('Note: Could not trigger AI labeling (workflow may not support dispatch)');
             });
+
+      - name: Skip (no #auto tag)
+        if: steps.check.outputs.create_issue != 'true'
+        run: echo "No #auto tag found in commit message, skipping."

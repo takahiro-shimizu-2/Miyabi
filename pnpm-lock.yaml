@@ -31,6 +31,9 @@ importers:
       '@octokit/rest':
         specifier: ^21.1.1
         version: 21.1.1
+      agent-skill-bus:
+        specifier: ^1.2.0
+        version: 1.2.0
       ansi-escapes:
         specifier: ^7.0.0
         version: 7.2.0

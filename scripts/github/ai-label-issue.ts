@@ -7,7 +7,7 @@
  */
 
 import { withAgentTracking } from '../reporting/dashboard-events.js';
-import { getGitHubClient } from '../../utils/api-client.js';
+import { getGitHubClient } from '@miyabi/shared-utils/api-client.js';
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 

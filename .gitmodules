@@ -1,3 +1,3 @@
 [submodule "external/context-engineering-mcp"]
-	path = external/context-engineering-mcp
+	path = docs/archive/external/context-engineering-mcp
 	url = https://github.com/ShunsukeHayashi/context_engineering_MCP.git

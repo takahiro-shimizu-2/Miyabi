@@ -14,8 +14,8 @@ import type { Octokit } from '@octokit/rest';
 import * as fs from 'fs';
 import * as path from 'path';
 import { getGitHubTokenSync } from './github-token-helper';
-import { getGitHubClient, withGitHubCache } from '../../utils/api-client';
-import { logConcurrencyRecommendation, getSafeConcurrency } from '../../utils/system-optimizer';
+import { getGitHubClient, withGitHubCache } from '@miyabi/shared-utils/api-client';
+import { logConcurrencyRecommendation, getSafeConcurrency } from '@miyabi/shared-utils/system-optimizer';
 
 // ============================================================================
 // CLI Arguments

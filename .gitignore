@@ -158,6 +158,14 @@ packages/shared-utils/src/**/*.d.ts.map
 
 # Local files
 SETUP_GUIDE.md
-playwright-results.json
 .specstory/
 .gitnexus
+
+# Runtime databases
+*.sqlite
+
+# Test results
+playwright-results.json
+
+# IDE-specific
+.cursorindexingignore

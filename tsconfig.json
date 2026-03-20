@@ -23,8 +23,6 @@
     "paths": {
       "@miyabi/coding-agents": ["./packages/coding-agents"],
       "@miyabi/coding-agents/*": ["./packages/coding-agents/*"],
-      "@miyabi/business-agents": ["./packages/business-agents/src"],
-      "@miyabi/business-agents/*": ["./packages/business-agents/src/*"],
       "@miyabi/shared-utils": ["./packages/shared-utils/src"],
       "@miyabi/shared-utils/*": ["./packages/shared-utils/src/*"]
     },

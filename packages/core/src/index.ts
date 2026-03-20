@@ -24,3 +24,7 @@ export const metadata = {
   version: VERSION,
   description: 'Core agent system for Agentic OS - Autonomous development framework',
 } as const;
+
+// Business agent base
+export { BusinessBaseAgent } from './business-base-agent';
+export type { BusinessAgentConfig, BusinessTask, BusinessResult } from './business-base-agent';

@@ -138,6 +138,16 @@ hooks/
 !packages/*/src/hooks/
 playwright-report/
 
+# TypeScript build artifacts leaked outside dist/
+packages/coding-agents/**/*.js
+packages/coding-agents/**/*.d.ts
+packages/coding-agents/**/*.js.map
+packages/coding-agents/**/*.d.ts.map
+packages/shared-utils/src/**/*.js
+packages/shared-utils/src/**/*.d.ts
+packages/shared-utils/src/**/*.js.map
+packages/shared-utils/src/**/*.d.ts.map
+
 # Local files
 SETUP_GUIDE.md
 playwright-results.json

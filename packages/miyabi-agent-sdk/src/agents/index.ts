@@ -19,3 +19,6 @@ export type { PRInput, PROutput } from "./PRAgent.js";
 
 export { TestAgent } from "./TestAgent.js";
 export type { TestInput, TestOutput } from "./TestAgent.js";
+
+export { DeploymentAgent } from "./DeploymentAgent.js";
+export type { DeploymentInput, DeploymentOutput } from "./DeploymentAgent.js";

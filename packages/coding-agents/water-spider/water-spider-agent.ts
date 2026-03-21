@@ -67,7 +67,7 @@ export class WaterSpiderAgent extends BaseAgent {
 
     try {
       // 1. Initialize sessions from worktrees
-      await this.initializeSessions();
+      this.initializeSessions();
 
       // 2. Start monitoring loop
       await this.startMonitoring();
@@ -91,9 +91,9 @@ export class WaterSpiderAgent extends BaseAgent {
   /**
    * Initialize sessions from existing worktrees
    */
-  private async initializeSessions(): Promise<void> {
+  private initializeSessions(): void {
     this.log('📋 Initializing sessions from worktrees');
-    await this.sessionManager.discoverWorktrees();
+    this.sessionManager.discoverWorktrees();
     const sessions = this.sessionManager.getSessions();
     this.log(`   Found ${sessions.length} worktree sessions`);
     sessions.forEach((s) => {
@@ -113,7 +113,7 @@ export class WaterSpiderAgent extends BaseAgent {
 
       try {
         // Check all sessions
-        const sessions = await this.sessionManager.checkAllSessions();
+        const sessions = this.sessionManager.checkAllSessions();
 
         for (const session of sessions) {
           if (session.needsContinue) {
@@ -131,7 +131,7 @@ export class WaterSpiderAgent extends BaseAgent {
       }
 
       // Schedule next check
-      this.monitorTimer = setTimeout(monitor, this.monitorInterval);
+      this.monitorTimer = setTimeout(() => { void monitor(); }, this.monitorInterval);
     };
 
     // Start monitoring
@@ -146,7 +146,7 @@ export class WaterSpiderAgent extends BaseAgent {
 
     try {
       // Send continue via session manager
-      await this.sessionManager.sendContinue(session.sessionId);
+      this.sessionManager.sendContinue(session.sessionId);
 
       // Notify webhook
       await this.webhookClient.notifyContinue(session.sessionId);
@@ -157,7 +157,7 @@ export class WaterSpiderAgent extends BaseAgent {
 
       if (this.autoRestart) {
         this.log(`🔄 Attempting auto-restart for ${session.sessionId}`);
-        await this.sessionManager.restartSession(session.sessionId);
+        this.sessionManager.restartSession(session.sessionId);
       }
     }
   }
@@ -165,7 +165,7 @@ export class WaterSpiderAgent extends BaseAgent {
   /**
    * Stop monitoring
    */
-  async stop(): Promise<void> {
+  stop(): void {
     this.log('🛑 Stopping Water Spider monitoring');
     this.isRunning = false;
 
@@ -174,7 +174,7 @@ export class WaterSpiderAgent extends BaseAgent {
       this.monitorTimer = undefined;
     }
 
-    await this.sessionManager.cleanup();
+    this.sessionManager.cleanup();
     this.log('✅ Water Spider stopped');
   }
 

@@ -91,13 +91,13 @@ export class WorktreeManager {
    * @param options - Optional configuration including agent assignment
    * @returns WorktreeInfo with all metadata
    */
-  async createWorktree(
+  createWorktree(
     issue: Issue,
     options?: {
       agentType?: AgentType;
       executionContext?: WorktreeExecutionContext;
     }
-  ): Promise<WorktreeInfo> {
+  ): WorktreeInfo {
     const issueNumber = issue.number;
 
     // Check if worktree already exists
@@ -166,7 +166,7 @@ export class WorktreeManager {
   /**
    * Remove a worktree
    */
-  async removeWorktree(issueNumber: number): Promise<void> {
+  removeWorktree(issueNumber: number): void {
     const worktreeInfo = this.activeWorktrees.get(issueNumber);
 
     if (!worktreeInfo) {
@@ -201,14 +201,14 @@ export class WorktreeManager {
   /**
    * Cleanup all worktrees
    */
-  async cleanupAll(): Promise<void> {
+  cleanupAll(): void {
     this.log('🧹 Cleaning up all worktrees...');
 
     const issues = Array.from(this.activeWorktrees.keys());
 
     for (const issueNumber of issues) {
       try {
-        await this.removeWorktree(issueNumber);
+        this.removeWorktree(issueNumber);
       } catch (error: any) {
         this.log(`⚠️  Failed to cleanup worktree for issue #${issueNumber}: ${error.message}`);
       }
@@ -450,7 +450,7 @@ export class WorktreeManager {
   /**
    * Check for idle worktrees and cleanup if needed
    */
-  async cleanupIdleWorktrees(): Promise<void> {
+  cleanupIdleWorktrees(): void {
     const now = Date.now();
     const maxIdleTime = this.config.maxIdleTime!;
 
@@ -461,7 +461,7 @@ export class WorktreeManager {
       if (idleTime > maxIdleTime && worktree.status === 'idle') {
         this.log(`⏱️  Worktree idle for ${Math.round(idleTime / 1000)}s, cleaning up: issue #${issueNumber}`);
         try {
-          await this.removeWorktree(issueNumber);
+          this.removeWorktree(issueNumber);
         } catch (error: any) {
           this.log(`⚠️  Failed to cleanup idle worktree: ${error.message}`);
         }
@@ -472,7 +472,7 @@ export class WorktreeManager {
   /**
    * Push worktree branch to remote
    */
-  async pushWorktree(issueNumber: number): Promise<void> {
+  pushWorktree(issueNumber: number): void {
     const worktree = this.activeWorktrees.get(issueNumber);
 
     if (!worktree) {
@@ -495,7 +495,7 @@ export class WorktreeManager {
   /**
    * Merge worktree back to main branch
    */
-  async mergeWorktree(issueNumber: number): Promise<void> {
+  mergeWorktree(issueNumber: number): void {
     const worktree = this.activeWorktrees.get(issueNumber);
 
     if (!worktree) {
@@ -519,7 +519,7 @@ export class WorktreeManager {
 
       // Cleanup worktree
       if (this.config.autoCleanup) {
-        await this.removeWorktree(issueNumber);
+        this.removeWorktree(issueNumber);
       }
     } catch (error: any) {
       this.log(`❌ Failed to merge worktree: ${error.message}`);
@@ -559,7 +559,7 @@ export class WorktreeManager {
    *
    * @param issueNumber - Issue number
    */
-  async writeExecutionContext(issueNumber: number): Promise<void> {
+  writeExecutionContext(issueNumber: number): void {
     const worktree = this.activeWorktrees.get(issueNumber);
 
     if (!worktree?.executionContext) {

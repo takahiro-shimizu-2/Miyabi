@@ -1,6 +1,7 @@
 {
   "name": "@miyabi/task-manager",
   "version": "0.1.0",
+  "private": true,
   "description": "LLM-based task decomposition and Linear-like status sync for Miyabi",
   "type": "module",
   "main": "dist/index.js",

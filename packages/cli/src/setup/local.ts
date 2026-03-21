@@ -22,11 +22,11 @@ export interface LocalSetupOptions {
 /**
  * Clone repository and setup local project
  */
-export async function cloneAndSetup(
+export function cloneAndSetup(
   cloneUrl: string,
   projectName: string,
   options: LocalSetupOptions = {}
-): Promise<void> {
+): void {
   // Clone repository
   execCommand(`git clone ${cloneUrl} ${projectName}`, {
     stdio: 'inherit',
@@ -35,29 +35,29 @@ export async function cloneAndSetup(
   const projectPath = path.join(process.cwd(), projectName);
 
   // Generate package.json
-  await generatePackageJson(projectPath, projectName);
+  generatePackageJson(projectPath, projectName);
 
   // Generate tsconfig.json
-  await generateTsConfig(projectPath);
+  generateTsConfig(projectPath);
 
   // Generate .gitignore
-  await generateGitignore(projectPath);
+  generateGitignore(projectPath);
 
   // Generate source directory with initial files
-  await generateSourceDirectory(projectPath, projectName);
+  generateSourceDirectory(projectPath, projectName);
 
   // Generate test directory with example test
-  await generateTestDirectory(projectPath, projectName);
+  generateTestDirectory(projectPath, projectName);
 
   // Generate .env.example
   const repository = options.owner && options.repo ? `${options.owner}/${options.repo}` : 'owner/repo';
-  await generateEnvExample(projectPath, repository);
+  generateEnvExample(projectPath, repository);
 
   // Generate ESLint configuration
-  await generateEslintConfig(projectPath);
+  generateEslintConfig(projectPath);
 
   // Generate README.md
-  await generateReadme(projectPath, projectName, repository);
+  generateReadme(projectPath, projectName, repository);
 
   // Install dependencies
   if (!options.skipInstall) {
@@ -71,7 +71,7 @@ export async function cloneAndSetup(
 /**
  * Generate package.json
  */
-async function generatePackageJson(projectPath: string, projectName: string): Promise<void> {
+function generatePackageJson(projectPath: string, projectName: string): void {
   const packageJson = {
     name: projectName,
     version: '0.1.0',
@@ -108,7 +108,7 @@ async function generatePackageJson(projectPath: string, projectName: string): Pr
 /**
  * Generate tsconfig.json
  */
-async function generateTsConfig(projectPath: string): Promise<void> {
+function generateTsConfig(projectPath: string): void {
   const tsconfig = {
     compilerOptions: {
       target: 'ES2022',
@@ -136,7 +136,7 @@ async function generateTsConfig(projectPath: string): Promise<void> {
 /**
  * Generate .gitignore
  */
-async function generateGitignore(projectPath: string): Promise<void> {
+function generateGitignore(projectPath: string): void {
   const gitignore = `# Dependencies
 node_modules/
 package-lock.json
@@ -199,7 +199,7 @@ yarn-error.log*
 /**
  * Generate src/ directory with initial source file
  */
-async function generateSourceDirectory(projectPath: string, projectName: string): Promise<void> {
+function generateSourceDirectory(projectPath: string, projectName: string): void {
   const srcDir = path.join(projectPath, 'src');
 
   // Create src directory
@@ -227,7 +227,7 @@ async function generateSourceDirectory(projectPath: string, projectName: string)
 /**
  * Generate tests/ directory with example test
  */
-async function generateTestDirectory(projectPath: string, projectName: string): Promise<void> {
+function generateTestDirectory(projectPath: string, projectName: string): void {
   const testsDir = path.join(projectPath, 'tests');
 
   // Create tests directory
@@ -255,7 +255,7 @@ async function generateTestDirectory(projectPath: string, projectName: string): 
 /**
  * Generate .env.example from template
  */
-async function generateEnvExample(projectPath: string, repository: string): Promise<void> {
+function generateEnvExample(projectPath: string, repository: string): void {
   // Load template
   const templatePath = path.join(__dirname, '../../templates/.env.example.template');
 
@@ -276,7 +276,7 @@ async function generateEnvExample(projectPath: string, repository: string): Prom
 /**
  * Generate ESLint configuration
  */
-async function generateEslintConfig(projectPath: string): Promise<void> {
+function generateEslintConfig(projectPath: string): void {
   // Load template
   const templatePath = path.join(__dirname, '../../templates/eslintrc.json.template');
 
@@ -296,7 +296,7 @@ async function generateEslintConfig(projectPath: string): Promise<void> {
 /**
  * Generate README.md from template
  */
-async function generateReadme(projectPath: string, projectName: string, repository: string): Promise<void> {
+function generateReadme(projectPath: string, projectName: string, repository: string): void {
   // Load template
   const templatePath = path.join(__dirname, '../../templates/README.md.template');
 

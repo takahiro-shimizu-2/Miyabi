@@ -15,9 +15,9 @@ import { execCommandSafe } from '../utils/cross-platform';
 /**
  * Get GitHub token without throwing error
  */
-async function getGitHubTokenSafe(): Promise<string | null> {
+function getGitHubTokenSafe(): string | null {
   try {
-    return await getGitHubToken();
+    return getGitHubToken();
   } catch {
     return null;
   }
@@ -61,16 +61,16 @@ export async function doctor(options: DoctorOptions = {}): Promise<void> {
     const checks: HealthCheck[] = [];
 
     // 1. Check Node.js version
-    checks.push(await checkNodeVersion());
+    checks.push(checkNodeVersion());
 
     // 2. Check Git installation
-    checks.push(await checkGit());
+    checks.push(checkGit());
 
     // 3. Check GitHub CLI
-    checks.push(await checkGitHubCLI());
+    checks.push(checkGitHubCLI());
 
     // 4. Check GITHUB_TOKEN
-    checks.push(await checkGitHubToken());
+    checks.push(checkGitHubToken());
 
     // 5. Check token permissions
     const tokenCheck = checks.find((c) => c.name === 'GITHUB_TOKEN');
@@ -82,13 +82,13 @@ export async function doctor(options: DoctorOptions = {}): Promise<void> {
     checks.push(await checkNetworkConnectivity());
 
     // 7. Check repository configuration (if in git repo)
-    const repoCheck = await checkRepositoryConfig();
+    const repoCheck = checkRepositoryConfig();
     if (repoCheck) {
       checks.push(repoCheck);
     }
 
     // 8. Check .miyabi.yml (if exists)
-    const configCheck = await checkMiyabiConfig();
+    const configCheck = checkMiyabiConfig();
     if (configCheck) {
       checks.push(configCheck);
     }
@@ -138,7 +138,7 @@ export async function doctor(options: DoctorOptions = {}): Promise<void> {
 /**
  * Check Node.js version
  */
-async function checkNodeVersion(): Promise<HealthCheck> {
+function checkNodeVersion(): HealthCheck {
   const version = process.version;
   const major = parseInt(version.slice(1).split('.')[0]);
 
@@ -163,7 +163,7 @@ async function checkNodeVersion(): Promise<HealthCheck> {
 /**
  * Check Git installation
  */
-async function checkGit(): Promise<HealthCheck> {
+function checkGit(): HealthCheck {
   const result = execCommandSafe('git --version', { silent: true });
   if (result.success) {
     return {
@@ -186,7 +186,7 @@ async function checkGit(): Promise<HealthCheck> {
 /**
  * Check GitHub CLI
  */
-async function checkGitHubCLI(): Promise<HealthCheck> {
+function checkGitHubCLI(): HealthCheck {
   const versionResult = execCommandSafe('gh --version', { silent: true });
 
   if (!versionResult.success) {
@@ -224,9 +224,9 @@ async function checkGitHubCLI(): Promise<HealthCheck> {
 /**
  * Check GITHUB_TOKEN
  */
-async function checkGitHubToken(): Promise<HealthCheck> {
+function checkGitHubToken(): HealthCheck {
   try {
-    const token = await getGitHubTokenSafe();
+    const token = getGitHubTokenSafe();
     if (token) {
       // Validate token format
       // Valid prefixes: ghp_ (PAT classic), github_pat_ (fine-grained PAT), gho_ (OAuth from gh CLI)
@@ -271,7 +271,7 @@ async function checkGitHubToken(): Promise<HealthCheck> {
  */
 async function checkTokenPermissions(): Promise<HealthCheck> {
   try {
-    const token = await getGitHubTokenSafe();
+    const token = getGitHubTokenSafe();
     if (!token) {
       return {
         name: 'Token Permissions',
@@ -334,7 +334,7 @@ async function checkTokenPermissions(): Promise<HealthCheck> {
  */
 async function checkNetworkConnectivity(): Promise<HealthCheck> {
   try {
-    const token = await getGitHubTokenSafe();
+    const token = getGitHubTokenSafe();
     const octokit = new Octokit({ auth: token || undefined });
 
     // Try to fetch rate limit (lightweight request)
@@ -360,7 +360,7 @@ async function checkNetworkConnectivity(): Promise<HealthCheck> {
 /**
  * Check repository configuration
  */
-async function checkRepositoryConfig(): Promise<HealthCheck | null> {
+function checkRepositoryConfig(): HealthCheck | null {
   // Check if we're in a git repository
   const gitDirResult = execCommandSafe('git rev-parse --git-dir', { silent: true });
 
@@ -392,7 +392,7 @@ async function checkRepositoryConfig(): Promise<HealthCheck | null> {
 /**
  * Check .miyabi.yml configuration
  */
-async function checkMiyabiConfig(): Promise<HealthCheck | null> {
+function checkMiyabiConfig(): HealthCheck | null {
   const configPath = join(process.cwd(), '.miyabi.yml');
 
   if (!existsSync(configPath)) {

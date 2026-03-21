@@ -1,6 +1,7 @@
 {
   "name": "@miyabi/context-engineering",
   "version": "0.1.0",
+  "private": true,
   "description": "TypeScript SDK for Miyabi Context Engineering API",
   "type": "module",
   "main": "./dist/index.js",

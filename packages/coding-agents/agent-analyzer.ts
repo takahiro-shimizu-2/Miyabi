@@ -39,20 +39,20 @@ export class AgentAnalyzer {
   /**
    * Analyze task and determine agent requirements
    */
-  async analyzeTask(
+  analyzeTask(
     task: Task,
     availableTemplates: AgentTemplate[]
-  ): Promise<AgentAnalysisResult> {
+  ): AgentAnalysisResult {
     logger.info(`Analyzing task ${task.id} (${task.title})`);
 
     // Step 1: Analyze task complexity
-    const complexity = await this.analyzeComplexity(task);
+    const complexity = this.analyzeComplexity(task);
 
     // Step 2: Determine agent requirements
-    const requirements = await this.determineRequirements(task, complexity);
+    const requirements = this.determineRequirements(task, complexity);
 
     // Step 3: Analyze capability gaps
-    const capabilityAnalysis = await this.analyzeCapabilities(
+    const capabilityAnalysis = this.analyzeCapabilities(
       requirements,
       availableTemplates
     );
@@ -81,7 +81,7 @@ export class AgentAnalyzer {
   /**
    * Analyze task complexity from higher-level concepts
    */
-  private async analyzeComplexity(task: Task): Promise<TaskComplexityAnalysis> {
+  private analyzeComplexity(task: Task): TaskComplexityAnalysis {
     const title = task.title.toLowerCase();
     const description = task.description.toLowerCase();
     const content = `${title} ${description}`;
@@ -232,10 +232,10 @@ export class AgentAnalyzer {
   /**
    * Determine agent requirements based on task and complexity
    */
-  private async determineRequirements(
+  private determineRequirements(
     task: Task,
     complexity: TaskComplexityAnalysis
-  ): Promise<AgentRequirements> {
+  ): AgentRequirements {
     const tools: ToolRequirement[] = [];
     const hooks: HookRequirement[] = [];
     const templates: TemplateRequirement[] = [];
@@ -326,10 +326,10 @@ export class AgentAnalyzer {
   /**
    * Analyze capability gaps
    */
-  private async analyzeCapabilities(
+  private analyzeCapabilities(
     requirements: AgentRequirements,
     availableTemplates: AgentTemplate[]
-  ): Promise<AgentCapabilityAnalysis> {
+  ): AgentCapabilityAnalysis {
     const matchingTemplates: Array<{
       template: AgentTemplate;
       matchScore: number;

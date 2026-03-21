@@ -69,7 +69,7 @@ export class PerformanceTrackingHook implements PreHook, PostHook {
   private startMemory: number = 0;
   private startCpu: NodeJS.CpuUsage = { user: 0, system: 0 };
 
-  async execute(_context: HookContext): Promise<void> {
+  execute(_context: HookContext): void {
     // PreHook: Record start metrics
     this.startMemory = process.memoryUsage().heapUsed;
     this.startCpu = process.cpuUsage();
@@ -126,7 +126,7 @@ export class TaskValidationHook implements PreHook {
     this.requiredFields = requiredFields;
   }
 
-  async execute(context: HookContext): Promise<void> {
+  execute(context: HookContext): void {
     logger.info('Validating task structure...');
 
     const missing: string[] = [];

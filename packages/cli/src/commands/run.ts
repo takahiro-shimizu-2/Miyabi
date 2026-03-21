@@ -147,7 +147,7 @@ function sleep(ms: number): Promise<void> {
 async function selectTaskInteractively(): Promise<{ taskType: TaskType; issue?: number }> {
   console.log(chalk.cyan.bold('\n✨ What would you like to do?\n'));
 
-  const { taskType } = await inquirer.prompt([
+  const { taskType } = await inquirer.prompt<{ taskType: string }>([
     {
       type: 'list',
       name: 'taskType',
@@ -162,7 +162,7 @@ async function selectTaskInteractively(): Promise<{ taskType: TaskType; issue?: 
   let issue: number | undefined;
 
   if (['fix-bug', 'add-feature', 'review-pr'].includes(taskType)) {
-    const { issueNumber } = await inquirer.prompt([
+    const { issueNumber } = await inquirer.prompt<{ issueNumber: string }>([
       {
         type: 'input',
         name: 'issueNumber',

@@ -8,28 +8,26 @@
  * - Logging
  */
 
-import type {
-  AgentType,
-  AgentResult,
-  AgentMetrics,
-  EscalationTarget,
-  EscalationInfo,
-  Severity,
-  Task,
-  AgentConfig,
-  CodexPromptChain,
-  ToolInvocation,
-  IssueState} from './types/index';
 import {
   AgentError,
-  EscalationError
+  EscalationError,
+  type AgentType,
+  type AgentResult,
+  type AgentMetrics,
+  type EscalationTarget,
+  type EscalationInfo,
+  type Severity,
+  type Task,
+  type AgentConfig,
+  type CodexPromptChain,
+  type ToolInvocation,
+  type IssueState,
 } from './types/index';
-import type {
-  AgentMessage,
-  MessageResponse,
-  MessageType} from './types/communication';
 import {
   MessagePriority,
+  type AgentMessage,
+  type MessageResponse,
+  type MessageType,
 } from './types/communication';
 import { logger, type AgentName } from './ui/index';
 import { PerformanceMonitor } from './monitoring/performance-monitor';
@@ -124,7 +122,7 @@ export abstract class BaseAgent {
 
     try {
       // Pre-execution validation
-      await this.validateTask(task);
+      this.validateTask(task);
 
       // Main execution
       const result = await this.execute(task);
@@ -207,7 +205,7 @@ export abstract class BaseAgent {
   /**
    * Validate task before execution
    */
-  protected async validateTask(task: Task): Promise<void> {
+  protected validateTask(task: Task): void {
     if (!task.id) {
       throw new AgentError('Task ID is required', this.agentType);
     }
@@ -262,7 +260,7 @@ export abstract class BaseAgent {
 
     // Create GitHub Issue comment or new Issue
     if (this.config.githubToken) {
-      await this.notifyEscalation(escalationInfo);
+      this.notifyEscalation(escalationInfo);
     }
 
     throw new EscalationError(reason, target, severity, escalationInfo.context);
@@ -286,7 +284,7 @@ export abstract class BaseAgent {
   /**
    * Notify escalation target via GitHub
    */
-  private async notifyEscalation(escalation: EscalationInfo): Promise<void> {
+  private notifyEscalation(escalation: EscalationInfo): void {
     // TODO: Implement GitHub notification
     // - Create Issue comment with @mention
     // - Or create new escalation Issue
@@ -407,13 +405,13 @@ ${JSON.stringify(invocations, null, 2)}
   /**
    * Log tool invocation (with performance tracking)
    */
-  protected async logToolInvocation(
+  protected logToolInvocation(
     command: string,
     status: 'passed' | 'failed',
     notes: string,
     output?: string,
     error?: string
-  ): Promise<void> {
+  ): void {
     const invocation: ToolInvocation = {
       command,
       workdir: process.cwd(),
@@ -458,7 +456,7 @@ ${JSON.stringify(invocations, null, 2)}
     logger.error(`Error in ${this.agentType}: ${error.message}`, error);
 
     // Log error
-    await this.logToolInvocation(
+    this.logToolInvocation(
       'error_handling',
       'failed',
       error.message,
@@ -559,7 +557,7 @@ ${JSON.stringify(invocations, null, 2)}
   protected async ensureDirectory(dirPath: string): Promise<void> {
     try {
       await fs.promises.mkdir(dirPath, { recursive: true });
-    } catch (error) {
+    } catch (_error) {
       // Directory might already exist
     }
   }
@@ -664,7 +662,7 @@ ${JSON.stringify(invocations, null, 2)}
       }
     }
 
-    throw lastError;
+    throw lastError instanceof Error ? lastError : new Error(String(lastError));
   }
 
   /**
@@ -794,7 +792,7 @@ ${JSON.stringify(invocations, null, 2)}
    * This should be called in the constructor or initialize method
    */
   protected registerMessageHandler(): void {
-    globalMessageBus.register(this.agentType, async (message) => this.receiveMessage(message));
+    globalMessageBus.register(this.agentType, (message) => Promise.resolve(this.receiveMessage(message)));
 
     logger.system(`${this.agentType} registered for messaging`);
   }
@@ -807,9 +805,9 @@ ${JSON.stringify(invocations, null, 2)}
    * @param message - Incoming message
    * @returns Promise<MessageResponse>
    */
-  protected async receiveMessage(
+  protected receiveMessage(
     message: AgentMessage
-  ): Promise<MessageResponse> {
+  ): MessageResponse {
     logger.system(
       `${this.agentType} received message from ${message.from}: ${message.type}`
     );

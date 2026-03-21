@@ -63,15 +63,15 @@ export class CodeGenAgent extends BaseAgent {
       const generatedCode = await this.generateCode(codeSpec, context);
 
       // 4. Generate tests
-      const tests = await this.generateTests(generatedCode, codeSpec);
+      const tests = this.generateTests(generatedCode, codeSpec);
       generatedCode.tests = tests;
 
       // 5. Generate documentation
-      const documentation = await this.generateDocumentation(generatedCode, codeSpec);
+      const documentation = this.generateDocumentation(generatedCode, codeSpec);
       generatedCode.documentation = documentation;
 
       // 6. Validate generated code
-      await this.validateCode(generatedCode);
+      this.validateCode(generatedCode);
 
       // 7. Write files (if not dry-run)
       if (!task.metadata?.dryRun) {
@@ -182,7 +182,7 @@ export class CodeGenAgent extends BaseAgent {
       };
       await scanDir(process.cwd());
       return files.slice(0, 50); // Limit to 50 files
-    } catch (error) {
+    } catch (_error) {
       return [];
     }
   }
@@ -212,7 +212,7 @@ export class CodeGenAgent extends BaseAgent {
         if (pkg.dependencies?.['express']) {patterns.push('Express.js backend');}
         if (pkg.dependencies?.['@anthropic-ai/sdk']) {patterns.push('Anthropic AI integration');}
       }
-    } catch (error) {
+    } catch (_error) {
       // Ignore errors
     }
 
@@ -225,8 +225,8 @@ export class CodeGenAgent extends BaseAgent {
   private async getDependencies(): Promise<string[]> {
     try {
       const pkg = JSON.parse(await fs.promises.readFile('package.json', 'utf-8'));
-      return Object.keys({ ...pkg.dependencies, ...pkg.devDependencies });
-    } catch (error) {
+      return Object.keys({ ...(pkg.dependencies as Record<string, unknown>), ...(pkg.devDependencies as Record<string, unknown>) });
+    } catch (_error) {
       return [];
     }
   }
@@ -247,7 +247,7 @@ export class CodeGenAgent extends BaseAgent {
     try {
       const readme = await fs.promises.readFile('README.md', 'utf-8');
       context.push(`# Project Overview\n${  this.safeTruncate(readme, 2000)}`);
-    } catch (error) {
+    } catch (_error) {
       // No README
     }
 
@@ -255,7 +255,7 @@ export class CodeGenAgent extends BaseAgent {
     try {
       const baseAgent = await fs.promises.readFile('agents/base-agent.ts', 'utf-8');
       context.push(`# BaseAgent Pattern\n\`\`\`typescript\n${  this.safeTruncate(baseAgent, 1000)  }\n\`\`\``);
-    } catch (error) {
+    } catch (_error) {
       // No base agent
     }
 
@@ -818,7 +818,7 @@ jobs:
     // Try to get from package.json
     try {
       const pkgPath = path.join(process.cwd(), 'package.json');
-      const pkg = JSON.parse(require('fs').readFileSync(pkgPath, 'utf-8'));
+      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
       if (pkg.name) {return pkg.name;}
     } catch {
       // Ignore
@@ -835,11 +835,11 @@ jobs:
   /**
    * Generate unit tests (stub - requires Claude Code worktree execution)
    */
-  private async generateTests(generatedCode: GeneratedCode, _spec: CodeSpec): Promise<Array<{ path: string; content: string }>> {
+  private generateTests(generatedCode: GeneratedCode, _spec: CodeSpec): Array<{ path: string; content: string }> {
     this.log('🧪 Test generation prepared for worktree execution');
 
     // Log that tests need to be generated in worktree
-    await this.logToolInvocation(
+    this.logToolInvocation(
       'test_generation_stub',
       'passed',
       `Prepared test generation for ${generatedCode.files.length} files`
@@ -855,11 +855,11 @@ jobs:
   /**
    * Generate documentation (stub - requires Claude Code worktree execution)
    */
-  private async generateDocumentation(_generatedCode: GeneratedCode, spec: CodeSpec): Promise<string> {
+  private generateDocumentation(_generatedCode: GeneratedCode, spec: CodeSpec): string {
     this.log('📚 Documentation generation prepared for worktree execution');
 
     // Log that documentation needs to be generated in worktree
-    await this.logToolInvocation(
+    this.logToolInvocation(
       'doc_generation_stub',
       'passed',
       `Prepared documentation generation for: ${spec.feature}`
@@ -875,7 +875,7 @@ jobs:
   /**
    * Validate generated code (syntax check, etc.)
    */
-  private async validateCode(generatedCode: GeneratedCode): Promise<void> {
+  private validateCode(generatedCode: GeneratedCode): void {
     this.log('✅ Validating generated code');
 
     for (const file of generatedCode.files) {

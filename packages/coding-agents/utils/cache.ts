@@ -319,7 +319,7 @@ export class TTLCache<T> {
       return undefined;
     }
 
-    const { value, ...metadata } = entry;
+    const { value: _value, ...metadata } = entry;
     return metadata;
   }
 

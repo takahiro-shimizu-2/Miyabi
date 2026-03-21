@@ -108,7 +108,7 @@ export async function setupLabels(
 /**
  * Load labels from .github/labels.yml template
  */
-async function loadLabelsFromTemplate(): Promise<Label[]> {
+function loadLabelsFromTemplate(): Promise<Label[]> {
   // Get template path (relative to this file)
   // In dist, __dirname points to dist/setup, templates are at project root
   // dist/setup -> dist -> project root -> templates

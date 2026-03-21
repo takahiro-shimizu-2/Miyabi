@@ -168,7 +168,7 @@ export class TaskToolExecutor {
     }
 
     // Cleanup
-    await this.cleanup();
+    this.cleanup();
 
     console.log('\n✅ Parallel execution completed');
     console.log(`   Duration: ${Math.ceil((endTime - startTime) / 1000)}s`);
@@ -203,7 +203,7 @@ export class TaskToolExecutor {
             this.scheduler!.completeGroup(nextGroup.groupId);
           })
           .catch((error) => {
-            this.scheduler!.failGroup(nextGroup.groupId, error.message);
+            this.scheduler!.failGroup(nextGroup.groupId, (error as Error).message);
           });
       }
 
@@ -390,7 +390,7 @@ export class TaskToolExecutor {
   /**
    * Cleanup resources
    */
-  private async cleanup(): Promise<void> {
+  private cleanup(): void {
     console.log('\n🧹 Cleaning up resources...');
 
     if (this.progressInterval) {

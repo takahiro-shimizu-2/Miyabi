@@ -38,7 +38,7 @@ export class WebhookClient {
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-    } catch (error) {
+    } catch (_error) {
       // Silently fail if webhook server is not available
       // This allows Water Spider to work without webhook server
     }
@@ -66,7 +66,7 @@ export class WebhookClient {
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-    } catch (error) {
+    } catch (_error) {
       // Silently fail
     }
   }

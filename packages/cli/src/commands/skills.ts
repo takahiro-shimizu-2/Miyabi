@@ -35,7 +35,7 @@ function runBus(subcommand: string): string {
   }
 }
 
-async function skillsList(options: { json?: boolean }): Promise<void> {
+function skillsList(options: { json?: boolean }): void {
   const skills = getSkillDirs();
 
   if (options.json) {
@@ -56,7 +56,7 @@ async function skillsList(options: { json?: boolean }): Promise<void> {
   console.log("");
 }
 
-async function skillsHealth(options: { json?: boolean }): Promise<void> {
+function skillsHealth(options: { json?: boolean }): void {
   const flagged = runBus("flagged");
 
   if (options.json) {
@@ -90,7 +90,7 @@ async function skillsHealth(options: { json?: boolean }): Promise<void> {
   console.log("");
 }
 
-async function skillsSync(options: { json?: boolean; dry?: boolean }): Promise<void> {
+function skillsSync(options: { json?: boolean; dry?: boolean }): void {
   console.log(chalk.cyan.bold("\n🔄 Miyabi Skills — SYNC\n"));
   console.log(chalk.gray(`  Syncing: ${SYNC_SKILLS.join(", ")}`));
   console.log(chalk.gray(`  Targets: ${SYNC_TARGETS.join(", ")}\n`));
@@ -142,16 +142,16 @@ export function registerSkillsCommand(program: Command): void {
     .command("list")
     .description("List all skills in ~/.claude/skills/")
     .option("--json", "Output in JSON format")
-    .action(async (options) => {
-      await skillsList(options);
+    .action((options: { json?: boolean }) => {
+      skillsList(options);
     });
 
   skills
     .command("health")
     .description("Show flagged skills from Agent Skill Bus")
     .option("--json", "Output in JSON format")
-    .action(async (options) => {
-      await skillsHealth(options);
+    .action((options: { json?: boolean }) => {
+      skillsHealth(options);
     });
 
   skills
@@ -159,12 +159,12 @@ export function registerSkillsCommand(program: Command): void {
     .description("Sync miyabi-master and openclaw-agents to all machines")
     .option("--json", "Output in JSON format")
     .option("--dry", "Dry run (show what would be synced)")
-    .action(async (options) => {
-      await skillsSync(options);
+    .action((options: { json?: boolean; dry?: boolean }) => {
+      skillsSync(options);
     });
 
   // Default: list
-  skills.action(async () => {
-    await skillsList({});
+  skills.action(() => {
+    skillsList({});
   });
 }

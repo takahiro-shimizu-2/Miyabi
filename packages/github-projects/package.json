@@ -1,6 +1,7 @@
 {
   "name": "@agentic-os/github-projects",
   "version": "1.0.0",
+  "private": true,
   "description": "GitHub Projects V2 API SDK for Agentic OS",
   "type": "module",
   "main": "./dist/index.js",

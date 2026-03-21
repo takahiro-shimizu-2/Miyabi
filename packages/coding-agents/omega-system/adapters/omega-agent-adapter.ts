@@ -11,13 +11,10 @@
 import type { Issue, Task, AgentType, DAG } from '../../types';
 import type { IntentSpace, Goal, GoalType, GoalPriority } from '../../types/intent';
 import type { WorldSpace } from '../../types/world';
-import type { OmegaResult , OmegaEngineConfig } from '../omega-engine';
-import { OmegaEngine } from '../omega-engine';
+import { OmegaEngine, type OmegaResult, type OmegaEngineConfig } from '../omega-engine';
 import { issueToIntent } from './issue-to-intent';
-import type { ExecutionContext } from './context-to-world';
-import { contextToWorld } from './context-to-world';
-import type { ExecutionReport } from './deliverable-to-report';
-import { deliverableToReport } from './deliverable-to-report';
+import { contextToWorld, type ExecutionContext } from './context-to-world';
+import { deliverableToReport, type ExecutionReport } from './deliverable-to-report';
 
 // ============================================================================
 // Types

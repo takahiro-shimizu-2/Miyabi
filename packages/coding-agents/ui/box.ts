@@ -133,8 +133,8 @@ export function agentBox(
     borderStyle: 'bold',
     borderColor,
     padding: 1,
-    margin: { top: 1, bottom: 1 },
-  } as any);
+    margin: 1,
+  } as BoxOptions);
 }
 
 /**

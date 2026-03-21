@@ -38,12 +38,12 @@ Miyabi orchestrates 7 specialized coding agents that autonomously analyze, imple
 | Feature | Miyabi | CrewAI | AutoGen | LangGraph |
 |---------|--------|--------|---------|-----------|
 | **Issue → PR automation** | Built-in | Manual setup | Manual setup | Manual setup |
-| **GitHub-native (Issues as task queue)** | 53 labels + 24 workflows | No | No | No |
+| **GitHub-native (Issues as task queue)** | 53 labels + 16 workflows | No | No | No |
 | **MCP tools (172+ bundled)** | Built-in bundle | Via adapter | Via extension | Via adapter |
 | **Agent Skill Bus (110+ skills)** | Built-in | No | No | No |
 | **Code intelligence (GitNexus)** | Built-in | No | No | No |
 | **Quality gate (auto-review + retry)** | Score 80+ or escalate | Manual | Manual | Manual |
-| **Distributed cluster execution** | Up to 6 machines | No | No | No |
+| **Distributed cluster execution** | Up to 5 machines | No | No | No |
 | **Zero-config quick start** | `npx miyabi` | pip install + config | pip install + config | pip install + config |
 | **Language** | TypeScript | Python | Python | Python |
 
@@ -61,13 +61,13 @@ Miyabi is a full-stack agentic framework. These are its core subsystems:
 │                                                                 │
 │  ┌──────────────┐  ┌──────────────┐  ┌───────────────────────┐  │
 │  │ Miyabi CLI   │  │ Agent SDK    │  │ MCP Bundle            │  │
-│  │ 22 commands  │  │ 7 coding +   │  │ 172+ tools for        │  │
+│  │ 25 commands  │  │ 7 coding +   │  │ 172+ tools for        │  │
 │  │ npx miyabi   │  │ 14 business  │  │ Claude Desktop/Code   │  │
 │  └──────────────┘  └──────────────┘  └───────────────────────┘  │
 │                                                                 │
 │  ┌──────────────┐  ┌──────────────┐  ┌───────────────────────┐  │
 │  │ Agent Skill  │  │ GitNexus     │  │ GitHub as OS          │  │
-│  │ Bus          │  │ Code Intel   │  │ 53 labels × 24        │  │
+│  │ Bus          │  │ Code Intel   │  │ 53 labels × 16        │  │
 │  │ 110+ skills  │  │ Impact       │  │ workflows             │  │
 │  └──────────────┘  └──────────────┘  └───────────────────────┘  │
 └─────────────────────────────────────────────────────────────────┘
@@ -109,7 +109,7 @@ npm install -g miyabi-mcp-bundle
 
 | Package | npm | Description |
 |---------|-----|-------------|
-| [miyabi](https://www.npmjs.com/package/miyabi) | [![npm](https://img.shields.io/npm/v/miyabi.svg?style=flat-square)](https://www.npmjs.com/package/miyabi) | CLI - 22-command autonomous development framework |
+| [miyabi](https://www.npmjs.com/package/miyabi) | [![npm](https://img.shields.io/npm/v/miyabi.svg?style=flat-square)](https://www.npmjs.com/package/miyabi) | CLI - 25-command autonomous development framework |
 | [miyabi-mcp-bundle](https://www.npmjs.com/package/miyabi-mcp-bundle) | [![npm](https://img.shields.io/npm/v/miyabi-mcp-bundle.svg?style=flat-square)](https://www.npmjs.com/package/miyabi-mcp-bundle) | MCP Server - 172+ tools for Claude Desktop/Code |
 | @miyabi/agent-sdk | v0.1.0 | Agent SDK - 7 Coding Agents in TypeScript |
 | @agentic-os/core | v0.1.0 | Core - Agent system foundation |
@@ -143,7 +143,7 @@ packages/
 | `miyabi status` | Project status (Issues/PRs/Agents) |
 | `miyabi doctor` | System diagnostics (git/node/npm/GitHub) |
 | `miyabi health` | Quick health check |
-| `miyabi init <name>` | New project (53 labels + 26 Actions) |
+| `miyabi init <name>` | New project (53 labels + 16 workflows) |
 | `miyabi install` | Add Miyabi to existing project |
 | `miyabi setup` | Setup guide (tokens/config) |
 | `miyabi onboard` | First-time onboarding wizard |
@@ -192,9 +192,9 @@ packages/
 | **PRAgent** | PR creation (Conventional Commits) | Execution |
 | **DeploymentAgent** | CI/CD automation | Execution |
 
-### 14 Business Agents
+### 14 Business Agents (Planned)
 
-Marketing, Sales, Content, and Analytics agents for end-to-end business automation.
+Marketing, Sales, Content, and Analytics agents for end-to-end business automation. Currently in design phase.
 
 ### Quality Gate
 
@@ -213,7 +213,7 @@ CodeGenAgent → ReviewAgent (score 80+?) → [Yes] → PRAgent
 | **Issues** | Task queue |
 | **Labels** | State machine (53 labels x 10 categories) |
 | **Projects V2** | Kanban board / data layer |
-| **Actions** | Execution engine (24 workflows) |
+| **Actions** | Execution engine (16 workflows) |
 | **Webhooks** | Event bus |
 
 ```
@@ -243,7 +243,7 @@ Automatic dependency analysis, test coverage mapping, and cross-package impact a
 
 ### Distributed Cluster Execution
 
-Run tasks across up to 6 machines (MacBook + Windows + Mac mini x3) via SSH/Tailscale network dispatch.
+Run tasks across up to 5 machines (MacBook + Windows + Mac mini x3) via SSH/Tailscale network dispatch.
 
 ### X/Discord Auto-Notification
 

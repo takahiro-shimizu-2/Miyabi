@@ -239,6 +239,7 @@ export function validateGitHubToken(token: string): void {
   }
 
   // Check for null bytes and control characters
+  // eslint-disable-next-line no-control-regex
   if (/[\x00-\x1F\x7F]/.test(token)) {
     throw new ValidationError(
       'GitHub token contains invalid control characters',
@@ -464,6 +465,7 @@ export function validateFileContent(content: string): void {
   }
 
   // Check for control characters (except common ones like \n, \r, \t)
+  // eslint-disable-next-line no-control-regex
   const controlCharsPattern = /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/;
   if (controlCharsPattern.test(content)) {
     throw new ValidationError(

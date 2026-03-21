@@ -69,7 +69,7 @@ export async function createProjectV2(
   const project = createResult.createProjectV2.projectV2;
 
   // Step 3: Add custom fields (Agent, Duration, Cost, Quality)
-  await addCustomFields(graphqlWithAuth, project.id);
+  await addCustomFields(graphqlWithAuth, project.id as string);
 
   return project;
 }
@@ -77,7 +77,7 @@ export async function createProjectV2(
 /**
  * Link existing repository to existing Projects V2
  */
-export async function linkToProject(
+export function linkToProject(
   _owner: string,
   _repo: string,
   _token: string

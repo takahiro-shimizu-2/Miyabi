@@ -90,8 +90,8 @@ export class DiscussionsClient {
       this.repositoryId = result.repository.id;
 
       // Store categories in map
-      for (const category of result.repository.discussionCategories.nodes) {
-        this.categories.set(category.name, category);
+      for (const category of result.repository.discussionCategories.nodes as Array<{ name: string; id: string; description: string; emoji: string }>) {
+        this.categories.set(category.name, category as DiscussionCategory);
       }
 
       console.log(`✓ Connected to repository discussions`);

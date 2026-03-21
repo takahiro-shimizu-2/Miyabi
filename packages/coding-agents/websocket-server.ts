@@ -117,7 +117,7 @@ export class AgentWebSocketServer {
     }
   }
 
-  private async handleQuery(command: string, _payload: any): Promise<AgentResponse> {
+  private handleQuery(command: string, _payload: any): AgentResponse {
     switch (command) {
       case 'get-stats':
         return this.getImprovementsStats();
@@ -155,7 +155,7 @@ export class AgentWebSocketServer {
   /**
    * Phase 1-5の改善統計を取得
    */
-  private async getImprovementsStats(): Promise<AgentResponse> {
+  private getImprovementsStats(): AgentResponse {
     const stats = {
       typeSafety: {
         anyTypeCount: 0,
@@ -274,8 +274,8 @@ export class AgentWebSocketServer {
   /**
    * コードをセキュリティ検証
    */
-  private async validateCode(payload: any): Promise<AgentResponse> {
-    const code = payload?.code || '';
+  private validateCode(payload: any): AgentResponse {
+    const code = (payload?.code || '') as string;
 
     if (!code) {
       throw new Error('No code provided for validation');

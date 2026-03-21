@@ -346,9 +346,9 @@ ${qualityReport.recommendations.map(r => `- ${r}`).join('\n')}` : ''}
  * console.log(deliverable.summary.status); // 'ready'
  * ```
  */
-export async function integration(
+export function integration(
   results: ResultSet
-): Promise<Deliverable> {
+): Deliverable {
   const startTime = Date.now();
 
   // Categorize artifacts

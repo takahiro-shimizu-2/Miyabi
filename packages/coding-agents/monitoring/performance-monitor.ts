@@ -177,7 +177,7 @@ export class PerformanceMonitor {
         const content = fs.readFileSync(file, 'utf-8');
         const metrics = JSON.parse(content) as AgentPerformanceMetrics;
         allMetrics.push(metrics);
-      } catch (error) {
+      } catch (_error) {
         // Ignore file read errors
       }
     }

@@ -95,7 +95,7 @@ export class DeploymentAgent extends BaseAgent {
       }
 
       // 8. Notify stakeholders
-      await this.notifyDeployment(deploymentResult, deploymentConfig);
+      this.notifyDeployment(deploymentResult, deploymentConfig);
 
       this.log(`✅ Deployment successful: ${deploymentConfig.environment} - ${deploymentResult.version}`);
 
@@ -183,7 +183,7 @@ export class DeploymentAgent extends BaseAgent {
       if (pkg.version) {
         return pkg.version;
       }
-    } catch (error) {
+    } catch (_error) {
       // Ignore
     }
 
@@ -191,7 +191,7 @@ export class DeploymentAgent extends BaseAgent {
     try {
       const result = await this.executeCommand('git describe --tags --always');
       return result.stdout.trim();
-    } catch (error) {
+    } catch (_error) {
       // Use timestamp
       return `v${Date.now()}`;
     }
@@ -223,7 +223,7 @@ export class DeploymentAgent extends BaseAgent {
       if (result.stdout.trim()) {
         this.log('⚠️  Warning: Working directory has uncommitted changes');
       }
-    } catch (error) {
+    } catch (_error) {
       // Ignore
     }
 
@@ -244,7 +244,7 @@ export class DeploymentAgent extends BaseAgent {
     // 3. Check if Firebase CLI is available
     try {
       await this.executeCommand('firebase --version');
-    } catch (error) {
+    } catch (_error) {
       throw new Error('Firebase CLI not found. Install with: npm install -g firebase-tools');
     }
 
@@ -252,7 +252,7 @@ export class DeploymentAgent extends BaseAgent {
     try {
       await this.executeCommand(`firebase use ${config.projectId}`);
       this.log(`   Firebase project: ${config.projectId}`);
-    } catch (error) {
+    } catch (_error) {
       throw new Error(`Cannot access Firebase project: ${config.projectId}`);
     }
 
@@ -272,7 +272,7 @@ export class DeploymentAgent extends BaseAgent {
     try {
       const result = await this.executeCommand('npm run build', { timeout: 120000 }); // 2 min timeout
 
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'npm_build',
         'passed',
         'Build successful',
@@ -282,7 +282,7 @@ export class DeploymentAgent extends BaseAgent {
       this.log('✅ Build successful');
       return { success: true };
     } catch (error) {
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'npm_build',
         'failed',
         'Build failed',
@@ -306,7 +306,7 @@ export class DeploymentAgent extends BaseAgent {
     try {
       const result = await this.executeCommand('npm test', { timeout: 180000 }); // 3 min timeout
 
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'npm_test',
         'passed',
         'Tests passed',
@@ -316,7 +316,7 @@ export class DeploymentAgent extends BaseAgent {
       this.log('✅ Tests passed');
       return { success: true };
     } catch (error) {
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'npm_test',
         'failed',
         'Tests failed',
@@ -350,7 +350,7 @@ export class DeploymentAgent extends BaseAgent {
 
       const result = await this.executeCommand(command, { timeout: 600000 }); // 10 min timeout
 
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'firebase_deploy',
         'passed',
         `Deployed to ${config.environment}`,
@@ -375,7 +375,7 @@ export class DeploymentAgent extends BaseAgent {
 
       return deploymentResult;
     } catch (error) {
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'firebase_deploy',
         'failed',
         'Deployment failed',
@@ -417,7 +417,7 @@ export class DeploymentAgent extends BaseAgent {
         const statusCode = result.stdout.trim();
 
         if (statusCode === '200') {
-          await this.logToolInvocation(
+          this.logToolInvocation(
             'health_check',
             'passed',
             `Health check passed (${statusCode})`,
@@ -435,7 +435,7 @@ export class DeploymentAgent extends BaseAgent {
     }
 
     // All retries failed
-    await this.logToolInvocation(
+    this.logToolInvocation(
       'health_check',
       'failed',
       'Health check failed after retries',
@@ -484,7 +484,7 @@ export class DeploymentAgent extends BaseAgent {
         { timeout: 600000 }
       );
 
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'rollback',
         'passed',
         `Rolled back to ${previousDeployment.version}`,
@@ -501,7 +501,7 @@ export class DeploymentAgent extends BaseAgent {
         { previousVersion: previousDeployment.version, currentVersion: config.version }
       );
     } catch (error) {
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'rollback',
         'failed',
         'Rollback failed',
@@ -528,7 +528,7 @@ export class DeploymentAgent extends BaseAgent {
   /**
    * Notify stakeholders of deployment
    */
-  private async notifyDeployment(result: DeploymentResult, _config: DeploymentConfig): Promise<void> {
+  private notifyDeployment(result: DeploymentResult, _config: DeploymentConfig): void {
     this.log('📢 Notifying deployment');
 
     const message = `
@@ -547,7 +547,7 @@ export class DeploymentAgent extends BaseAgent {
     // TODO: Integrate with Slack/Discord/Lark for notifications
     // For now, just log
 
-    await this.logToolInvocation(
+    this.logToolInvocation(
       'notify_deployment',
       'passed',
       'Deployment notification sent',

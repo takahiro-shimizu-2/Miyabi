@@ -91,7 +91,7 @@ export class InfiniteLoopOrchestrator {
   /**
    * Start infinite feedback loop for a goal
    */
-  async startLoop(goalId: string): Promise<FeedbackLoop> {
+  startLoop(goalId: string): FeedbackLoop {
     const goal = this.goalManager.getGoal(goalId);
     if (!goal) {
       throw new Error(`Goal not found: ${goalId}`);
@@ -145,7 +145,7 @@ export class InfiniteLoopOrchestrator {
     try {
       // Execute with timeout
       return await Promise.race([
-        this.executeIterationInternal(loopId, sessionId, actualMetrics),
+        Promise.resolve(this.executeIterationInternal(loopId, sessionId, actualMetrics)),
         this.createTimeout(timeout, sessionId),
       ]);
     } catch (error: any) {
@@ -212,11 +212,11 @@ export class InfiniteLoopOrchestrator {
   /**
    * Execute one iteration of the feedback loop (internal implementation)
    */
-  private async executeIterationInternal(
+  private executeIterationInternal(
     loopId: string,
     sessionId: string,
     actualMetrics: ActualMetrics
-  ): Promise<IterationRecord> {
+  ): IterationRecord {
     const loop = this.activeLoops.get(loopId);
     if (!loop) {
       throw new Error(`Loop not found: ${loopId}`);

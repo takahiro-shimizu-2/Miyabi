@@ -40,7 +40,7 @@ export function createTable(options: TableOptions): string {
   } = options;
 
   // Prepare table configuration
-  const tableConfig: any = {
+  const tableConfig: Table.TableConstructorOptions = {
     head: columns.map(col =>
       chalk.hex(headerColor).bold(col.label)
     ),

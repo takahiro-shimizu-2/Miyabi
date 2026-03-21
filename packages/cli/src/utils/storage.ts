@@ -61,7 +61,7 @@ export function loadCodeGenOutput(
   owner: string,
   repo: string,
   issueNumber: number
-): any | null {
+): any {
   const filePath = path.join(getIssueDir(owner, repo, issueNumber), 'codegen-output.json');
 
   if (!fs.existsSync(filePath)) {
@@ -105,7 +105,7 @@ export function loadReviewOutput(
   owner: string,
   repo: string,
   issueNumber: number
-): any | null {
+): any {
   const filePath = path.join(getIssueDir(owner, repo, issueNumber), 'review-output.json');
 
   if (!fs.existsSync(filePath)) {

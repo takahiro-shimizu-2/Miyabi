@@ -127,7 +127,7 @@ export async function onboard(options: OnboardOptions = {}): Promise<void> {
   ]);
 
   if (exploreFeatures !== 'skip') {
-    await showFeatureDetails(exploreFeatures);
+    showFeatureDetails(exploreFeatures as string);
   }
 
   // Step 6: Next steps
@@ -204,7 +204,7 @@ async function runHealthCheck(): Promise<{
       issues: hasErrors ? ['GITHUB_TOKEN not configured'] : [],
       warnings: hasWarnings ? ['Some optional features unavailable'] : [],
     };
-  } catch (error) {
+  } catch (_error) {
     spinner.fail('Health check failed');
     console.log = originalLog;
     return {
@@ -327,7 +327,7 @@ async function createDemoProject(): Promise<void> {
       name: 'projectName',
       message: 'Project name:',
       default: 'miyabi-demo',
-      validate: (input) => {
+      validate: (input: string) => {
         if (!input) {return 'Project name is required';}
         if (!/^[a-zA-Z0-9_-]+$/.test(input)) {
           return 'Only letters, numbers, hyphens, and underscores allowed';
@@ -349,7 +349,7 @@ async function createDemoProject(): Promise<void> {
   console.log(chalk.cyan('\n🚀 Creating demo project...\n'));
 
   try {
-    await init(projectName, { private: isPrivate, skipInstall: false });
+    await init(projectName as string, { private: isPrivate, skipInstall: false });
     console.log(chalk.green(`\n✓ Demo project created: ${projectName}\n`));
   } catch (error) {
     console.log(chalk.red('\n❌ Failed to create demo project\n'));
@@ -377,7 +377,7 @@ function displayFeatures(): void {
 /**
  * Show feature details
  */
-async function showFeatureDetails(feature: string): Promise<void> {
+function showFeatureDetails(feature: string): void {
   console.log('');
 
   switch (feature) {

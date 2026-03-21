@@ -315,7 +315,7 @@ export class PipelineExecutor extends EventEmitter {
    */
   private registerDefaultHandlers(): void {
     // Create-issue handler
-    this.registerHandler('create-issue', async (args, ctx) => {
+    this.registerHandler('create-issue', (args, ctx) => {
       // Simulate command execution
       const issueNumber = args.issue as number || Math.floor(Math.random() * 1000);
       ctx.issueNumber = issueNumber;
@@ -329,7 +329,7 @@ export class PipelineExecutor extends EventEmitter {
     });
 
     // Agent-run handler
-    this.registerHandler('agent-run', async (args, ctx) => {
+    this.registerHandler('agent-run', (args, ctx) => {
       const issueNumber = args.issue as number || ctx.issueNumber;
       if (!issueNumber) {
         return {
@@ -359,7 +359,7 @@ export class PipelineExecutor extends EventEmitter {
     });
 
     // Review handler
-    this.registerHandler('review', async (args, ctx) => {
+    this.registerHandler('review', (args, ctx) => {
       const threshold = args.threshold as number || 80;
       const score = ctx.qualityScore || 75 + Math.floor(Math.random() * 25);
       ctx.qualityScore = score;
@@ -381,7 +381,7 @@ export class PipelineExecutor extends EventEmitter {
     });
 
     // Test handler
-    this.registerHandler('test', async (_args, ctx) => {
+    this.registerHandler('test', (_args, ctx) => {
       const coverage = 70 + Math.floor(Math.random() * 30);
       ctx.coveragePercent = coverage;
       ctx.testsPassed = coverage >= 80;
@@ -401,7 +401,7 @@ export class PipelineExecutor extends EventEmitter {
     });
 
     // Security-scan handler
-    this.registerHandler('security-scan', async (_args, _ctx) => {
+    this.registerHandler('security-scan', (_args, _ctx) => {
       const vulnerabilities = Math.floor(Math.random() * 3);
       const passed = vulnerabilities === 0;
 
@@ -420,7 +420,7 @@ export class PipelineExecutor extends EventEmitter {
     });
 
     // Deploy handler
-    this.registerHandler('deploy', async (args, ctx) => {
+    this.registerHandler('deploy', (args, ctx) => {
       const environment = (args.env as string) || (args._0 as string) || 'staging';
       ctx.environment = environment as 'staging' | 'production';
       ctx.deploymentUrl = `https://${environment}.example.com`;
@@ -438,7 +438,7 @@ export class PipelineExecutor extends EventEmitter {
     });
 
     // Verify handler
-    this.registerHandler('verify', async (_args, ctx) => {
+    this.registerHandler('verify', (_args, ctx) => {
       const passed = Math.random() > 0.1; // 90% success rate
 
       return {
@@ -460,21 +460,21 @@ export class PipelineExecutor extends EventEmitter {
     });
 
     // Generate-docs handler
-    this.registerHandler('generate-docs', async (_args, _ctx) => ({
+    this.registerHandler('generate-docs', (_args, _ctx) => ({
         success: true,
         data: { docsGenerated: true },
         duration: 2000,
       }));
 
     // Miyabi-auto handler
-    this.registerHandler('miyabi-auto', async (_args, _ctx) => ({
+    this.registerHandler('miyabi-auto', (_args, _ctx) => ({
         success: true,
         data: { autoMode: true },
         duration: 1000,
       }));
 
     // Miyabi-todos handler
-    this.registerHandler('miyabi-todos', async (_args, ctx) => {
+    this.registerHandler('miyabi-todos', (_args, ctx) => {
       const todos = Math.floor(Math.random() * 10);
       ctx.issueNumbers = Array.from({ length: todos }, () => Math.floor(Math.random() * 1000));
 

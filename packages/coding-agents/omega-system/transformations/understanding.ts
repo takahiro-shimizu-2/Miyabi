@@ -427,10 +427,10 @@ function determineStrategy(
  * console.log(plan.strategy.approach); // 'parallel'
  * ```
  */
-export async function understanding(
+export function understanding(
   intent: IntentSpace,
   world: WorldSpace
-): Promise<StrategicPlan> {
+): StrategicPlan {
   const startTime = Date.now();
 
   // Analyze intent to extract objectives

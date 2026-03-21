@@ -19,8 +19,8 @@ import { autoLabelIssues } from '../analyze/issues';
 import { deployWorkflows } from '../setup/workflows';
 import { deployClaudeConfig, verifyClaudeConfig } from '../setup/claude-config';
 
-// @ts-ignore - inquirer is an ESM-only module
-import inquirer from 'inquirer';
+// @ts-expect-error - inquirer is an ESM-only module
+import _inquirer from 'inquirer';
 import { linkToProject } from '../setup/projects';
 import { confirmOrDefault } from '../utils/interactive';
 import { getGitHubToken, isGhCliAuthenticated } from '../utils/github-token';
@@ -100,10 +100,10 @@ export async function install(options: InstallOptions = {}) {
   try {
     // Try automatic token retrieval first (gh CLI or env var)
     try {
-      token = await getGitHubToken();
+      token = getGitHubToken();
       const source = isGhCliAuthenticated() ? 'gh CLI' : 'environment variable';
       spinner.succeed(chalk.green(`GitHub authentication complete (via ${source})`));
-    } catch (tokenError) {
+    } catch (_tokenError) {
       // Fall back to OAuth if automatic retrieval fails
       spinner.text = 'No GitHub token found, starting OAuth flow...';
       token = await githubOAuth();
@@ -121,7 +121,7 @@ export async function install(options: InstallOptions = {}) {
   spinner.start('Setting up labels (checking for conflicts)...');
 
   try {
-    const result = await setupLabels(analysis.owner, analysis.repo, token, {
+    const result = await setupLabels(analysis.owner as string, analysis.repo as string, token, {
       merge: true,
     });
     spinner.succeed(
@@ -149,7 +149,7 @@ export async function install(options: InstallOptions = {}) {
     spinner.start(`Analyzing and labeling ${analysis.issueCount} existing Issues...`);
 
     try {
-      const labeled = await autoLabelIssues(analysis.owner, analysis.repo, token);
+      const labeled = await autoLabelIssues(analysis.owner as string, analysis.repo as string, token);
       spinner.succeed(chalk.green(`${labeled} Issues labeled successfully`));
     } catch (error) {
       spinner.fail(chalk.red('自動ラベリングに失敗しました'));
@@ -164,7 +164,7 @@ export async function install(options: InstallOptions = {}) {
   spinner.start('Deploying GitHub Actions workflows...');
 
   try {
-    const workflowCount = await deployWorkflows(analysis.owner, analysis.repo, token, {
+    const workflowCount = await deployWorkflows(analysis.owner as string, analysis.repo as string, token, {
       skipExisting: true,
     });
     spinner.succeed(chalk.green(`${workflowCount} workflows deployed`));
@@ -180,7 +180,7 @@ export async function install(options: InstallOptions = {}) {
   spinner.start('Connecting to GitHub Projects V2...');
 
   try {
-    await linkToProject(analysis.owner, analysis.repo, token);
+    await linkToProject(analysis.owner as string, analysis.repo as string, token);
     spinner.succeed(chalk.green('Projects V2 connected'));
   } catch (error) {
     spinner.fail(chalk.red('Projects V2の接続に失敗しました'));
@@ -199,7 +199,7 @@ export async function install(options: InstallOptions = {}) {
       projectName: analysis.repo,
     });
 
-    const verification = await verifyClaudeConfig(process.cwd());
+    const verification = verifyClaudeConfig(process.cwd());
 
     if (verification.claudeDirExists && verification.claudeMdExists) {
       spinner.succeed(
@@ -212,7 +212,7 @@ export async function install(options: InstallOptions = {}) {
     } else {
       spinner.warn(chalk.yellow('Claude Code configuration incomplete'));
     }
-  } catch (error) {
+  } catch (_error) {
     spinner.warn(chalk.yellow('Claude Code configuration skipped'));
     console.log(chalk.gray('  You can add .claude/ manually later\n'));
   }

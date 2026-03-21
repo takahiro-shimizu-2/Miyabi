@@ -195,6 +195,7 @@ export class TaskGrouper {
    */
   private getCPUCores(): number {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const os = require('os');
       return os.cpus().length;
     } catch {
@@ -207,6 +208,7 @@ export class TaskGrouper {
    */
   private getAvailableMemoryGB(): number {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const os = require('os');
       const freeMemoryBytes = os.freemem();
       return freeMemoryBytes / (1024 * 1024 * 1024);

@@ -82,7 +82,7 @@ export class SecretsScanner implements SecurityScanner {
             }
           }
         }
-      } catch (error) {
+      } catch (_error) {
         // Ignore file read errors (file may not exist or be inaccessible)
       }
     }
@@ -138,7 +138,7 @@ export class VulnerabilityScanner implements SecurityScanner {
             }
           }
         }
-      } catch (error) {
+      } catch (_error) {
         // Ignore file read errors
       }
     }
@@ -167,7 +167,7 @@ export class NpmAuditScanner implements SecurityScanner {
           const audit = JSON.parse(stdout);
 
           if (audit.vulnerabilities) {
-            for (const [pkgName, vuln] of Object.entries(audit.vulnerabilities)) {
+            for (const [pkgName, vuln] of Object.entries(audit.vulnerabilities as Record<string, unknown>)) {
               const v = vuln as any;
               if (v.severity === 'critical' || v.severity === 'high') {
                 issues.push({
@@ -179,11 +179,11 @@ export class NpmAuditScanner implements SecurityScanner {
               }
             }
           }
-        } catch (parseError) {
+        } catch (_parseError) {
           // Ignore JSON parse errors
         }
       }
-    } catch (error) {
+    } catch (_error) {
       // Ignore npm audit execution errors (may fail in non-npm projects)
     }
 

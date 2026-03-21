@@ -1,6 +1,7 @@
 {
   "name": "@agentic-os/doc-generator",
   "version": "1.0.0",
+  "private": true,
   "description": "AI-Powered TypeScript Documentation Generator - Automatic Markdown docs from TypeScript code",
   "type": "module",
   "main": "./dist/index.js",

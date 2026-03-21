@@ -188,7 +188,7 @@ export class MetricsCollector {
       // ESLint exits with code 1 if there are errors, but still outputs JSON
       if (error.stdout) {
         try {
-          const results = JSON.parse(error.stdout);
+          const results = JSON.parse(error.stdout as string);
           const errorCount = results.reduce(
             (sum: number, r: any) => sum + r.errorCount,
             0
@@ -210,7 +210,7 @@ export class MetricsCollector {
               messages: r.messages,
             })),
           };
-        } catch (parseError) {
+        } catch (_parseError) {
           // JSON parse failed
         }
       }
@@ -243,7 +243,7 @@ export class MetricsCollector {
       // No errors if command succeeded
       return { errors: [], totalErrors: 0 };
     } catch (error: any) {
-      const stderr = error.stderr || '';
+      const stderr = (error.stderr as string) || '';
       const errors = this.parseTscOutput(stderr);
 
       return {
@@ -342,27 +342,27 @@ export class MetricsCollector {
         let totalBranches = 0;
         let coveredBranches = 0;
 
-        for (const file of Object.values(coverageData)) {
-          const data = file as any;
-          totalLines += Object.keys(data.statementMap || {}).length;
-          coveredLines += Object.values(data.s || {}).filter(
+        for (const file of Object.values(coverageData as Record<string, unknown>)) {
+          const data = file as Record<string, unknown>;
+          totalLines += Object.keys((data.statementMap as Record<string, unknown>) || {}).length;
+          coveredLines += Object.values((data.s as Record<string, unknown>) || {}).filter(
             (v: unknown) => (v as number) > 0
           ).length;
 
-          totalStatements += Object.keys(data.statementMap || {}).length;
-          coveredStatements += Object.values(data.s || {}).filter(
+          totalStatements += Object.keys((data.statementMap as Record<string, unknown>) || {}).length;
+          coveredStatements += Object.values((data.s as Record<string, unknown>) || {}).filter(
             (v: unknown) => (v as number) > 0
           ).length;
 
-          totalFunctions += Object.keys(data.fnMap || {}).length;
-          coveredFunctions += Object.values(data.f || {}).filter(
+          totalFunctions += Object.keys((data.fnMap as Record<string, unknown>) || {}).length;
+          coveredFunctions += Object.values((data.f as Record<string, unknown>) || {}).filter(
             (v: unknown) => (v as number) > 0
           ).length;
 
-          totalBranches += Object.keys(data.branchMap || {}).length;
-          coveredBranches += Object.values(data.b || {}).reduce(
-            (sum: number, branches: any) =>
-              sum + branches.filter((v: number) => v > 0).length,
+          totalBranches += Object.keys((data.branchMap as Record<string, unknown>) || {}).length;
+          coveredBranches += Object.values((data.b as Record<string, unknown>) || {}).reduce(
+            (sum: number, branches: unknown) =>
+              sum + (branches as number[]).filter((v: number) => v > 0).length,
             0
           );
         }
@@ -419,7 +419,7 @@ export class MetricsCollector {
       });
 
       return Date.now() - startTime;
-    } catch (error) {
+    } catch (_error) {
       // Even with errors, return the time it took
       return Date.now() - startTime;
     }
@@ -440,7 +440,7 @@ export class MetricsCollector {
 
       const match = stdout.trim().match(/^\s*(\d+)/);
       return match ? parseInt(match[1], 10) : 0;
-    } catch (error) {
+    } catch (_error) {
       return 0;
     }
   }
@@ -461,7 +461,7 @@ export class MetricsCollector {
       );
 
       return parseInt(stdout.trim(), 10) || 0;
-    } catch (error) {
+    } catch (_error) {
       return 0;
     }
   }

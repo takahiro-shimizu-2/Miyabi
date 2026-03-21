@@ -66,7 +66,7 @@ function buildTweetText(repoShort: string, release: { tagName: string; name?: st
   return lines.join("\n").trim();
 }
 
-async function releaseList(options: { json?: boolean }): Promise<void> {
+function releaseList(options: { json?: boolean }): void {
   const repos = [
     "ShunsukeHayashi/Miyabi",
     "ShunsukeHayashi/agent-skill-bus",
@@ -100,7 +100,7 @@ async function releaseList(options: { json?: boolean }): Promise<void> {
   console.log("");
 }
 
-async function releaseView(repo: string, options: { json?: boolean }): Promise<void> {
+function releaseView(repo: string, options: { json?: boolean }): void {
   const result = run(`gh release view --repo ${  repo  } --json tagName,name,publishedAt,url`);
   if (options.json) { console.log(result); return; }
   console.log(chalk.cyan.bold(`\n\uD83D\uDCE6 Latest Release \u2014 ${  repo  }\n`));
@@ -196,23 +196,23 @@ export function registerReleaseCommand(program: Command): void {
     .description("\uD83D\uDCE6 Release management \u2014 view, list, announce releases");
 
   release.command("list").description("List latest releases")
-    .action(async (_options: unknown, command: Command) => {
-      const json = command.parent?.parent?.opts().json || false;
-      await releaseList({ json });
+    .action((_options: unknown, command: Command) => {
+      const json = (command.parent?.parent?.opts().json as boolean) || false;
+      releaseList({ json });
     });
 
   release.command("view <repo>").description("View latest release")
-    .action(async (repo: string, _options: unknown, command: Command) => {
-      const json = command.parent?.parent?.opts().json || false;
-      await releaseView(repo, { json });
+    .action((repo: string, _options: unknown, command: Command) => {
+      const json = (command.parent?.parent?.opts().json as boolean) || false;
+      releaseView(repo, { json });
     });
 
   release.command("announce <repo>").description("Announce release on X (dry-run by default)")
     .option("--post", "Actually post to X (default is dry-run)")
     .action(async (repo: string, options: { post?: boolean }, command: Command) => {
-      const json = command.parent?.parent?.opts().json || false;
+      const json = (command.parent?.parent?.opts().json as boolean) || false;
       await releaseAnnounce(repo, { ...options, json });
     });
 
-  release.action(async () => { await releaseList({}); });
+  release.action(() => { releaseList({}); });
 }

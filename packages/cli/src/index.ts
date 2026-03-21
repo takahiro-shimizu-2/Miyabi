@@ -46,13 +46,13 @@ import { isJsonMode, outputError } from './utils/agent-output';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const packageJson = JSON.parse(readFileSync(join(__dirname, '../package.json'), 'utf-8'));
+const packageJson = JSON.parse(readFileSync(join(__dirname, '../package.json'), 'utf-8')) as { version: string };
 
 // Load and apply configuration at startup
 try {
   const userConfig = loadConfig({ silent: true });
   applyConfigToEnvironment(userConfig);
-} catch (error) {
+} catch (_error) {
   // Silently fail if config doesn't exist - it's optional
 }
 
@@ -145,7 +145,7 @@ program
     console.log(chalk.cyan.bold('\n✨ Miyabi\n'));
     console.log(chalk.gray('一つのコマンドで全てが完結\n'));
 
-    const { action } = await inquirer.prompt([
+    const { action } = await inquirer.prompt<{ action: string }>([
       {
         type: 'list',
         name: 'action',
@@ -188,7 +188,7 @@ program
               name: 'projectName',
               message: 'プロジェクト名:',
               default: 'my-project',
-              validate: (input) => {
+              validate: (input: string) => {
                 if (!input) {return 'プロジェクト名を入力してください';}
                 if (!/^[a-zA-Z0-9_-]+$/.test(input)) {
                   return '英数字、ハイフン、アンダースコアのみ使用可能です';
@@ -205,7 +205,7 @@ program
           ]);
 
           console.log(chalk.cyan.bold('\n🚀 セットアップ開始...\n'));
-          await init(projectName, { private: isPrivate, skipInstall: false });
+          await init(projectName as string, { private: isPrivate as boolean, skipInstall: false });
           break;
         }
 
@@ -310,11 +310,11 @@ program
 
           if (dashboardAction === 'refresh') {
             console.log(chalk.cyan.bold('\n🔄 ダッシュボードをリフレッシュ中...\n'));
-            await dashboardCmd.parse(['node', 'miyabi', 'dashboard', 'refresh']);
+            dashboardCmd.parse(['node', 'miyabi', 'dashboard', 'refresh']);
           } else if (dashboardAction === 'status') {
-            await dashboardCmd.parse(['node', 'miyabi', 'dashboard', 'status']);
+            dashboardCmd.parse(['node', 'miyabi', 'dashboard', 'status']);
           } else if (dashboardAction === 'open') {
-            await dashboardCmd.parse(['node', 'miyabi', 'dashboard', 'open']);
+            dashboardCmd.parse(['node', 'miyabi', 'dashboard', 'open']);
           }
           break;
         }
@@ -525,7 +525,7 @@ async function handleErrorAndReport(action: string, error: Error): Promise<void>
     } else {
       console.log(chalk.gray('💡 この問題を自動報告するには GITHUB_TOKEN を設定してください\n'));
     }
-  } catch (reportError) {
+  } catch (_reportError) {
     // Issue報告自体が失敗しても、元のエラー処理は続行
     console.log(chalk.gray('（自動報告をスキップしました）\n'));
   }

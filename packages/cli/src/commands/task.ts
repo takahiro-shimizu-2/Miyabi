@@ -38,8 +38,8 @@ export function registerTaskCommand(program: Command): void {
     .description("List tasks")
     .option("-s, --status <status>", "Filter by status (pending, in_progress, done)")
     .option("-p, --priority <priority>", "Filter by priority (critical, high, medium, low)")
-    .action((opts) => {
-      const args = ["list"];
+    .action((opts: { status?: string; priority?: string }) => {
+      const args: string[] = ["list"];
       if (opts.status) {args.push(opts.status);}
       if (opts.priority) {args.push(opts.priority);}
       runTaskSync(args);
@@ -50,8 +50,8 @@ export function registerTaskCommand(program: Command): void {
     .argument("<title>", "Task title")
     .option("-p, --priority <priority>", "Priority level", "medium")
     .option("-d, --due <date>", "Due date (YYYY-MM-DD)")
-    .action((title, opts) => {
-      const args = ["add", title, `priority:${opts.priority}`];
+    .action((title: string, opts: { priority?: string; due?: string }) => {
+      const args: string[] = ["add", title, `priority:${opts.priority}`];
       if (opts.due) {args.push(`due:${opts.due}`);}
       runTaskSync(args);
     });
@@ -59,7 +59,7 @@ export function registerTaskCommand(program: Command): void {
   task.command("done")
     .description("Mark task as completed")
     .argument("<id>", "Task ID")
-    .action((id) => runTaskSync(["done", id]));
+    .action((id: string) => runTaskSync(["done", id]));
 
   task.command("critical")
     .description("Show critical/overdue tasks")

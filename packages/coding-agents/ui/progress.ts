@@ -6,8 +6,7 @@
  */
 
 import chalk from 'chalk';
-import type { Ora } from 'ora';
-import ora from 'ora';
+import ora, { type Ora } from 'ora';
 import { theme } from './theme';
 
 export interface ProgressBarOptions {

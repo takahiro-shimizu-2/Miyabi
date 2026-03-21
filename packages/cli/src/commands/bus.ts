@@ -87,7 +87,7 @@ export function registerBusCommand(program: Command): void {
     .action(async (opts) => {
       const asb = await loadBus();
       const queue = new asb.PromptRequestQueue(getQueueDir());
-      const tasks = queue.getDispatchable(parseInt(opts.count, 10));
+      const tasks = queue.getDispatchable(parseInt(opts.count as string, 10));
 
       if (opts.json) {
         console.log(JSON.stringify(tasks, null, 2));
@@ -130,7 +130,7 @@ export function registerBusCommand(program: Command): void {
     .action(async (id, opts) => {
       const asb = await loadBus();
       const queue = new asb.PromptRequestQueue(getQueueDir());
-      const pr = queue.startExecution(id);
+      const pr = queue.startExecution(id as string);
       if (opts.json) {
         console.log(JSON.stringify(pr, null, 2));
       } else {
@@ -145,8 +145,8 @@ export function registerBusCommand(program: Command): void {
     .action(async (id, opts) => {
       const asb = await loadBus();
       const queue = new asb.PromptRequestQueue(getQueueDir());
-      queue.complete(id, opts.result);
-      console.log(chalk.green(`✓ Completed: ${id}`));
+      queue.complete(id as string, opts.result as string);
+      console.log(chalk.green(`✓ Completed: ${id as string}`));
     });
 
   bus.command("fail")
@@ -156,8 +156,8 @@ export function registerBusCommand(program: Command): void {
     .action(async (id, opts) => {
       const asb = await loadBus();
       const queue = new asb.PromptRequestQueue(getQueueDir());
-      queue.fail(id, opts.reason);
-      console.log(chalk.red(`✗ Failed: ${id} — ${opts.reason}`));
+      queue.fail(id as string, opts.reason as string);
+      console.log(chalk.red(`✗ Failed: ${id as string} — ${opts.reason as string}`));
     });
 
   bus.command("locks")
@@ -271,7 +271,7 @@ export function registerBusCommand(program: Command): void {
         skill,
         task: opts.task,
         result: opts.result,
-        score: parseFloat(opts.score),
+        score: parseFloat(opts.score as string),
       });
       if (opts.json) {
         console.log(JSON.stringify(run, null, 2));

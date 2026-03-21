@@ -249,7 +249,7 @@ export async function setup(options: SetupOptions = {}) {
       // Will continue to main menu
       break;
 
-    case 'guide':
+    case 'guide': {
       console.log(chalk.cyan('\n📖 使い方ガイド\n'));
       console.log(chalk.white('【基本コマンド】'));
       console.log(chalk.gray('  npx miyabi              # メニューを表示'));
@@ -277,6 +277,7 @@ export async function setup(options: SetupOptions = {}) {
         );
       }
       break;
+    }
 
     case 'exit':
       console.log(chalk.cyan('\n👋 Miyabiへようこそ！\n'));

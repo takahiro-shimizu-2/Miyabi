@@ -153,7 +153,7 @@ export async function verifyToken(token: string): Promise<boolean> {
     const octokit = new Octokit({ auth: token });
     await octokit.users.getAuthenticated();
     return true;
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 }

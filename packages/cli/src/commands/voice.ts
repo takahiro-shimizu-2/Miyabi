@@ -14,7 +14,7 @@ function run(cmd: string): string {
   }
 }
 
-async function voiceAnnounce(message: string, options: { device?: string }): Promise<void> {
+function voiceAnnounce(message: string, options: { device?: string }): void {
   const device = options.device || "office";
   console.log(chalk.cyan.bold("\n\uD83D\uDD0A Voice Announce\n"));
   console.log(chalk.white(`  Message: ${  message}`));
@@ -25,7 +25,7 @@ async function voiceAnnounce(message: string, options: { device?: string }): Pro
   console.log("");
 }
 
-async function voiceStatus(): Promise<void> {
+function voiceStatus(): void {
   console.log(chalk.cyan.bold("\n\uD83C\uDFA4 Voice System Status\n"));
   const vv = run("curl -s http://localhost:50021/version 2>/dev/null");
   console.log(chalk.white(`  VOICEVOX: ${  vv ? chalk.green(vv) : chalk.red("NOT RUNNING")}`));
@@ -39,10 +39,10 @@ export function registerVoiceCommand(program: Command): void {
 
   voice.command("announce <message>").description("Send voice announcement")
     .option("--device <name>", "Target device", "office")
-    .action(async (message, options) => { await voiceAnnounce(message, options); });
+    .action((message: string, options: { device?: string }) => { voiceAnnounce(message, options); });
 
   voice.command("status").description("Show voice system status")
-    .action(async () => { await voiceStatus(); });
+    .action(() => { voiceStatus(); });
 
-  voice.action(async () => { await voiceStatus(); });
+  voice.action(() => { voiceStatus(); });
 }

@@ -406,10 +406,10 @@ function groupTasks(tasks: GeneratedTask[], dag: DAG): TaskGroup[] {
  * console.log(taskSet.summary.totalTasks); // 15
  * ```
  */
-export async function generation(
+export function generation(
   plan: StrategicPlan,
   world: WorldSpace
-): Promise<TaskSet> {
+): TaskSet {
   const startTime = Date.now();
 
   // Generate tasks from each objective

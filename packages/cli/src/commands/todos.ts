@@ -128,7 +128,7 @@ function extractTodosFromFile(filePath: string): TodoItem[] {
         });
       });
     });
-  } catch (error) {
+  } catch (_error) {
     // ファイル読み込みエラーは無視
   }
 
@@ -161,7 +161,7 @@ function scanDirectory(dir: string): TodoItem[] {
         }
       }
     });
-  } catch (error) {
+  } catch (_error) {
     // ディレクトリアクセスエラーは無視
   }
 
@@ -171,10 +171,10 @@ function scanDirectory(dir: string): TodoItem[] {
 /**
  * TODOをIssueに変換
  */
-async function convertToIssue(
+function convertToIssue(
   todo: TodoItem,
   options: TodosAutoOptions
-): Promise<void> {
+): void {
   if (options.dryRun) {
     console.log(chalk.yellow(`[DRY RUN] Issue作成: ${todo.description}`));
     console.log(chalk.gray(`  ファイル: ${todo.file}:${todo.line}`));
@@ -190,9 +190,9 @@ async function convertToIssue(
 /**
  * Todos Auto Mode実行
  */
-export async function runTodosAutoMode(
+export function runTodosAutoMode(
   options: TodosAutoOptions
-): Promise<void> {
+): void {
   const targetPath = options.path || process.cwd();
 
   // JSON出力モード
@@ -296,7 +296,7 @@ export async function runTodosAutoMode(
     console.log(chalk.cyan.bold('\n🔄 GitHub Issueに変換中...\n'));
 
     for (const todo of sortedTodos.slice(0, 10)) {
-      await convertToIssue(todo, options);
+      convertToIssue(todo, options);
     }
 
     if (sortedTodos.length > 10) {
@@ -348,10 +348,10 @@ export function registerTodosCommand(program: Command): void {
     .option('--dry-run', '実行シミュレーション')
     .option('-v, --verbose', '詳細ログ出力')
     .option('--json', 'JSON形式で出力')
-    .action(async (options: TodosAutoOptions, command: Command) => {
+    .action((options: TodosAutoOptions, command: Command) => {
       // Get global --json option from parent command (miyabi --json todos)
       // OR local --json option (miyabi todos --json)
-      const json = options.json || command.parent?.opts().json || false;
-      await runTodosAutoMode({ ...options, json });
+      const json = options.json || (command.parent?.opts().json as boolean) || false;
+      runTodosAutoMode({ ...options, json });
     });
 }

@@ -406,10 +406,10 @@ function calculateOptimization(
  * console.log(allocation.optimization.parallelizationFactor); // 0.75
  * ```
  */
-export async function allocation(
+export function allocation(
   taskSet: TaskSet,
   world: WorldSpace
-): Promise<AgentAllocation> {
+): AgentAllocation {
   const startTime = Date.now();
 
   // Get resource constraints

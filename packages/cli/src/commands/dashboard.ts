@@ -121,8 +121,8 @@ async function refreshDashboard(options: DashboardRefreshOptions): Promise<void>
     await performRefresh(url, target, json, timeout);
 
     // Set up interval
-    setInterval(async () => {
-      await performRefresh(url, target, json, timeout);
+    setInterval(() => {
+      void performRefresh(url, target, json, timeout);
     }, interval * 1000);
 
     return;
@@ -307,7 +307,7 @@ async function dashboardStatus(options: DashboardStatusOptions): Promise<void> {
       console.log(chalk.cyan(`  🤖 Agents: ${agentsData.agents?.length || 0} registered`));
       console.log('');
     }
-  } catch (error: any) {
+  } catch (_error: unknown) {
     if (json) {
       console.log(JSON.stringify({
         success: false,

@@ -44,7 +44,7 @@ export class GitRepository {
     try {
       const { stdout } = await execAsync('git remote get-url origin');
       return stdout.trim();
-    } catch (error) {
+    } catch (_error) {
       throw new Error('Failed to get git remote URL. Make sure you are in a git repository.');
     }
   }
@@ -85,7 +85,7 @@ export class GitRepository {
     try {
       const { stdout } = await execAsync('git rev-parse --abbrev-ref HEAD');
       return stdout.trim();
-    } catch (error) {
+    } catch (_error) {
       throw new Error('Failed to get current branch');
     }
   }
@@ -97,7 +97,7 @@ export class GitRepository {
     try {
       const { stdout } = await execAsync('git status --porcelain');
       return stdout.trim() === '';
-    } catch (error) {
+    } catch (_error) {
       return false;
     }
   }
@@ -109,7 +109,7 @@ export class GitRepository {
     try {
       const { stdout } = await execAsync('git rev-parse --show-toplevel');
       return stdout.trim();
-    } catch (error) {
+    } catch (_error) {
       throw new Error('Failed to get repository root');
     }
   }

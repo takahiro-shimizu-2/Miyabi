@@ -57,7 +57,7 @@ function getHealthInfo(): HealthInfo {
 /**
  * Execute the health command
  */
-export async function health(options: { json?: boolean } = {}): Promise<void> {
+export function health(options: { json?: boolean } = {}): void {
   const info = getHealthInfo();
 
   if (options.json) {
@@ -85,8 +85,8 @@ export function registerHealthCommand(program: Command): void {
     .command('health')
     .description('Quick health check — show CLI version, Node.js, OS, and timestamp')
     .option('--json', 'Output in JSON format')
-    .action(async (options: { json?: boolean }, command: Command) => {
-      const json = options.json || command.parent?.opts().json || false;
-      await health({ json });
+    .action((options: { json?: boolean }, command: Command) => {
+      const json = options.json || (command.parent?.opts().json as boolean) || false;
+      health({ json });
     });
 }

@@ -97,7 +97,7 @@ export async function reportIssueToMiyabi(
     };
   } catch (error) {
     // Issue作成自体が失敗した場合はローカルログに記録
-    await saveLocalFeedback(context);
+    saveLocalFeedback(context);
 
     return {
       created: false,
@@ -239,7 +239,7 @@ async function checkDuplicateIssue(
     }
 
     return null;
-  } catch (error) {
+  } catch (_error) {
     // 検索失敗時はnullを返す（重複チェックをスキップ）
     return null;
   }
@@ -248,7 +248,7 @@ async function checkDuplicateIssue(
 /**
  * Save feedback locally if Issue creation fails
  */
-async function saveLocalFeedback(context: FeedbackContext): Promise<void> {
+function saveLocalFeedback(context: FeedbackContext): void {
   const feedbackDir = path.join(process.cwd(), '.miyabi-feedback');
   const feedbackFile = path.join(
     feedbackDir,
@@ -271,7 +271,7 @@ async function saveLocalFeedback(context: FeedbackContext): Promise<void> {
     console.log(chalk.gray(`\n💾 Feedback saved locally: ${feedbackFile}`));
     console.log(chalk.gray('   You can manually report this to:'));
     console.log(chalk.cyan(`   https://github.com/${MIYABI_OWNER}/${MIYABI_REPO}/issues/new\n`));
-  } catch (error) {
+  } catch (_error) {
     // Even local save failed, silently ignore
   }
 }

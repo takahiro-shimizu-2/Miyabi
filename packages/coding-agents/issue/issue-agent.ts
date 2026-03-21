@@ -49,10 +49,10 @@ export class IssueAgent extends BaseAgent {
     }
 
     // Use singleton GitHub client with connection pooling
-    this.octokit = getGitHubClient(config.githubToken) as Octokit;
+    this.octokit = getGitHubClient(config.githubToken);
 
     // Parse repo from git remote
-    this.initializeRepository();
+    void this.initializeRepository();
 
     // Initialize Ω-System adapter if enabled
     if (config.useOmegaSystem) {
@@ -103,7 +103,7 @@ export class IssueAgent extends BaseAgent {
       const issue = await this.fetchIssue(issueNumber);
 
       // 2. Analyze Issue content
-      const analysis = await this.analyzeIssue(issue);
+      const analysis = this.analyzeIssue(issue);
 
       // 3-5. Apply labels, assign team members, and add comment (parallel for performance)
       await Promise.all([
@@ -147,13 +147,13 @@ export class IssueAgent extends BaseAgent {
       // Use LRU cache to avoid repeated API calls for same issue
       const cacheKey = `issue:${this.owner}/${this.repo}/${issueNumber}`;
 
-      const response = await withGitHubCache(cacheKey, async () => await withRetry(async () => this.octokit.issues.get({
+      const response = await withGitHubCache(cacheKey, async () => withRetry(async () => this.octokit.issues.get({
             owner: this.owner,
             repo: this.repo,
             issue_number: issueNumber,
           })));
 
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'github_api_get_issue',
         'passed',
         `Fetched Issue #${issueNumber}`,
@@ -172,7 +172,7 @@ export class IssueAgent extends BaseAgent {
         url: response.data.html_url,
       };
     } catch (error) {
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'github_api_get_issue',
         'failed',
         `Failed to fetch Issue #${issueNumber}`,
@@ -199,7 +199,7 @@ export class IssueAgent extends BaseAgent {
         });
       });
 
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'github_api_add_labels',
         'passed',
         `Applied labels: ${labels.join(', ')}`,
@@ -219,7 +219,7 @@ export class IssueAgent extends BaseAgent {
         }
       }
     } catch (error) {
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'github_api_add_labels',
         'failed',
         'Failed to apply labels',
@@ -248,14 +248,14 @@ export class IssueAgent extends BaseAgent {
         });
       });
 
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'github_api_add_assignees',
         'passed',
         `Assigned: ${assignees.join(', ')}`,
         assignees.join(', ')
       );
     } catch (error) {
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'github_api_add_assignees',
         'failed',
         'Failed to assign team members',
@@ -285,14 +285,14 @@ export class IssueAgent extends BaseAgent {
         });
       });
 
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'github_api_create_comment',
         'passed',
         'Added analysis comment',
         this.safeTruncate(comment, 200)
       );
     } catch (error) {
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'github_api_create_comment',
         'failed',
         'Failed to add comment',
@@ -310,7 +310,7 @@ export class IssueAgent extends BaseAgent {
   /**
    * Analyze Issue and determine classification
    */
-  private async analyzeIssue(issue: Issue): Promise<IssueAnalysis> {
+  private analyzeIssue(issue: Issue): IssueAnalysis {
     this.log('🧠 Analyzing Issue content');
 
     // Use IssueAnalyzer for consistent analysis
@@ -336,7 +336,7 @@ export class IssueAgent extends BaseAgent {
     analysis.labels = this.buildLabelSet(analysis);
 
     // Determine assignees from CODEOWNERS or responsibility
-    analysis.assignees = await this.determineAssignees(analysis);
+    analysis.assignees = this.determineAssignees(analysis);
 
     return analysis;
   }
@@ -462,7 +462,7 @@ export class IssueAgent extends BaseAgent {
   /**
    * Determine assignees from CODEOWNERS or responsibility
    */
-  private async determineAssignees(analysis: IssueAnalysis): Promise<string[]> {
+  private determineAssignees(analysis: IssueAnalysis): string[] {
     const assignees: string[] = [];
 
     // Map responsibility to GitHub usernames (from config)

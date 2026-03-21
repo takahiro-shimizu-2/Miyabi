@@ -87,7 +87,7 @@ export function loadGlobalConfig(): GlobalConfig | null {
   try {
     const content = readFileSync(GLOBAL_CONFIG_FILE, 'utf-8');
     return JSON.parse(content) as GlobalConfig;
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 }
@@ -115,7 +115,7 @@ export function loadGlobalState(): GlobalState {
   try {
     const content = readFileSync(GLOBAL_STATE_FILE, 'utf-8');
     return JSON.parse(content) as GlobalState;
-  } catch (error) {
+  } catch (_error) {
     return {
       projectsCreated: 0,
       projectsInstalled: 0,

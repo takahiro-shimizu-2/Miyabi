@@ -77,7 +77,7 @@ export class DynamicToolCreator implements IToolCreator {
     );
 
     // Step 1: Create tool
-    const creationResult = await this.toolFactory.createTool(requirement);
+    const creationResult = this.toolFactory.createTool(requirement);
 
     if (!creationResult.success || !creationResult.tool) {
       return {
@@ -163,10 +163,10 @@ export class DynamicToolCreator implements IToolCreator {
   /**
    * Execute function-type tool
    */
-  private async executeFunctionTool(
+  private executeFunctionTool(
     tool: DynamicToolSpec,
     params: any
-  ): Promise<any> {
+  ): any {
     if (typeof tool.implementation !== 'string') {
       throw new Error('Function tool requires string implementation');
     }
@@ -205,10 +205,10 @@ export class DynamicToolCreator implements IToolCreator {
   /**
    * Execute class-type tool
    */
-  private async executeClassTool(
+  private executeClassTool(
     tool: DynamicToolSpec,
     params: any
-  ): Promise<any> {
+  ): any {
     if (typeof tool.implementation !== 'string') {
       throw new Error('Class tool requires string implementation');
     }
@@ -256,7 +256,7 @@ export class DynamicToolCreator implements IToolCreator {
 
     // Build command
     const command = tool.name;
-    const args = Object.entries(params)
+    const args = Object.entries(params as Record<string, unknown>)
       .map(([key, value]) => `--${key}=${value}`)
       .join(' ');
 
@@ -292,7 +292,7 @@ export class DynamicToolCreator implements IToolCreator {
     logger.info(`API request: ${method} ${url}`);
 
     try {
-      const response = await fetch(url, {
+      const response = await fetch(url as string, {
         method,
         headers: {
           'Content-Type': 'application/json',
@@ -316,12 +316,12 @@ export class DynamicToolCreator implements IToolCreator {
   /**
    * Create a simple tool with minimal specification
    */
-  async createSimpleTool(
+  createSimpleTool(
     name: string,
     description: string,
     type: 'command' | 'api' | 'library' | 'service',
     params: Record<string, any> = {}
-  ): Promise<ToolCreationResult> {
+  ): ToolCreationResult {
     const requirement: ToolRequirement = {
       name,
       type,
@@ -337,10 +337,10 @@ export class DynamicToolCreator implements IToolCreator {
   /**
    * Create a tool from natural language description
    */
-  async createToolFromDescription(
+  createToolFromDescription(
     description: string,
     _context: DynamicToolContext
-  ): Promise<ToolCreationResult> {
+  ): ToolCreationResult {
     logger.info('[DynamicToolCreator] Analyzing tool description...');
 
     // Simple NLP-based tool creation (in real implementation, use AI)

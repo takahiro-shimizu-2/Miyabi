@@ -13,18 +13,12 @@ import type { IntentSpace } from '../types/intent';
 import type { WorldSpace } from '../types/world';
 
 // Transform imports
-import type { StrategicPlan} from './transformations/understanding';
-import { understanding, validatePlan } from './transformations/understanding';
-import type { TaskSet} from './transformations/generation';
-import { generation, validateTaskSet } from './transformations/generation';
-import type { AgentAllocation} from './transformations/allocation';
-import { allocation, validateAllocation } from './transformations/allocation';
-import type { ResultSet} from './transformations/execution';
-import { execution, validateResultSet } from './transformations/execution';
-import type { Deliverable} from './transformations/integration';
-import { integration, validateDeliverable } from './transformations/integration';
-import type { Knowledge} from './transformations/learning';
-import { learning, validateKnowledge } from './transformations/learning';
+import { understanding, validatePlan, type StrategicPlan } from './transformations/understanding';
+import { generation, validateTaskSet, type TaskSet } from './transformations/generation';
+import { allocation, validateAllocation, type AgentAllocation } from './transformations/allocation';
+import { execution, validateResultSet, type ResultSet } from './transformations/execution';
+import { integration, validateDeliverable, type Deliverable } from './transformations/integration';
+import { learning, validateKnowledge, type Knowledge } from './transformations/learning';
 
 // ============================================================================
 // Engine Types
@@ -431,7 +425,7 @@ export class OmegaEngine {
       }
     }
 
-    throw lastError;
+    throw lastError instanceof Error ? lastError : new Error(String(lastError));
   }
 
   /**

@@ -50,7 +50,7 @@ export class TaskOrchestrator {
   /**
    * Load tasks from GitHub Issues
    */
-  async loadTasksFromIssues(): Promise<Task[]> {
+  loadTasksFromIssues(): Task[] {
     // TODO: Integrate with GitHub Issues API
     // For now, return empty array
     console.log('[TaskOrchestrator] Loading tasks from GitHub Issues...');
@@ -88,7 +88,7 @@ export class TaskOrchestrator {
   /**
    * Claim a task for a worker
    */
-  async claimTask(workerId: string, taskId: string): Promise<ClaimResult> {
+  claimTask(workerId: string, taskId: string): ClaimResult {
     const task = this.tasks.get(taskId);
 
     if (!task) {
@@ -131,7 +131,7 @@ export class TaskOrchestrator {
   /**
    * Start task execution
    */
-  async startTask(taskId: string): Promise<boolean> {
+  startTask(taskId: string): boolean {
     const task = this.tasks.get(taskId);
 
     if (!task) {
@@ -154,7 +154,7 @@ export class TaskOrchestrator {
   /**
    * Complete a task
    */
-  async completeTask(taskId: string, success: boolean): Promise<void> {
+  completeTask(taskId: string, success: boolean): void {
     const task = this.tasks.get(taskId);
 
     if (!task) {
@@ -178,7 +178,7 @@ export class TaskOrchestrator {
   /**
    * Release a task (unclaim)
    */
-  async releaseTask(taskId: string): Promise<void> {
+  releaseTask(taskId: string): void {
     const task = this.tasks.get(taskId);
 
     if (!task) {

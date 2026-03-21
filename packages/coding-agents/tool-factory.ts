@@ -33,7 +33,7 @@ export class ToolFactory {
   /**
    * Create dynamic tool from requirement
    */
-  async createTool(requirement: ToolRequirement): Promise<ToolCreationResult> {
+  createTool(requirement: ToolRequirement): ToolCreationResult {
     const startTime = Date.now();
 
     logger.info(`Creating dynamic tool: ${requirement.name} (${requirement.type})`);
@@ -100,9 +100,9 @@ export class ToolFactory {
   /**
    * Create dynamic hook from requirement
    */
-  async createHook(
+  createHook(
     requirement: HookRequirement
-  ): Promise<PreHook | PostHook | ErrorHook> {
+  ): PreHook | PostHook | ErrorHook {
     logger.info(`Creating dynamic hook: ${requirement.name} (${requirement.type})`);
 
     switch (requirement.type) {
@@ -287,7 +287,7 @@ export async function ${this.sanitizeName(name)}(params: any): Promise<any> {
       name,
       description,
       priority,
-      async execute(_context: HookContext): Promise<void> {
+      execute(_context: HookContext): void {
         logger.info(`[PreHook: ${name}] Executing...`);
 
         // Dynamic hook logic based on config
@@ -320,7 +320,7 @@ export async function ${this.sanitizeName(name)}(params: any): Promise<any> {
       name,
       description,
       priority,
-      async execute(context: HookContext, result: AgentResult): Promise<void> {
+      execute(context: HookContext, result: AgentResult): void {
         logger.info(`[PostHook: ${name}] Executing...`);
 
         // Post-execution logic
@@ -351,7 +351,7 @@ export async function ${this.sanitizeName(name)}(params: any): Promise<any> {
       name,
       description,
       priority,
-      async execute(_context: HookContext, error: Error): Promise<void> {
+      execute(_context: HookContext, error: Error): void {
         logger.error(`[ErrorHook: ${name}] Handling error...`);
 
         // Error handling logic

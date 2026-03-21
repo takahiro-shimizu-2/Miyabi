@@ -57,7 +57,7 @@ export async function authLogin(): Promise<void> {
     console.log(chalk.gray('     miyabi agent run codegen --issue=123\n'));
     console.log(chalk.white('  3. Check project status:'));
     console.log(chalk.gray('     miyabi status\n'));
-  } catch (error) {
+  } catch (_error) {
     console.log(chalk.yellow('\n⚠️  Could not fetch user info\n'));
   }
 }
@@ -65,7 +65,7 @@ export async function authLogin(): Promise<void> {
 /**
  * Logout command - Delete credentials
  */
-export async function authLogout(): Promise<void> {
+export function authLogout(): void {
   console.log(chalk.cyan.bold('\n🔓 GitHub Logout\n'));
 
   const existing = loadCredentials();
@@ -192,7 +192,7 @@ export async function authStatus(json = false): Promise<void> {
     console.log(chalk.gray(`ID: ${user.id}`));
     console.log(chalk.gray(`Created: ${credentials.created_at}`));
     console.log(chalk.gray(`Profile: ${user.html_url}\n`));
-  } catch (error) {
+  } catch (_error) {
     console.log(chalk.yellow('\n⚠️  Could not fetch user info\n'));
   }
 }
@@ -222,9 +222,9 @@ export function registerAuthCommand(program: Command): void {
   auth
     .command('logout')
     .description('Logout and remove credentials')
-    .action(async () => {
+    .action(() => {
       try {
-        await authLogout();
+        authLogout();
       } catch (error) {
         if (error instanceof Error) {
           console.error(chalk.red(`\nError: ${error.message}\n`));
@@ -241,7 +241,7 @@ export function registerAuthCommand(program: Command): void {
       try {
         // Get global --json option from parent command (miyabi --json auth status)
         // OR local --json option (miyabi auth status --json)
-        const json = options.json || command.parent?.parent?.opts().json || false;
+        const json = options.json || (command.parent?.parent?.opts().json as boolean) || false;
         await authStatus(json);
       } catch (error) {
         if (error instanceof Error) {

@@ -209,7 +209,7 @@ class CoordinatedDashboardExample {
   /**
    * Create agent with shared session ID
    */
-  createAgent(agentType: string, config: AgentConfig): BaseAgent {
+  createAgent(agentType: AgentType, config: AgentConfig): BaseAgent {
     const hookManager = new HookManager();
 
     // All agents share the same session ID for tracking
@@ -225,12 +225,14 @@ class CoordinatedDashboardExample {
     hookManager.registerErrorHook(dashboardHook);
 
     // Create custom agent class dynamically
+    const boundAgentType = agentType;
     class CustomAgent extends BaseAgent {
       constructor() {
-        super(agentType as any, config);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        super(boundAgentType, config);
       }
 
-      async execute(_task: Task): Promise<AgentResult> {
+      execute(_task: Task): AgentResult {
         // Agent-specific implementation
         return {
           status: 'success',
@@ -251,7 +253,7 @@ class CoordinatedDashboardExample {
 
         try {
           await hookManager.executePreHooks(context);
-          const result = await this.execute(task);
+          const result = this.execute(task);
           await hookManager.executePostHooks(context, result);
           return result;
         } catch (error) {

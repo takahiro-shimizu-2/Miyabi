@@ -7,15 +7,14 @@
 
 import { v4 as uuidv4 } from 'uuid';
 import { EventEmitter } from 'events';
-import type {
-  AgentMessage,
-  MessageResponse,
-  MessageType,
-  MessageHandler,
-  MessageBusConfig} from '../types/communication';
 import {
   MessagePriority,
   isAgentMessage,
+  type AgentMessage,
+  type MessageResponse,
+  type MessageType,
+  type MessageHandler,
+  type MessageBusConfig,
 } from '../types/communication';
 import type { AgentType } from '../types/index';
 import { logger } from '../ui/index';

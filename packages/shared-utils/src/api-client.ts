@@ -142,17 +142,17 @@ export function getConnectionPoolStats() {
     http: {
       maxSockets: httpAgent.maxSockets,
       maxFreeSockets: httpAgent.maxFreeSockets,
-      // @ts-ignore - accessing private properties for monitoring
+      // @ts-expect-error - accessing private properties for monitoring
       sockets: Object.keys(httpAgent.sockets || {}).length,
-      // @ts-ignore
+      // @ts-expect-error - accessing private properties for monitoring
       freeSockets: Object.keys(httpAgent.freeSockets || {}).length,
     },
     https: {
       maxSockets: httpsAgent.maxSockets,
       maxFreeSockets: httpsAgent.maxFreeSockets,
-      // @ts-ignore - accessing private properties for monitoring
+      // @ts-expect-error - accessing private properties for monitoring
       sockets: Object.keys(httpsAgent.sockets || {}).length,
-      // @ts-ignore
+      // @ts-expect-error - accessing private properties for monitoring
       freeSockets: Object.keys(httpsAgent.freeSockets || {}).length,
     },
     cache: {

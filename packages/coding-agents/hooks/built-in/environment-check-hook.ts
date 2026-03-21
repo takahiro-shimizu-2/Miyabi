@@ -16,7 +16,7 @@ export class EnvironmentCheckHook implements PreHook {
     this.requiredEnvVars = requiredEnvVars;
   }
 
-  async execute(_context: HookContext): Promise<void> {
+  execute(_context: HookContext): void {
     logger.info(`Checking ${this.requiredEnvVars.length} environment variables...`);
 
     const missing: string[] = [];

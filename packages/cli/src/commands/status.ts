@@ -97,17 +97,19 @@ export async function status(options: StatusOptions = {}) {
         console.log(chalk.gray('\n👀 Watch mode active (refreshing every 10s)...'));
         console.log(chalk.gray('Press Ctrl+C to exit\n'));
 
-        setInterval(async () => {
+        setInterval(() => {
           console.clear();
-          try {
-            const data = await getStatusData(octokit, repo.owner, repo.name);
-            displayStatusHuman(data);
-          } catch (error) {
-            console.log(chalk.red('\n⚠️  ステータスの取得に失敗しました'));
-            if (error instanceof Error) {
-              console.log(chalk.gray(`原因: ${error.message}\n`));
+          void (async () => {
+            try {
+              const data = await getStatusData(octokit, repo.owner, repo.name);
+              displayStatusHuman(data);
+            } catch (error) {
+              console.log(chalk.red('\n⚠️  ステータスの取得に失敗しました'));
+              if (error instanceof Error) {
+                console.log(chalk.gray(`原因: ${error.message}\n`));
+              }
             }
-          }
+          })();
         }, 10000);
       }
     }

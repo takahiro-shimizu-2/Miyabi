@@ -19,9 +19,6 @@ import {
   type ReviewInput,
   CoordinatorAgent,
   type CoordinatorInput,
-} from 'miyabi-agent-sdk';
-
-import {
   PRAgent,
   type PRInput,
 } from 'miyabi-agent-sdk';
@@ -78,7 +75,7 @@ export interface AgentResult {
 /**
  * Agent一覧表示
  */
-export async function listAgents(options?: { json?: boolean }): Promise<void> {
+export function listAgents(options?: { json?: boolean }): void {
   const agents = [
     {
       name: 'coordinator',
@@ -154,7 +151,7 @@ async function getCurrentRepo(): Promise<{ owner: string; name: string } | null>
     if (match) {
       return { owner: match[1], name: match[2] };
     }
-  } catch (error) {
+  } catch (_error) {
     // Git repository not found
     return null;
   }
@@ -488,7 +485,7 @@ export async function runAgent(
 /**
  * Agent状態確認
  */
-export async function agentStatus(agentName?: AgentType): Promise<void> {
+export function agentStatus(agentName?: AgentType): void {
   console.log(chalk.cyan.bold('\n📊 Agent実行状態\n'));
 
   const table = new Table({
@@ -591,8 +588,8 @@ export function registerAgentCommand(program: Command): void {
     .command('list')
     .description('利用可能なAgent一覧')
     .option('--json', 'JSON形式で出力')
-    .action(async (options: { json?: boolean }) => {
-      await listAgents(options);
+    .action((options: { json?: boolean }) => {
+      listAgents(options);
     });
 
   // agent status [agent-name]
@@ -600,8 +597,8 @@ export function registerAgentCommand(program: Command): void {
     .command('status [agent-name]')
     .description('Agent実行状態確認')
     .option('--json', 'JSON形式で出力')
-    .action(async (agentName: string | undefined, _options: { json?: boolean }) => {
+    .action((agentName: string | undefined, _options: { json?: boolean }) => {
       // TODO: Implement JSON output
-      await agentStatus(agentName as AgentType | undefined);
+      agentStatus(agentName as AgentType | undefined);
     });
 }

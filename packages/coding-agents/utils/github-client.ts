@@ -105,7 +105,7 @@ export class GitHubClient {
 
       if (error.status === 403 && error.response?.headers['x-ratelimit-remaining'] === '0') {
         const resetTime = new Date(
-          parseInt(error.response.headers['x-ratelimit-reset']) * 1000
+          parseInt(error.response.headers['x-ratelimit-reset'] as string) * 1000
         );
         throw new Error(
           `GitHub API rate limit exceeded. Resets at ${resetTime.toISOString()}`

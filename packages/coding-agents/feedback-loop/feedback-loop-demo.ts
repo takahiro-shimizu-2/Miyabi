@@ -136,7 +136,7 @@ async function demo() {
 
   console.log('🔄 Step 3: Starting infinite feedback loop...');
 
-  const loop = await loopOrchestrator.startLoop(goal.id);
+  const loop = loopOrchestrator.startLoop(goal.id);
 
   console.log(`✅ Loop started: ${loop.loopId}`);
   console.log(`   Max Iterations: ${loop.maxIterations}`);

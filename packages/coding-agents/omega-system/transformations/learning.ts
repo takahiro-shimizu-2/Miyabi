@@ -625,11 +625,11 @@ function generateRecommendations(
  * console.log(knowledge.recommendations.immediate);
  * ```
  */
-export async function learning(
+export function learning(
   deliverable: Deliverable,
   intent: IntentSpace,
   world: WorldSpace
-): Promise<Knowledge> {
+): Knowledge {
   const startTime = Date.now();
 
   // Extract patterns

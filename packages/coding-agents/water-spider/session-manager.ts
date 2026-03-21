@@ -20,7 +20,7 @@ export class SessionManager {
   /**
    * Discover worktrees and create session entries
    */
-  async discoverWorktrees(): Promise<void> {
+  discoverWorktrees(): void {
     const worktreesDir = '.worktrees';
 
     if (!fs.existsSync(worktreesDir)) {
@@ -53,7 +53,7 @@ export class SessionManager {
   /**
    * Check all sessions and update their status
    */
-  async checkAllSessions(): Promise<SessionStatus[]> {
+  checkAllSessions(): SessionStatus[] {
     const now = Date.now();
     const maxIdleTime = this.config.maxIdleTime || 30000;
 
@@ -95,7 +95,7 @@ export class SessionManager {
   /**
    * Send continue signal to session
    */
-  async sendContinue(sessionId: string): Promise<void> {
+  sendContinue(sessionId: string): void {
     const session = this.sessions.get(sessionId);
     if (!session) {
       throw new Error(`Session ${sessionId} not found`);
@@ -119,7 +119,7 @@ export class SessionManager {
   /**
    * Restart session
    */
-  async restartSession(sessionId: string): Promise<void> {
+  restartSession(sessionId: string): void {
     const session = this.sessions.get(sessionId);
     if (!session) {
       throw new Error(`Session ${sessionId} not found`);
@@ -171,7 +171,7 @@ export class SessionManager {
   /**
    * Cleanup
    */
-  async cleanup(): Promise<void> {
+  cleanup(): void {
     // Optional: Kill all managed tmux sessions
     // for (const sessionId of this.sessions.keys()) {
     //   const tmuxSessionName = `miyabi-${sessionId}`;

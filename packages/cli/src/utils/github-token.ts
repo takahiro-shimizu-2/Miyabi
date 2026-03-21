@@ -17,7 +17,7 @@ import { execCommandSafe } from './cross-platform';
  * @returns GitHub personal access token
  * @throws Error if no valid token is found
  */
-export async function getGitHubToken(): Promise<string> {
+export function getGitHubToken(): string {
   // Priority 1: Try gh CLI authentication
   const ghResult = execCommandSafe('gh auth token', { silent: true });
   if (ghResult.success) {
@@ -51,7 +51,7 @@ export async function getGitHubToken(): Promise<string> {
           }
         }
       }
-    } catch (error) {
+    } catch (_error) {
       // Failed to read .env file, continue to error
     }
   }
@@ -100,7 +100,7 @@ export function getGitHubTokenSync(): string {
           }
         }
       }
-    } catch (error) {
+    } catch (_error) {
       // Failed to read .env file, continue to error
     }
   }

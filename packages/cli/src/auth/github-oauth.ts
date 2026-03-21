@@ -16,7 +16,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Octokit } from '@octokit/rest';
 
-// @ts-ignore - open is an ESM-only module
+// @ts-expect-error - open is an ESM-only module
 import open from 'open';
 
 // GitHub OAuth App credentials
@@ -226,7 +226,7 @@ async function verifyRequiredScopes(token: string): Promise<void> {
       console.log(chalk.yellow(`  ${missingScopes.join(', ')}`));
       console.log(chalk.gray('\nSome features may not work correctly.\n'));
     }
-  } catch (error) {
+  } catch (_error) {
     console.log(chalk.yellow('\n⚠️  Could not verify token scopes\n'));
   }
 }
@@ -275,7 +275,7 @@ function loadTokenFromEnv(): string | null {
  * @deprecated Use credentials.ts instead for OAuth-based authentication
  * This function is kept for backward compatibility with existing code
  */
-export async function saveTokenToEnv(token: string): Promise<void> {
+export function saveTokenToEnv(token: string): void {
   // Validate token format before writing (防御的プログラミング)
   if (!token || typeof token !== 'string' || !token.startsWith('gho_') && !token.startsWith('ghp_')) {
     throw new Error('Invalid GitHub token format');

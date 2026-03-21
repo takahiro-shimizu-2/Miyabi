@@ -34,29 +34,31 @@ export function registerGniCommand(program: Command): void {
     .description("Analyze blast radius of a symbol")
     .argument("<symbol>", "Symbol name to analyze")
     .option("--direction <dir>", "upstream or downstream", "upstream")
-    .action((symbol, opts) =>
-      gniPassthrough("impact", [symbol, ...(opts.direction ? ["--direction", opts.direction] : [])])
-    );
+    .action((_symbol, _opts) => {
+      const symbol = _symbol as string;
+      const opts = _opts as { direction?: string };
+      gniPassthrough("impact", [symbol, ...(opts.direction ? ["--direction", opts.direction] : [])]);
+    });
 
   gni.command("safe-impact")
     .description("Impact analysis with JSON fallback (no segfault)")
     .argument("<symbol>", "Symbol name")
-    .action((symbol) => gniPassthrough("safe-impact", [symbol]));
+    .action((_symbol) => gniPassthrough("safe-impact", [_symbol as string]));
 
   gni.command("query")
     .description("Search code by concept")
     .argument("<search>", "Search query")
-    .action((search) => gniPassthrough("query", [search]));
+    .action((_search) => gniPassthrough("query", [_search as string]));
 
   gni.command("context")
     .description("360-degree view of a symbol")
     .argument("<symbol>", "Symbol name")
-    .action((symbol) => gniPassthrough("context", [symbol]));
+    .action((_symbol) => gniPassthrough("context", [_symbol as string]));
 
   gni.command("cypher")
     .description("Run raw Cypher query")
     .argument("<query>", "Cypher query string")
-    .action((query) => gniPassthrough("cypher", [query]));
+    .action((_query) => gniPassthrough("cypher", [_query as string]));
 
   gni.command("hotspots")
     .description("Top 20 most-depended-on symbols")
@@ -77,7 +79,7 @@ export function registerGniCommand(program: Command): void {
   gni.command("deps")
     .description("Show dependencies of a symbol")
     .argument("<symbol>", "Symbol name")
-    .action((symbol) => gniPassthrough("deps", [symbol]));
+    .action((_symbol) => gniPassthrough("deps", [_symbol as string]));
 
   gni.command("reindex")
     .description("Reindex the repository")

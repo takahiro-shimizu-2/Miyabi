@@ -59,7 +59,7 @@ async function executeOmega(options: OmegaOptions): Promise<OmegaResult> {
     // Check if OmegaAgentAdapter is exported
     if (!codingAgents.OmegaAgentAdapter) {
       // Not yet exported - use simulation mode
-      return simulateOmegaExecution(options);
+      return await simulateOmegaExecution(options);
     }
 
     const OmegaAgentAdapter = codingAgents.OmegaAgentAdapter;

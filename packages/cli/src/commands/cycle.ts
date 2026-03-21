@@ -62,7 +62,7 @@ function safeParseJson(raw: string, fallback: Record<string, unknown> = {}): any
 // Subcommands
 // ============================================================================
 
-async function cycleCheck(options: { json?: boolean }): Promise<void> {
+function cycleCheck(options: { json?: boolean }): void {
   const stats = runBus("stats");
   const flagged = runBus("flagged");
 
@@ -86,7 +86,7 @@ async function cycleCheck(options: { json?: boolean }): Promise<void> {
   }
 }
 
-async function cycleDispatch(options: { json?: boolean }): Promise<void> {
+function cycleDispatch(options: { json?: boolean }): void {
   const dispatched = runBus("dispatch");
   if (options.json) {
     console.log(JSON.stringify({ phase: "dispatch", ...safeParseJson(dispatched) }, null, 2));
@@ -103,7 +103,7 @@ async function cycleDispatch(options: { json?: boolean }): Promise<void> {
   }
 }
 
-async function cycleHealth(options: { json?: boolean }): Promise<void> {
+function cycleHealth(options: { json?: boolean }): void {
   const health = runBus("health");
   if (options.json) {
     console.log(JSON.stringify({ phase: "health", ...safeParseJson(health) }, null, 2));
@@ -111,13 +111,13 @@ async function cycleHealth(options: { json?: boolean }): Promise<void> {
   }
   console.log(chalk.cyan.bold("\n  💚 HEALTH\n"));
   const h = safeParseJson(health);
-  const skills = Object.entries(h.skills || {});
-  const ok = skills.filter(([, v]: any) => !v.flagged).length;
-  const flaggedCount = skills.filter(([, v]: any) => v.flagged).length;
+  const skills = Object.entries((h.skills || {}) as Record<string, unknown>);
+  const ok = skills.filter(([, v]) => !(v as Record<string, unknown>).flagged).length;
+  const flaggedCount = skills.filter(([, v]) => (v as Record<string, unknown>).flagged).length;
   console.log(chalk.white(`  Skills: ${chalk.green(String(ok))} OK / ${chalk.yellow(String(flaggedCount))} flagged / ${skills.length} total`));
 }
 
-async function cycleFull(options: { json?: boolean }): Promise<void> {
+function cycleFull(options: { json?: boolean }): void {
   if (!options.json) {
     console.log(chalk.cyan.bold("\n🔄 Miyabi Cycle — FULL LOOP"));
   }
@@ -140,22 +140,22 @@ async function cycleFull(options: { json?: boolean }): Promise<void> {
     return;
   }
 
-  await cycleCheck(options);
-  await cycleDispatch(options);
-  await cycleHealth(options);
+  cycleCheck(options);
+  cycleDispatch(options);
+  cycleHealth(options);
 
   runBus("record-run --agent miyabi-cli --skill ops-cycle --task full-cycle --result success --score 0.9");
   console.log(chalk.green("\n  ✓ Cycle recorded to Skill Bus\n"));
 }
 
-async function cycleStatus(options: { json?: boolean }): Promise<void> {
+function cycleStatus(options: { json?: boolean }): void {
   const stats = safeParseJson(runBus("stats"));
   const flagged = safeParseJson(runBus("flagged"));
   const health = safeParseJson(runBus("health"));
 
-  const skills = Object.entries(health.skills || {});
-  const okCount = skills.filter(([, v]: any) => !v.flagged).length;
-  const flaggedCount = skills.filter(([, v]: any) => v.flagged).length;
+  const skills = Object.entries((health.skills || {}) as Record<string, unknown>);
+  const okCount = skills.filter(([, v]) => !(v as Record<string, unknown>).flagged).length;
+  const flaggedCount = skills.filter(([, v]) => (v as Record<string, unknown>).flagged).length;
 
   const statusData = {
     timestamp: new Date().toISOString(),
@@ -252,9 +252,9 @@ async function cycleAuto(options: { interval?: string; maxDuration?: string; jso
           health,
         }));
       } else {
-        await cycleCheck({ json: false });
-        await cycleDispatch({ json: false });
-        await cycleHealth({ json: false });
+        cycleCheck({ json: false });
+        cycleDispatch({ json: false });
+        cycleHealth({ json: false });
         runBus("record-run --agent miyabi-cli --skill ops-cycle --task auto-cycle --result success --score 0.9");
         console.log(chalk.green("  ✓ Recorded"));
       }
@@ -285,7 +285,7 @@ async function cycleAuto(options: { interval?: string; maxDuration?: string; jso
   }
 }
 
-async function cycleEnqueue(args: string[], options: { priority?: string; agent?: string }): Promise<void> {
+function cycleEnqueue(args: string[], options: { priority?: string; agent?: string }): void {
   const task = args.join(" ");
   const priority = options.priority || "medium";
   const agent = options.agent || "ops";
@@ -293,7 +293,7 @@ async function cycleEnqueue(args: string[], options: { priority?: string; agent?
   console.log(chalk.green(`\n✓ Enqueued: [${priority}] ${agent} — ${task}\n`));
 }
 
-async function cycleGni(options: { reindex?: boolean }): Promise<void> {
+function cycleGni(options: { reindex?: boolean }): void {
   console.log(chalk.cyan.bold("\n🔍 Miyabi Cycle — GitNexus Impact Analysis\n"));
   try {
     const gniStatus = execSync("cd ~/dev/HAYASHI_SHUNSUKE && npx gitnexus status", {
@@ -312,7 +312,7 @@ async function cycleGni(options: { reindex?: boolean }): Promise<void> {
       }).trim();
       console.log(chalk.green(`  ${  result}`));
     }
-  } catch (e: any) {
+  } catch (_e: any) {
     console.log(chalk.gray("  GitNexus not available"));
   }
   console.log("");
@@ -337,31 +337,31 @@ export function registerCycleCommand(program: Command): void {
     .command("full")
     .description("Run full feedback loop cycle")
     .option("--json", "Output in JSON format")
-    .action(async (options) => { await cycleFull(mergeJson(options)); });
+    .action((options: Record<string, unknown>) => { cycleFull(mergeJson(options) as { json?: boolean }); });
 
   cycle
     .command("check")
     .description("Check queue stats and flagged skills")
     .option("--json", "Output in JSON format")
-    .action(async (options) => { await cycleCheck(mergeJson(options)); });
+    .action((options: Record<string, unknown>) => { cycleCheck(mergeJson(options) as { json?: boolean }); });
 
   cycle
     .command("dispatch")
     .description("Get next dispatchable tasks")
     .option("--json", "Output in JSON format")
-    .action(async (options) => { await cycleDispatch(mergeJson(options)); });
+    .action((options: Record<string, unknown>) => { cycleDispatch(mergeJson(options) as { json?: boolean }); });
 
   cycle
     .command("health")
     .description("Show skill health summary")
     .option("--json", "Output in JSON format")
-    .action(async (options) => { await cycleHealth(mergeJson(options)); });
+    .action((options: Record<string, unknown>) => { cycleHealth(mergeJson(options) as { json?: boolean }); });
 
   cycle
     .command("status")
     .description("Show compact status overview (queue + skills + flagged)")
     .option("--json", "Output in JSON format")
-    .action(async (options) => { await cycleStatus(mergeJson(options)); });
+    .action((options: Record<string, unknown>) => { cycleStatus(mergeJson(options) as { json?: boolean }); });
 
   cycle
     .command("auto")
@@ -369,21 +369,21 @@ export function registerCycleCommand(program: Command): void {
     .option("--interval <seconds>", "Seconds between cycles", "60")
     .option("--max-duration <minutes>", "Maximum runtime in minutes", "30")
     .option("--json", "Output in JSON format (JSONL per iteration)")
-    .action(async (options) => { await cycleAuto(mergeJson(options)); });
+    .action(async (options: Record<string, unknown>) => { await cycleAuto(mergeJson(options) as { interval?: string; maxDuration?: string; json?: boolean }); });
 
   cycle
     .command("gni")
     .description("GitNexus Impact Analysis status & reindex")
     .option("--reindex", "Force reindex even if up-to-date")
-    .action(async (options) => { await cycleGni(options); });
+    .action((options: Record<string, unknown>) => { cycleGni(options as { reindex?: boolean }); });
 
   cycle
     .command("enqueue <task...>")
     .description("Add a task to the queue")
     .option("--priority <level>", "Priority: critical|high|medium|low", "medium")
     .option("--agent <id>", "Target agent", "ops")
-    .action(async (task, options) => { await cycleEnqueue(task, options); });
+    .action((task: string[], options: Record<string, unknown>) => { cycleEnqueue(task, options as { priority?: string; agent?: string }); });
 
   // Default: run full cycle
-  cycle.action(async (options) => { await cycleFull(mergeJson(options || {})); });
+  cycle.action((options: Record<string, unknown>) => { cycleFull(mergeJson(options || {}) as { json?: boolean }); });
 }

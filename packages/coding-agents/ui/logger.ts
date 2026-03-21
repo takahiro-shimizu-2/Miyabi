@@ -14,8 +14,7 @@
 
 import chalk from 'chalk';
 import boxen from 'boxen';
-import type { Ora } from 'ora';
-import ora from 'ora';
+import ora, { type Ora } from 'ora';
 import gradient from 'gradient-string';
 import figlet from 'figlet';
 import logSymbols from 'log-symbols';
@@ -249,7 +248,7 @@ export class RichLogger {
    */
   banner(text: string, font: string = 'Standard'): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      figlet.text(
+      void figlet.text(
         text,
         {
           font: font as any,

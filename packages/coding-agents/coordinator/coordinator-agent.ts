@@ -95,7 +95,7 @@ export class CoordinatorAgent extends BaseAgent {
 
     try {
       // 1. If task has issue reference, decompose it
-      const issue = await this.fetchIssue(task);
+      const issue = this.fetchIssue(task);
       if (!issue) {
         return {
           status: 'failed',
@@ -119,7 +119,7 @@ export class CoordinatorAgent extends BaseAgent {
       this.recordStateTransition('pending', 'analyzing', 'Starting Issue decomposition');
 
       // 2. Decompose Issue into Tasks
-      const decomposition = await this.decomposeIssue(issue);
+      const decomposition = this.decomposeIssue(issue);
 
       // Update task statistics
       issueLogger.updateTaskStats(decomposition.tasks.length, 0, 0);
@@ -139,7 +139,7 @@ export class CoordinatorAgent extends BaseAgent {
       this.recordStateTransition('analyzing', 'implementing', 'Starting task execution');
 
       // 4. Create execution plan
-      const plan = await this.createExecutionPlan(decomposition.tasks, dag);
+      const plan = this.createExecutionPlan(decomposition.tasks, dag);
 
       // 4.5. Generate Plans.md (Feler's pattern from OpenAI Dev Day)
       await this.generatePlansFile(decomposition, plan);
@@ -188,11 +188,11 @@ export class CoordinatorAgent extends BaseAgent {
   /**
    * Decompose GitHub Issue into executable Tasks
    */
-  async decomposeIssue(issue: Issue): Promise<TaskDecomposition> {
+  decomposeIssue(issue: Issue): TaskDecomposition {
     this.log(`🔍 Decomposing Issue #${issue.number}: ${issue.title}`);
 
     // Extract task information from Issue body
-    const tasks = await this.extractTasks(issue);
+    const tasks = this.extractTasks(issue);
 
     // Build dependency graph using DAGManager
     const dag = DAGManager.buildDAG(tasks);
@@ -226,7 +226,7 @@ export class CoordinatorAgent extends BaseAgent {
    * - 1. Task description
    * - ## Task Title
    */
-  private async extractTasks(issue: Issue): Promise<Task[]> {
+  private extractTasks(issue: Issue): Task[] {
     const tasks: Task[] = [];
     const lines = issue.body.split('\n');
 
@@ -241,7 +241,7 @@ export class CoordinatorAgent extends BaseAgent {
       }
 
       // Match numbered tasks: 1. Task or 1) Task
-      const numberedMatch = line.match(/^\d+[\.)]\s+(.+)$/);
+      const numberedMatch = line.match(/^\d+[.)]\s+(.+)$/);
       if (numberedMatch) {
         tasks.push(this.createTask(issue, numberedMatch[1], taskCounter++));
         continue;
@@ -334,10 +334,10 @@ export class CoordinatorAgent extends BaseAgent {
   /**
    * Create execution plan
    */
-  private async createExecutionPlan(
+  private createExecutionPlan(
     tasks: Task[],
     dag: DAG
-  ): Promise<ExecutionPlan> {
+  ): ExecutionPlan {
     const sessionId = `session-${Date.now()}`;
     const deviceIdentifier = this.config.deviceIdentifier || 'unknown';
     const concurrency = Math.min(tasks.length, 5); // Max 5 parallel
@@ -519,7 +519,7 @@ export class CoordinatorAgent extends BaseAgent {
     // Fetch Issue for worktree creation (if enabled)
     let issue: Issue | null = null;
     if (this.worktreeManager && tasks.length > 0 && tasks[0].metadata?.issueNumber) {
-      issue = await this.fetchIssueForWorktree(tasks[0].metadata.issueNumber);
+      issue = await this.fetchIssueForWorktree(tasks[0].metadata.issueNumber as number);
     }
 
     // Execute real agents in parallel
@@ -541,7 +541,7 @@ export class CoordinatorAgent extends BaseAgent {
             };
 
             // Create worktree with agent assignment
-            const worktreeInfo = await this.worktreeManager.createWorktree(issue, {
+            const worktreeInfo = this.worktreeManager.createWorktree(issue, {
               agentType,
               executionContext,
             });
@@ -549,7 +549,7 @@ export class CoordinatorAgent extends BaseAgent {
             this.log(`   🌳 Created worktree for task ${task.id}: ${worktreeInfo.path}`);
 
             // Write execution context files to worktree
-            await this.worktreeManager.writeExecutionContext(issue.number);
+            this.worktreeManager.writeExecutionContext(issue.number);
             this.log(`   📄 Wrote execution context to worktree`);
 
             // Update agent status to executing
@@ -807,7 +807,7 @@ export class CoordinatorAgent extends BaseAgent {
   /**
    * Fetch Issue from GitHub (or local metadata)
    */
-  private async fetchIssue(task: Task): Promise<Issue | null> {
+  private fetchIssue(task: Task): Issue | null {
     // Check if task has issue metadata
     if (task.metadata?.issueNumber) {
       // TODO: Fetch from GitHub API

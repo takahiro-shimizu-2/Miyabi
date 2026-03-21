@@ -79,7 +79,7 @@ class AsyncFileWriter {
 
       // Flush immediately if queue is full
       if (this.queue.length >= this.MAX_BATCH_SIZE) {
-        this.flush();
+        void this.flush();
       }
     });
   }
@@ -91,7 +91,7 @@ class AsyncFileWriter {
     if (this.flushTimer) {return;}
 
     this.flushTimer = setTimeout(() => {
-      this.flush();
+      void this.flush();
     }, this.FLUSH_INTERVAL_MS);
   }
 

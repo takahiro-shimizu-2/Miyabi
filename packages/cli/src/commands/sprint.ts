@@ -12,7 +12,7 @@
 import ora from 'ora';
 import chalk from 'chalk';
 import { Octokit } from '@octokit/rest';
-// @ts-ignore - inquirer is an ESM-only module
+// @ts-expect-error - inquirer is an ESM-only module
 import inquirer from 'inquirer';
 
 export interface SprintOptions {
@@ -98,7 +98,8 @@ export async function sprintStart(sprintName: string, options: SprintOptions = {
   const tasks: SprintTask[] = [];
   let taskNumber = 1;
 
-  while (true) {
+  let addingTasks = true;
+  while (addingTasks) {
     console.log(chalk.white.bold(`Task #${taskNumber}:`));
 
     const answers = await inquirer.prompt([
@@ -111,7 +112,8 @@ export async function sprintStart(sprintName: string, options: SprintOptions = {
     ]);
 
     if (answers.title.toLowerCase() === 'done') {
-      break;
+      addingTasks = false;
+      continue;
     }
 
     const taskDetails = await inquirer.prompt([
@@ -256,8 +258,8 @@ async function getRepositoryInfo(): Promise<{ owner: string; repo: string; token
  * Initialize project structure with directories and starter files
  */
 async function initializeProjectStructure(projectRoot: string): Promise<void> {
-  const { mkdirSync, writeFileSync } = await import('fs');
-  const { join } = await import('path');
+  const fs = await import('fs');
+  const path = await import('path');
 
   // Define project structure
   const directories = [
@@ -337,12 +339,12 @@ npm install
 
   // Create directories (avoid TOCTOU with try-catch)
   for (const dir of directories) {
-    const dirPath = join(projectRoot, dir);
+    const dirPath = path.join(projectRoot, dir);
     try {
-      mkdirSync(dirPath, { recursive: true });
-    } catch (error: any) {
+      fs.mkdirSync(dirPath, { recursive: true });
+    } catch (error: unknown) {
       // Ignore error if directory already exists
-      if (error.code !== 'EEXIST') {
+      if ((error as NodeJS.ErrnoException).code !== 'EEXIST') {
         throw error;
       }
     }
@@ -350,12 +352,12 @@ npm install
 
   // Create files (avoid TOCTOU with wx flag)
   for (const [filePath, content] of Object.entries(files)) {
-    const fullPath = join(projectRoot, filePath);
+    const fullPath = path.join(projectRoot, filePath);
     try {
-      writeFileSync(fullPath, content, { encoding: 'utf-8', flag: 'wx' });
-    } catch (error: any) {
+      fs.writeFileSync(fullPath, content, { encoding: 'utf-8', flag: 'wx' });
+    } catch (error: unknown) {
       // Skip if file already exists
-      if (error.code !== 'EEXIST') {
+      if ((error as NodeJS.ErrnoException).code !== 'EEXIST') {
         throw error;
       }
     }

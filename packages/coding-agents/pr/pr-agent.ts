@@ -46,9 +46,9 @@ export class PRAgent extends BaseAgent {
     }
 
     // Use singleton GitHub client with connection pooling
-    this.octokit = getGitHubClient(config.githubToken) as Octokit;
+    this.octokit = getGitHubClient(config.githubToken);
 
-    this.initializeRepository();
+    void this.initializeRepository();
 
     // Initialize Ω-System adapter if enabled
     if (config.useOmegaSystem) {
@@ -177,7 +177,7 @@ export class PRAgent extends BaseAgent {
     const labels = task.metadata?.labels as string[] || [];
 
     // Get reviewers (will be determined by CODEOWNERS)
-    const reviewers = await this.determineReviewers(task);
+    const reviewers = this.determineReviewers(task);
 
     return {
       title: '', // Will be generated
@@ -199,7 +199,7 @@ export class PRAgent extends BaseAgent {
       const branch = await GitRepository.getCurrentBranch();
       this.log(`   Current branch: ${branch}`);
       return branch;
-    } catch (error) {
+    } catch (_error) {
       this.log(`⚠️  Failed to get current branch, using default`);
       return `feature/${Date.now()}`;
     }
@@ -208,7 +208,7 @@ export class PRAgent extends BaseAgent {
   /**
    * Determine reviewers based on changed files and CODEOWNERS
    */
-  private async determineReviewers(_task: Task): Promise<string[]> {
+  private determineReviewers(_task: Task): string[] {
     const reviewers: string[] = [];
 
     // Get TechLead from config
@@ -251,7 +251,7 @@ export class PRAgent extends BaseAgent {
     let title = task.title.trim();
 
     // Remove common prefixes if they exist
-    title = title.replace(/^(feat|fix|refactor|docs|test|ci)[\(:].*?[\):]?\s*/i, '');
+    title = title.replace(/^(feat|fix|refactor|docs|test|ci)[(:].*?[):]?\s*/i, '');
 
     // Construct Conventional Commit title
     const conventionalTitle = scope
@@ -286,7 +286,7 @@ export class PRAgent extends BaseAgent {
         .sort(([, a], [, b]) => b - a)[0];
 
       return mostCommon ? mostCommon[0] : '';
-    } catch (error) {
+    } catch (_error) {
       return '';
     }
   }
@@ -316,7 +316,7 @@ export class PRAgent extends BaseAgent {
 
     // 3. Test results section
     sections.push('## テスト結果');
-    const testResults = await this.getTestResults();
+    const testResults = this.getTestResults();
     sections.push(testResults);
     sections.push('');
 
@@ -370,7 +370,7 @@ export class PRAgent extends BaseAgent {
           summary.push(`${file} (${changes} changes)`);
         }
       }
-    } catch (error) {
+    } catch (_error) {
       // Ignore errors
     }
 
@@ -380,7 +380,7 @@ export class PRAgent extends BaseAgent {
   /**
    * Get test results
    */
-  private async getTestResults(): Promise<string> {
+  private getTestResults(): string {
     // Check if we have test results from previous agent runs
     // For now, return template
     return `\`\`\`
@@ -412,7 +412,7 @@ export class PRAgent extends BaseAgent {
           draft: request.draft,
         }));
 
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'github_api_create_pr',
         'passed',
         `Created PR #${response.data.number}`,
@@ -426,7 +426,7 @@ export class PRAgent extends BaseAgent {
         createdAt: response.data.created_at,
       };
     } catch (error) {
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'github_api_create_pr',
         'failed',
         'Failed to create PR',
@@ -453,14 +453,14 @@ export class PRAgent extends BaseAgent {
         });
       });
 
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'github_api_add_labels_pr',
         'passed',
         `Added labels: ${labels.join(', ')}`,
         labels.join(', ')
       );
     } catch (error) {
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'github_api_add_labels_pr',
         'failed',
         'Failed to add labels to PR',
@@ -490,14 +490,14 @@ export class PRAgent extends BaseAgent {
         });
       });
 
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'github_api_request_reviewers',
         'passed',
         `Requested reviewers: ${reviewers.join(', ')}`,
         reviewers.join(', ')
       );
     } catch (error) {
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'github_api_request_reviewers',
         'failed',
         'Failed to request reviewers',

@@ -309,12 +309,12 @@ async function collectDirectoryFiles(
 /**
  * Verify Claude Code configuration
  */
-export async function verifyClaudeConfig(projectPath: string): Promise<{
+export function verifyClaudeConfig(projectPath: string): {
   claudeDirExists: boolean;
   claudeMdExists: boolean;
   agentsCount: number;
   commandsCount: number;
-}> {
+} {
   // Validate project path
   validateProjectPath(projectPath);
 

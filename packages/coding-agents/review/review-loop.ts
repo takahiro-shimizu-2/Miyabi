@@ -118,7 +118,7 @@ export class ReviewLoop {
 
       // If auto-fix enabled, attempt fixes automatically
       if (this.autoFix) {
-        await this.attemptAutoFix(finalReport);
+        this.attemptAutoFix(finalReport);
         this.log('\n🔄 Re-running review after auto-fix...\n');
         continue; // Re-review immediately after auto-fix
       }
@@ -132,7 +132,7 @@ export class ReviewLoop {
       }
 
       if (action === 'fix') {
-        await this.attemptAutoFix(finalReport);
+        this.attemptAutoFix(finalReport);
       }
 
       // If action is 'continue', user will manually fix and we'll re-review
@@ -331,7 +331,7 @@ export class ReviewLoop {
   /**
    * Attempt automatic fixes
    */
-  async attemptAutoFix(report: QualityReport): Promise<AutoFixResult> {
+  attemptAutoFix(report: QualityReport): AutoFixResult {
     this.log('\n🔧 Attempting automatic fixes...\n');
 
     const fixedIssues: QualityIssue[] = [];
@@ -349,7 +349,7 @@ export class ReviewLoop {
           fixedIssues.push(issue);
           this.log(`✅ Fixed: [${issue.type.toUpperCase()}] ${issue.message}`);
           this.log(`   - File: ${issue.file}:${issue.line}\n`);
-        } catch (error) {
+        } catch (_error) {
           manualIssues.push(issue);
           this.log(`⚠️  Could not auto-fix: [${issue.type.toUpperCase()}] ${issue.message}`);
           this.log(`   - File: ${issue.file}:${issue.line}\n`);

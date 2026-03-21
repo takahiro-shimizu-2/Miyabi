@@ -157,7 +157,7 @@ export class ParallelExecutionManager {
     for (const issue of issues) {
       try {
         // Create worktree
-        const worktree = await this.worktreeManager.createWorktree(issue);
+        const worktree = this.worktreeManager.createWorktree(issue);
 
         // Create goal
         const goal = this.goalManager.createGoal({
@@ -193,7 +193,7 @@ export class ParallelExecutionManager {
         );
 
         // Start feedback loop
-        const loop = await orchestrator.startLoop(goal.id);
+        const loop = orchestrator.startLoop(goal.id);
 
         const task: ExecutionTask = {
           issue,
@@ -252,7 +252,7 @@ export class ParallelExecutionManager {
           ]);
 
           if (isSettled) {
-            running.splice(i, 1);
+            void running.splice(i, 1);
           }
         }
       }
@@ -427,9 +427,9 @@ export class ParallelExecutionManager {
   /**
    * Cleanup all worktrees
    */
-  async cleanup(): Promise<void> {
+  cleanup(): void {
     this.log('🧹 Cleaning up worktrees...');
-    await this.worktreeManager.cleanupAll();
+    this.worktreeManager.cleanupAll();
   }
 
   /**

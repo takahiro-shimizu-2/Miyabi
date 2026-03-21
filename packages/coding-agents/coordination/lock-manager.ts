@@ -39,7 +39,7 @@ export class LockManager {
   /**
    * Acquire locks for files
    */
-  async acquireLocks(taskId: string, workerId: string, files: string[]): Promise<LockResult> {
+  acquireLocks(taskId: string, workerId: string, files: string[]): LockResult {
     // Check for existing locks
     const conflicts = this.checkConflicts(files);
 
@@ -68,7 +68,7 @@ export class LockManager {
       this.locks.set(file, lock);
 
       // Write lock file to disk
-      await this.writeLockFile(file, lock);
+      this.writeLockFile(file, lock);
     }
 
     console.log(`[LockManager] Acquired ${files.length} lock(s) for task ${taskId}`);
@@ -79,7 +79,7 @@ export class LockManager {
   /**
    * Release locks for task
    */
-  async releaseLocks(taskId: string): Promise<void> {
+  releaseLocks(taskId: string): void {
     const locksToRelease: string[] = [];
 
     // Find all locks for this task
@@ -92,7 +92,7 @@ export class LockManager {
     // Release each lock
     for (const file of locksToRelease) {
       this.locks.delete(file);
-      await this.deleteLockFile(file);
+      this.deleteLockFile(file);
     }
 
     console.log(`[LockManager] Released ${locksToRelease.length} lock(s) for task ${taskId}`);
@@ -101,7 +101,7 @@ export class LockManager {
   /**
    * Renew locks (heartbeat)
    */
-  async renewLocks(taskId: string): Promise<boolean> {
+  renewLocks(taskId: string): boolean {
     let renewed = false;
     const now = new Date();
     const newExpiresAt = new Date(now.getTime() + this.lockTimeout);
@@ -112,7 +112,7 @@ export class LockManager {
         lock.expiresAt = newExpiresAt;
 
         // Update lock file
-        await this.writeLockFile(file, lock);
+        this.writeLockFile(file, lock);
         renewed = true;
       }
     }
@@ -166,7 +166,7 @@ export class LockManager {
   /**
    * Clean up expired locks
    */
-  async cleanupExpiredLocks(): Promise<number> {
+  cleanupExpiredLocks(): number {
     const expiredFiles: string[] = [];
 
     for (const [file, lock] of this.locks.entries()) {
@@ -178,7 +178,7 @@ export class LockManager {
     // Remove expired locks
     for (const file of expiredFiles) {
       this.locks.delete(file);
-      await this.deleteLockFile(file);
+      this.deleteLockFile(file);
     }
 
     if (expiredFiles.length > 0) {
@@ -207,7 +207,7 @@ export class LockManager {
   /**
    * Write lock file to disk
    */
-  private async writeLockFile(file: string, lock: FileLock): Promise<void> {
+  private writeLockFile(file: string, lock: FileLock): void {
     const lockFileName = this.getLockFileName(file);
     const lockFilePath = path.join(this.lockDir, lockFileName);
 
@@ -226,7 +226,7 @@ export class LockManager {
   /**
    * Delete lock file from disk
    */
-  private async deleteLockFile(file: string): Promise<void> {
+  private deleteLockFile(file: string): void {
     const lockFileName = this.getLockFileName(file);
     const lockFilePath = path.join(this.lockDir, lockFileName);
 
@@ -246,7 +246,7 @@ export class LockManager {
   /**
    * Load locks from disk (on startup)
    */
-  async loadLocksFromDisk(): Promise<number> {
+  loadLocksFromDisk(): number {
     if (!fs.existsSync(this.lockDir)) {
       return 0;
     }
@@ -263,9 +263,9 @@ export class LockManager {
           file: lockData.file,
           taskId: lockData.taskId,
           workerId: lockData.workerId,
-          acquiredAt: new Date(lockData.acquiredAt),
-          expiresAt: new Date(lockData.expiresAt),
-          lastHeartbeat: new Date(lockData.lastHeartbeat),
+          acquiredAt: new Date(lockData.acquiredAt as string),
+          expiresAt: new Date(lockData.expiresAt as string),
+          lastHeartbeat: new Date(lockData.lastHeartbeat as string),
         };
 
         // Only load if not expired

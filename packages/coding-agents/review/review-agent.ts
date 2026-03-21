@@ -102,7 +102,7 @@ export class ReviewAgent extends BaseAgent {
       );
 
       // 5. Determine if escalation is needed
-      const escalationInfo = await this.checkEscalation(qualityReport);
+      const escalationInfo = this.checkEscalation(qualityReport);
 
       const reviewResult: ReviewResult = {
         qualityReport,
@@ -190,7 +190,7 @@ export class ReviewAgent extends BaseAgent {
             files.push(fullPath);
           }
         }
-      } catch (error) {
+      } catch (_error) {
         // Ignore errors
       }
     };
@@ -227,7 +227,7 @@ export class ReviewAgent extends BaseAgent {
         { timeout: 60000 }
       );
 
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'eslint',
         result.code === 0 ? 'passed' : 'failed',
         `ESLint completed with ${result.code === 0 ? 'no' : 'some'} issues`,
@@ -251,13 +251,13 @@ export class ReviewAgent extends BaseAgent {
               });
             }
           }
-        } catch (parseError) {
+        } catch (_parseError) {
           this.log(`⚠️  Failed to parse ESLint output`);
         }
       }
     } catch (error) {
       this.log(`⚠️  ESLint execution failed: ${(error as Error).message}`);
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'eslint',
         'failed',
         'ESLint execution error',
@@ -288,7 +288,7 @@ export class ReviewAgent extends BaseAgent {
         { timeout: 60000 }
       );
 
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'typescript',
         result.code === 0 ? 'passed' : 'failed',
         `TypeScript check ${result.code === 0 ? 'passed' : 'found errors'}`,
@@ -313,7 +313,7 @@ export class ReviewAgent extends BaseAgent {
       }
     } catch (error) {
       this.log(`⚠️  TypeScript check failed: ${(error as Error).message}`);
-      await this.logToolInvocation(
+      this.logToolInvocation(
         'typescript',
         'failed',
         'TypeScript check execution error',
@@ -520,9 +520,9 @@ export class ReviewAgent extends BaseAgent {
   /**
    * Check if escalation is required
    */
-  private async checkEscalation(
+  private checkEscalation(
     qualityReport: QualityReport
-  ): Promise<{ required: boolean; message: string; reason: string }> {
+  ): { required: boolean; message: string; reason: string } {
     // Escalate if critical security issues found
     const criticalSecurityIssues = qualityReport.issues.filter(
       i => i.type === 'security' && i.severity === 'critical'

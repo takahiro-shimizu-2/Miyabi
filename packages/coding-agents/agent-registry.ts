@@ -85,7 +85,7 @@ export class AgentRegistry {
       // Step 1: Analyze task from higher-level concepts
       logger.info('Step 1: Analyzing task requirements...');
       const availableTemplates = this.factory.getAllTemplates();
-      const analysis = await this.analyzer.analyzeTask(task, availableTemplates);
+      const analysis = this.analyzer.analyzeTask(task, availableTemplates);
 
       // Cache analysis
       this.analysisCache.set(task.id, analysis);
@@ -104,7 +104,7 @@ export class AgentRegistry {
       // Create required tools
       for (const toolReq of analysis.requirements.tools) {
         if (toolReq.critical || toolReq.priority > 50) {
-          const result = await this.toolFactory.createTool(toolReq);
+          const result = this.toolFactory.createTool(toolReq);
           if (result.success && result.tool) {
             createdTools.push(result.tool.name);
             logger.success(`  ✓ Created tool: ${result.tool.name}`);
@@ -115,7 +115,7 @@ export class AgentRegistry {
       // Create required hooks
       const hookManager = this.defaultHookManager || new HookManager();
       for (const hookReq of analysis.requirements.hooks) {
-        const hook = await this.toolFactory.createHook(hookReq);
+        const hook = this.toolFactory.createHook(hookReq);
         createdHooks.push(hook.name);
 
         // Register hook based on type

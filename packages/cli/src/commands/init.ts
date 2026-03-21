@@ -22,6 +22,8 @@ import { deployWorkflows } from '../setup/workflows';
 import { cloneAndSetup } from '../setup/local';
 import { createWelcomeIssue } from '../setup/welcome';
 import { deployClaudeConfig, deployClaudeConfigToGitHub, verifyClaudeConfig } from '../setup/claude-config';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export interface InitOptions {
   private?: boolean;
@@ -81,7 +83,7 @@ export async function init(projectName: string, options: InitOptions = {}) {
   spinner.start('Creating labels (53 labels across 10 categories)...');
 
   try {
-    const result = await setupLabels(repo.owner.login, repo.name, token);
+    const result = await setupLabels(repo.owner.login as string, repo.name as string, token);
     spinner.succeed(chalk.green(`Labels created: ${result.created} new, ${result.updated} updated`));
     console.log(chalk.gray(`  ✓ Total: ${result.created + result.updated} labels configured`));
   } catch (error) {
@@ -105,9 +107,9 @@ export async function init(projectName: string, options: InitOptions = {}) {
   spinner.start('Setting up GitHub Projects V2...');
 
   try {
-    const project = await createProjectV2(repo.owner.login, repo.name, token);
+    const project = await createProjectV2(repo.owner.login as string, repo.name as string, token);
     spinner.succeed(chalk.green(`Projects V2 created: ${chalk.cyan(project.url)}`));
-  } catch (error) {
+  } catch (_error) {
     spinner.warn(chalk.yellow('Projects V2 creation skipped (requires read:org scope)'));
     console.log(chalk.gray('  You can create Projects manually later at:'));
     console.log(chalk.gray(`  ${repo.html_url}/projects\n`));
@@ -117,9 +119,9 @@ export async function init(projectName: string, options: InitOptions = {}) {
   spinner.start('Deploying GitHub Actions workflows...');
 
   try {
-    const workflowCount = await deployWorkflows(repo.owner.login, repo.name, token);
+    const workflowCount = await deployWorkflows(repo.owner.login as string, repo.name as string, token);
     spinner.succeed(chalk.green(`${workflowCount} workflows deployed`));
-  } catch (error) {
+  } catch (_error) {
     spinner.warn(chalk.yellow('Workflow deployment skipped'));
     console.log(chalk.gray('  You can add workflows manually later\n'));
   }
@@ -128,7 +130,7 @@ export async function init(projectName: string, options: InitOptions = {}) {
   spinner.start('Deploying Claude Code configuration to repository...');
 
   try {
-    await deployClaudeConfigToGitHub(repo.owner.login, repo.name, projectName, token);
+    await deployClaudeConfigToGitHub(repo.owner.login as string, repo.name as string, projectName, token);
     spinner.succeed(chalk.green('Claude Code configuration committed to repository'));
     console.log(chalk.gray('  ✓ .claude/ directory created'));
     console.log(chalk.gray('  ✓ CLAUDE.md context file created'));
@@ -149,14 +151,14 @@ export async function init(projectName: string, options: InitOptions = {}) {
   let projectPath: string | undefined;
 
   try {
-    await cloneAndSetup(repo.clone_url, projectName, {
+    cloneAndSetup(repo.clone_url as string, projectName, {
       skipInstall: options.skipInstall || false,
-      owner: repo.owner.login,
-      repo: repo.name,
+      owner: repo.owner.login as string,
+      repo: repo.name as string,
     });
     projectPath = `./${projectName}`;
     spinner.succeed(chalk.green('Local setup complete'));
-  } catch (error) {
+  } catch (_error) {
     spinner.warn(chalk.yellow('Local setup skipped'));
     console.log(chalk.gray(`  Clone manually: git clone ${repo.clone_url}\n`));
   }
@@ -171,7 +173,7 @@ export async function init(projectName: string, options: InitOptions = {}) {
         projectName,
       });
 
-      const verification = await verifyClaudeConfig(projectPath);
+      const verification = verifyClaudeConfig(projectPath);
 
       if (verification.claudeDirExists && verification.claudeMdExists) {
         spinner.succeed(
@@ -184,7 +186,7 @@ export async function init(projectName: string, options: InitOptions = {}) {
       } else {
         spinner.warn(chalk.yellow('Claude Code configuration incomplete'));
       }
-    } catch (error) {
+    } catch (_error) {
       spinner.warn(chalk.yellow('Claude Code configuration skipped'));
       console.log(chalk.gray('  You can add .claude/ manually later\n'));
     }
@@ -194,9 +196,9 @@ export async function init(projectName: string, options: InitOptions = {}) {
   spinner.start('Creating welcome Issue...');
 
   try {
-    const issue = await createWelcomeIssue(repo.owner.login, repo.name, token);
+    const issue = await createWelcomeIssue(repo.owner.login as string, repo.name as string, token);
     spinner.succeed(chalk.green(`Welcome Issue created: ${chalk.cyan(issue.html_url)}`));
-  } catch (error) {
+  } catch (_error) {
     spinner.warn(chalk.yellow('Welcome Issue skipped'));
     console.log(chalk.gray('  You can create Issues manually\n'));
   }
@@ -218,7 +220,7 @@ export async function init(projectName: string, options: InitOptions = {}) {
           console.log(chalk.yellow(`  Missing: ${verification.missing.join(', ')}`));
         }
       }
-    } catch (error) {
+    } catch (_error) {
       spinner.warn(chalk.yellow('Verification skipped'));
     }
   }
@@ -241,8 +243,7 @@ function verifyProjectSetup(projectPath: string): {
   directoriesCreated: number;
   missing: string[];
 } {
-  const fs = require('fs');
-  const path = require('path');
+  // fs and path imported at top level
 
   const requiredFiles = [
     'package.json',

@@ -38,6 +38,7 @@ interface EventPayload {
   author?: string;
   branch?: string;
   commit?: string;
+  merged?: boolean;
 }
 
 interface RoutingRule {
@@ -155,7 +156,7 @@ const ROUTING_RULES: RoutingRule[] = [
 
   // Medium: PR merged
   {
-    condition: (p) => p.type === 'pr' && p.action === 'closed' && (p.body?.includes('merged') ?? false),
+    condition: (p) => p.type === 'pr' && p.action === 'closed' && p.merged === true,
     agent: 'DeploymentAgent',
     priority: 'medium',
     action: 'Trigger deployment pipeline',
@@ -364,11 +365,10 @@ async function main() {
     action,
   };
 
-  if (eventType === 'issue' || eventType === 'pr' || eventType === 'comment') {
+  if (eventType === 'issue' || eventType === 'pr') {
     payload.number = parseInt(rest[0], 10);
     payload.title = process.env.ISSUE_TITLE || process.env.PR_TITLE;
-    payload.body = process.env.COMMENT_BODY;
-    payload.author = process.env.COMMENT_AUTHOR || rest[1];
+    payload.merged = eventType === 'pr' ? process.env.PR_MERGED === 'true' : undefined;
 
     // Parse labels from JSON string
     const labelsJson = process.env.ISSUE_LABELS;
@@ -380,9 +380,14 @@ async function main() {
         console.warn('⚠️  Failed to parse ISSUE_LABELS');
       }
     }
+  } else if (eventType === 'comment') {
+    payload.action = process.env.EVENT_TYPE || 'created';
+    payload.number = parseInt(action, 10);
+    payload.body = process.env.COMMENT_BODY;
+    payload.author = process.env.COMMENT_AUTHOR || rest[0];
   } else if (eventType === 'push') {
-    payload.branch = rest[0];
-    payload.commit = rest[1];
+    payload.branch = action;
+    payload.commit = rest[0];
   }
 
   // Route the event

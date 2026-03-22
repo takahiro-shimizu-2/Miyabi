@@ -4,7 +4,7 @@
  * Fetches KPI data from Projects V2 and generates JSON for GitHub Pages dashboard
  */
 
-import { ProjectsV2Client } from '@miyabi/coding-agents/github/projects-v2';
+import { ProjectsV2Client } from '../../coding-agents/github/projects-v2.ts';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -31,14 +31,17 @@ interface DashboardData {
     avgCost: number;
     avgQuality: number;
   }[];
+  meta: {
+    source: 'project-v2' | 'fallback';
+    owner: string;
+    repo: string;
+    projectNumber: number;
+    warning?: string;
+  };
 }
 
 async function main() {
   const token = process.env.GITHUB_TOKEN || process.env.GH_PROJECT_TOKEN;
-  if (!token) {
-    throw new Error('GITHUB_TOKEN or GH_PROJECT_TOKEN environment variable is required');
-  }
-
   const [owner, repo] = (process.env.GITHUB_REPOSITORY || 'ShunsukeHayashi/Autonomous-Operations').split('/');
   const projectNumber = parseInt(process.env.GITHUB_PROJECT_NUMBER || '1');
 
@@ -47,17 +50,35 @@ async function main() {
   console.log(`  Repo: ${repo}`);
   console.log(`  Project: #${projectNumber}`);
 
-  // Initialize Projects V2 client
-  const client = new ProjectsV2Client(token, {
-    owner,
-    repo,
-    projectNumber,
-  });
+  let source: DashboardData['meta']['source'] = 'fallback';
+  let warning: string | undefined;
+  let kpi = {
+    totalIssues: 0,
+    completedIssues: 0,
+    avgDuration: 0,
+    totalCost: 0,
+    avgQualityScore: 0,
+  };
 
-  await client.initialize();
+  if (!token) {
+    warning = 'GITHUB_TOKEN or GH_PROJECT_TOKEN is not configured. Generated fallback dashboard data.';
+    console.warn(`Warning: ${warning}`);
+  } else {
+    try {
+      const client = new ProjectsV2Client(token, {
+        owner,
+        repo,
+        projectNumber,
+      });
 
-  // Generate KPI report
-  const kpi = await client.generateKPIReport();
+      await client.initialize();
+      kpi = await client.generateKPIReport();
+      source = 'project-v2';
+    } catch (error) {
+      warning = formatDashboardWarning(error);
+      console.warn(`Warning: ${warning}`);
+    }
+  }
 
   // Calculate completion rate
   const completionRate = kpi.totalIssues > 0
@@ -75,8 +96,15 @@ async function main() {
       totalCost: Math.round(kpi.totalCost * 100) / 100,
       avgQualityScore: Math.round(kpi.avgQualityScore * 10) / 10,
     },
-    trends: generateMockTrends(), // TODO: Implement real trend data
-    agents: generateMockAgentData(), // TODO: Implement real agent data
+    trends: source === 'project-v2' ? generateMockTrends() : generateFallbackTrends(),
+    agents: source === 'project-v2' ? generateMockAgentData() : [],
+    meta: {
+      source,
+      owner,
+      repo,
+      projectNumber,
+      warning,
+    },
   };
 
   // Ensure docs directory exists
@@ -96,6 +124,10 @@ async function main() {
   console.log(`  Avg Duration: ${dashboardData.summary.avgDuration} min`);
   console.log(`  Total Cost: $${dashboardData.summary.totalCost}`);
   console.log(`  Avg Quality: ${dashboardData.summary.avgQualityScore}/100`);
+  console.log(`  Source: ${dashboardData.meta.source}`);
+  if (dashboardData.meta.warning) {
+    console.log(`  Warning: ${dashboardData.meta.warning}`);
+  }
 }
 
 /**
@@ -115,6 +147,25 @@ function generateMockTrends() {
       completed: Math.floor(Math.random() * 5) + 1,
       inProgress: Math.floor(Math.random() * 3) + 1,
       cost: Math.round((Math.random() * 0.5 + 0.1) * 100) / 100,
+    });
+  }
+
+  return trends;
+}
+
+function generateFallbackTrends() {
+  const trends = [];
+  const today = new Date();
+
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+
+    trends.push({
+      date: date.toISOString().split('T')[0],
+      completed: 0,
+      inProgress: 0,
+      cost: 0,
     });
   }
 
@@ -156,6 +207,24 @@ function generateMockAgentData() {
       avgQuality: 98.5,
     },
   ];
+}
+
+function formatDashboardWarning(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error);
+
+  if (message.includes('not been granted the required scopes')) {
+    return 'GitHub token is missing Projects V2 scopes. Set GH_PROJECT_TOKEN with read:project access.';
+  }
+
+  if (message.includes('Could not resolve to a ProjectV2')) {
+    return 'GitHub Project V2 was not found. Check GITHUB_PROJECT_NUMBER for this repository.';
+  }
+
+  if (message.includes('Bad credentials')) {
+    return 'GitHub token could not authenticate. Generated fallback dashboard data.';
+  }
+
+  return `Failed to read Projects V2 data. Generated fallback dashboard data instead. Details: ${message}`;
 }
 
 main().catch((error) => {

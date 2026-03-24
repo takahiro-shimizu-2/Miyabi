@@ -29,7 +29,7 @@
   "dependencies": {
     "@miyabi/agent-sdk": "file:../miyabi-agent-sdk",
     "@octokit/graphql": "^8.2.1",
-    "@octokit/rest": "^21.1.1"
+    "@octokit/rest": "^22.0.1"
   },
   "devDependencies": {
     "@types/node": "^22.15.0",

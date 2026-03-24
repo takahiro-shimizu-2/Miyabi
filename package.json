@@ -191,7 +191,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
     "@modelcontextprotocol/sdk": "^1.20.0",
-    "@octokit/graphql": "^8.2.1",
+    "@octokit/graphql": "^9.0.3",
     "@octokit/rest": "^21.1.1",
     "agent-skill-bus": "^1.2.0",
     "ansi-escapes": "^7.0.0",

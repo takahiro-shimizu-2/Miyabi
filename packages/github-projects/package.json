@@ -28,7 +28,7 @@
   "license": "MIT",
   "dependencies": {
     "@miyabi/agent-sdk": "file:../miyabi-agent-sdk",
-    "@octokit/graphql": "^8.2.1",
+    "@octokit/graphql": "^9.0.3",
     "@octokit/rest": "^21.1.1"
   },
   "devDependencies": {

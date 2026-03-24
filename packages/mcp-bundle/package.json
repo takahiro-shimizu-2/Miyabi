@@ -84,7 +84,7 @@
   ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",
-    "@octokit/rest": "^21.1.1",
+    "@octokit/rest": "^22.0.1",
     "glob": "^10.5.0",
     "simple-git": "^3.33.0",
     "systeminformation": "^5.31.5",

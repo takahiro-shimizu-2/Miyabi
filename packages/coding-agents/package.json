@@ -151,7 +151,7 @@
     "@miyabi/shared-utils": "*",
     "miyabi-agent-sdk": "^0.1.0-alpha.2",
     "@anthropic-ai/sdk": "^0.71.2",
-    "@octokit/rest": "^21.1.1",
+    "@octokit/rest": "^22.0.1",
     "chalk": "^5.3.0",
     "yaml": "^2.7.0"
   },

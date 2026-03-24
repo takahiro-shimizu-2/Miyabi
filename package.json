@@ -189,7 +189,7 @@
     }
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.71.2",
+    "@anthropic-ai/sdk": "^0.80.0",
     "@modelcontextprotocol/sdk": "^1.20.0",
     "@octokit/graphql": "^8.2.1",
     "@octokit/rest": "^21.1.1",

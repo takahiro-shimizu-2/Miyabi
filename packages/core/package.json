@@ -25,7 +25,7 @@
   "author": "Agentic OS Team",
   "license": "MIT",
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.71.2",
+    "@anthropic-ai/sdk": "^0.80.0",
     "@octokit/rest": "^21.1.1",
     "@octokit/graphql": "^8.2.1",
     "chalk": "^5.3.0",

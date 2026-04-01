@@ -3,6 +3,10 @@ node_modules/
 
 # Build outputs
 dist/
+!packages/cli/dist/
+packages/cli/dist/*
+!packages/cli/dist/index.js
+!packages/cli/dist/index.d.ts
 build/
 *.tsbuildinfo
 

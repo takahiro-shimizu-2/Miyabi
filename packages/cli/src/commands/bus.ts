@@ -5,18 +5,62 @@
 import type { Command } from "commander";
 import chalk from "chalk";
 import { resolve } from "node:path";
-import { existsSync, mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { execSync } from "node:child_process";
 
 /** ASB data directory (queue) */
 function getQueueDir(): string {
   const base = process.env.MIYABI_REPO_DIR || process.cwd();
-  return resolve(base, ".skill-bus", "queue");
+  return resolve(base, "skills", "prompt-request-bus");
 }
 
 /** ASB data directory (monitor) */
 function getMonitorDir(): string {
   const base = process.env.MIYABI_REPO_DIR || process.cwd();
-  return resolve(base, ".skill-bus", "monitor");
+  return resolve(base, "skills", "self-improving-skills");
+}
+
+function ensureBusLayout(base: string): string {
+  const skillsRoot = resolve(base, "skills");
+  const queueDir = resolve(skillsRoot, "prompt-request-bus");
+  const monitorDir = resolve(skillsRoot, "self-improving-skills");
+  const watcherDir = resolve(skillsRoot, "knowledge-watcher");
+
+  try {
+    execSync("npx agent-skill-bus init", {
+      cwd: base,
+      encoding: "utf-8",
+      stdio: "pipe",
+      timeout: 15000,
+    });
+    return skillsRoot;
+  } catch {
+    for (const dir of [queueDir, monitorDir, watcherDir]) {
+      if (!existsSync(dir)) {
+        mkdirSync(dir, { recursive: true });
+      }
+    }
+
+    const defaults: Array<[string, string]> = [
+      [resolve(queueDir, "prompt-request-queue.jsonl"), ""],
+      [resolve(queueDir, "active-locks.jsonl"), ""],
+      [resolve(queueDir, "dag-state.jsonl"), ""],
+      [resolve(queueDir, "prompt-request-history.md"), "# Prompt Request History\n"],
+      [resolve(monitorDir, "skill-runs.jsonl"), ""],
+      [resolve(monitorDir, "skill-health.json"), '{"lastUpdated":"","skills":{}}'],
+      [resolve(monitorDir, "skill-improvements.md"), "# Skill Improvements\n"],
+      [resolve(watcherDir, "knowledge-state.json"), '{"lastCheck":"","sources":{}}'],
+      [resolve(watcherDir, "knowledge-diffs.jsonl"), ""],
+    ];
+
+    for (const [file, contents] of defaults) {
+      if (!existsSync(file)) {
+        writeFileSync(file, contents);
+      }
+    }
+
+    return skillsRoot;
+  }
 }
 
 /** Dynamic import of agent-skill-bus */
@@ -38,12 +82,8 @@ export function registerBusCommand(program: Command): void {
     .description("Initialize ASB data directory")
     .action(() => {
       const base = process.env.MIYABI_REPO_DIR || process.cwd();
-      const baseDir = resolve(base, ".skill-bus");
-      for (const sub of ["queue", "monitor", "watcher"]) {
-        const dir = resolve(baseDir, sub);
-        if (!existsSync(dir)) {mkdirSync(dir, { recursive: true });}
-      }
-      console.log(chalk.green(`✓ ASB data directory initialized: ${baseDir}`));
+      const skillsRoot = ensureBusLayout(base);
+      console.log(chalk.green(`✓ ASB data directory initialized: ${skillsRoot}`));
     });
 
   bus.command("enqueue")
